@@ -1,7 +1,11 @@
-target/
-*.class
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+build/
+dist/
 .idea/
-*.iml
 .vscode/
 .env
 *.pem

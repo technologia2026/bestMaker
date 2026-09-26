@@ -263,7 +263,7 @@ footer { font-size: 12px; color: var(--ink-2); max-width: 90ch; }
   <footer>
     모든 인물·주소·연락처는 가상입니다. 이 페이지는 브라우저 WebCrypto로 실제 암호 연산을 합니다:
     AES-256-GCM 봉인(AAD = 가구 ID·층·버전), Shamir 2-of-3(GF(256)), <span id="sigalg">Ed25519</span> 서명, HMAC-SHA256 도착 코드, SHA-256 해시 체인.
-    판정·매칭·공개 규칙은 저장소의 Java 코어(<span class="mono">src/main/java</span>)와 같습니다.
+    판정·매칭·공개 규칙은 저장소의 Python 코어(<span class="mono">emergency_envelope/</span>)와 같습니다.
   </footer>
 </div>
 
@@ -279,7 +279,7 @@ function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;
 function hm(ms) { return new Date(ms + 9 * 3600000).toISOString().slice(11, 16); }
 function iso(ms) { return new Date(ms).toISOString(); }
 
-/** 길이 접두 인코딩 (Java Codec.fields와 같은 바이트). */
+/** 길이 접두 인코딩 (Python common.fields와 같은 바이트). */
 function fields(...parts) {
   const bs = parts.map(p => enc.encode(p == null ? "" : String(p)));
   const out = new Uint8Array(4 + bs.reduce((a, b) => a + 4 + b.length, 0));
@@ -475,7 +475,7 @@ class Verifier {
   }
 }
 
-/** 증거 묶음이 이 가구(격자)에 허용하는 최고 단계. Java EvidenceEvaluator와 같은 규칙. */
+/** 증거 묶음이 이 가구(격자)에 허용하는 최고 단계. Python evaluate_evidence와 같은 규칙. */
 async function evaluateEvidence(verifier, list, hid, cell) {
   const rejected = [], advisories = [], escs = [];
   let best = "PEACETIME", until = null, basis = "증거 없음";

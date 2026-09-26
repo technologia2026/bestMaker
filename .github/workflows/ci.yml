@@ -12,9 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-python@v5
         with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
-      - run: mvn -B verify
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: pytest -q
+      - run: bandit -q -r emergency_envelope

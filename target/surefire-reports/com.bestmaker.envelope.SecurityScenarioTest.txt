@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.bestmaker.envelope.SecurityScenarioTest
+-------------------------------------------------------------------------------
+Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.451 s -- in com.bestmaker.envelope.SecurityScenarioTest

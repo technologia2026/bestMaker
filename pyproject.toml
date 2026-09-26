@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "emergency-envelope"
+version = "0.1.0"
+description = "비상봉투: 평소엔 봉인, 재난 땐 가장 가까운 이웃이 여는 재난약자 구조 플랫폼 (보안 코어)"
+requires-python = ">=3.11"
+dependencies = [
+    "pycryptodome>=3.20",
+    "cryptography>=42",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "bandit>=1.7"]
+
+[tool.setuptools]
+packages = ["emergency_envelope"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
