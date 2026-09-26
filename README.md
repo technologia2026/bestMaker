@@ -18,6 +18,18 @@ MAVEN_OPTS="-Dstdout.encoding=UTF-8" mvn -q compile exec:java   # 결선 시연 
 요구 사항: JDK 21, Maven 3.9+. 외부 의존성은 Shamir 비밀분산(`com.codahale:shamir`)과 JUnit뿐이며,
 AES-256-GCM·Ed25519·HMAC·SecureRandom은 JDK 표준 암호 API(JCA)를 쓴다.
 
+## 웹 시연 (설치 없이 브라우저로)
+
+`web/demo.html`은 Java 코어의 판정·매칭·공개 규칙을 JavaScript로 옮긴 앱 형태 시연 페이지다.
+암호 연산은 브라우저 WebCrypto로 실제로 수행한다 (AES-256-GCM, Shamir 2-of-3, Ed25519, HMAC-SHA256, SHA-256 해시 체인).
+
+- 상단 "다음 장면"으로 결선 시연 6장면(세부 10단계)을 차례로 진행
+- 조력자 폰(P-1 지정 / P-2 파트너 / C-1 시민)과 당사자(H1) 화면을 탭으로 전환, 수락·거절·포기·도착 코드 입력을 직접 조작
+- 가정 기기 패널에서 수위 센서·긴급버튼을 눌러 즉시 공개
+- "직접 공격해 보기"로 관리자 열람, 경보 위조·재전송, 봉투 끼워 넣기, 로그 조작을 시도하고 거부·탐지 확인
+
+파일은 Artifact 게시용 조각(fragment)이라 `<html>` 뼈대 없이 시작하지만, 브라우저로 바로 열어도 동작한다.
+
 ## 구조 (기획서 ❷ 절과 대응)
 
 | 패키지 | 기획서 | 내용 |
