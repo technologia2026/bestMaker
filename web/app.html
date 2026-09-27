@@ -193,6 +193,53 @@ button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--seal);
 .done-ic { width: 76px; height: 76px; border-radius: 50%; background: var(--s-accent); display: grid; place-items: center; margin: 18px auto 6px; }
 .center { text-align: center; justify-items: center; }
 footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
+/* 관제탑 */
+.ops { display: grid; gap: 14px; border-top: 2px solid var(--line); padding-top: 22px; }
+.ops-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.ops-title { font-family: var(--display); font-weight: 400; font-size: 28px; margin: 2px 0 0; line-height: 1.1; }
+.ops-privacy { font-size: 12.5px; color: var(--sub); display: flex; align-items: center; gap: 6px; }
+.stage-pill { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: 14px; color: #fff; }
+.stage-pill i { width: 9px; height: 9px; border-radius: 50%; background: #fff; }
+.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 1000px) { .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: grid; gap: 2px; position: relative; overflow: hidden; }
+.kpi b { font-family: var(--mono); font-size: 26px; font-weight: 500; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 12px; color: var(--sub); }
+.kpi small { font-size: 11.5px; color: var(--sub); }
+.kpi.warn { box-shadow: inset 4px 0 0 var(--alert); }
+.kpi.ok { box-shadow: inset 4px 0 0 var(--safe); }
+.ops-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 900px) { .ops-grid { grid-template-columns: minmax(0, 1fr); } }
+.ops-side { display: grid; gap: 14px; }
+.rowhead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.rowhead b { font-size: 15px; }
+.rowhead span { font-size: 12px; color: var(--sub); }
+.ops-map { height: 470px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
+  --s-map: var(--panel-2); --s-land: var(--panel); --s-edge: var(--line); --s-sub: var(--sub); --s-ink: var(--ink); --s-accent: var(--alert); }
+.ops-map svg { display: block; width: 100%; height: 100%; }
+.ops-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--sub); }
+.ops-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.tbl-wrap { overflow-x: auto; }
+.ops-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ops-table th { text-align: left; font-weight: 500; color: var(--sub); font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.ops-table td { padding: 8px; border-bottom: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ops-table tr:last-child td { border-bottom: 0; }
+.ops-table .mono { font-family: var(--mono); font-size: 12px; }
+.st { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 999px; border: 1px solid; }
+.st.wait { color: var(--alert); border-color: var(--alert); }
+.st.go { color: var(--amber); border-color: var(--amber); }
+.st.here { color: var(--seal); border-color: var(--seal); }
+.st.done { color: var(--safe); border-color: var(--safe); }
+.rain-chart svg { display: block; width: 100%; height: auto; }
+.rain-chart text { font-family: var(--mono); }
+.sec-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.sec-list li { font-size: 13px; display: grid; grid-template-columns: 44px 1fr; gap: 6px; padding: 7px 9px; border-radius: 10px; background: var(--panel-2); }
+.sec-list li.bad { box-shadow: inset 3px 0 0 var(--deny); }
+.sec-list time { font-family: var(--mono); color: var(--sub); font-size: 12px; }
+.agency-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; font-size: 13px; padding: 5px 0; border-bottom: 1px dashed var(--line); }
+.agency-row:last-child { border-bottom: 0; }
+.agency-row span.n { font-family: var(--mono); }
 </style>
 
 <div class="page">
@@ -250,6 +297,47 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
       </div>
     </section>
   </main>
+
+  <section class="ops" aria-label="관제탑">
+    <div class="ops-head">
+      <div>
+        <div class="eyebrow">관제탑 · 재난안전상황실 (담당 공무원 화면)</div>
+        <h2 class="ops-title">지금 우리 구, 한눈에</h2>
+        <p class="ops-privacy">이름·주소·연락처는 관제탑에도 보이지 않습니다. 500m 격자와 요청 상태, 조력자 배치만 표시합니다.</p>
+      </div>
+      <div id="ops-stage"></div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="ops-grid">
+      <div class="card">
+        <div class="rowhead"><b>격자 상황 지도</b><span>서울 관악·동작·구로 일대 · 500m 격자</span></div>
+        <div class="ops-map"><svg id="ops-svg" aria-label="관제 지도"></svg></div>
+        <div class="ops-legend">
+          <span><i style="background:rgba(232,154,31,.35)"></i>예보 격자</span>
+          <span><i style="background:rgba(255,106,43,.4)"></i>경보 격자</span>
+          <span><i style="border:2px dashed #ff6a2b;background:transparent;border-radius:50%"></i>도움 요청 (반경 180m)</span>
+          <span><i style="background:#2346e8;border-radius:50%"></i>출동 중 조력자</span>
+          <span><i style="background:#8a98ab;border-radius:50%"></i>대기 조력자</span>
+          <span><i style="background:#12a58a"></i>대피소</span>
+        </div>
+      </div>
+      <div class="ops-side">
+        <div class="card">
+          <div class="rowhead"><b>도움 요청 현황</b><span>요청 번호로만 표시</span></div>
+          <div class="tbl-wrap"><table class="ops-table" id="ops-table"></table></div>
+        </div>
+        <div class="card rain-chart">
+          <div class="rowhead"><b>10분 강우량</b><span id="rain-meta">신대방1동 부근 관측소 · 최근 2시간</span></div>
+          <svg id="rain-svg" viewBox="0 0 360 170" aria-label="10분 강우량 막대 그래프"></svg>
+        </div>
+        <div class="card">
+          <div class="rowhead"><b>기관 승인 · 보안 이벤트</b><span>오늘 누적</span></div>
+          <div id="agency-sum"></div>
+          <ul class="sec-list" id="sec-list"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <footer>
     모든 인물·주소·연락처는 가상입니다. 도움 요청 가구의 정보는 브라우저에서 AES-256-GCM으로 실제 암호화돼 있고, 열쇠는 세 기관에 나뉘어 두 곳 이상 승인해야 복원됩니다.
@@ -325,6 +413,8 @@ const HOUSES = [
 const DONGS = [{"n":"신도림동","g":"구로구","r":[[[-1796,-2417],[-1604,-2272],[-1718,-2197],[-1932,-2201],[-1965,-2241],[-2059,-2273],[-2460,-1978],[-2684,-1786],[-2767,-1767],[-2789,-1775],[-2833,-1812],[-2929,-1916],[-3081,-1915],[-3138,-1944],[-3204,-1978],[-3517,-2313],[-3078,-2949],[-2988,-3225],[-2788,-3119],[-2189,-2771],[-2091,-2707],[-1998,-2623],[-1904,-2462],[-1796,-2417]]]},{"n":"구로1동","g":"구로구","r":[[[-2928,28],[-2883,180],[-3109,144],[-3199,195],[-3265,220],[-3406,245],[-3370,123],[-3358,-103],[-3579,-133],[-3821,-477],[-3855,-544],[-3859,-641],[-3921,-829],[-3974,-829],[-3999,-1046],[-3965,-977],[-3718,-1035],[-3531,-1149],[-3087,-1350],[-2927,-1380],[-2930,-1372],[-2967,-1244],[-2980,-1119],[-2941,-543],[-2957,-412],[-2928,28]]]},{"n":"구로3동","g":"구로구","r":[[[-890,289],[-1222,802],[-1267,956],[-1513,1000],[-1524,974],[-1671,818],[-1751,812],[-1872,768],[-1941,466],[-1921,432],[-1971,408],[-2243,316],[-2360,292],[-2393,290],[-2204,17],[-1904,-237],[-1581,-490],[-1403,-18],[-1390,1],[-1299,96],[-1135,214],[-931,287],[-890,289]]]},{"n":"구로4동","g":"구로구","r":[[[-1584,-498],[-1581,-490],[-1904,-237],[-2204,17],[-2393,290],[-2407,289],[-2517,-33],[-2549,-147],[-2582,-322],[-2571,-327],[-2454,-292],[-2236,-257],[-2088,-496],[-2022,-620],[-2162,-850],[-1747,-1119],[-1657,-743],[-1584,-498]]]},{"n":"구로5동","g":"구로구","r":[[[-1718,-2197],[-1733,-1859],[-1763,-1649],[-1766,-1538],[-1747,-1119],[-2162,-850],[-2303,-1058],[-2527,-1266],[-2589,-1299],[-2630,-1332],[-2869,-1595],[-2957,-1704],[-2833,-1812],[-2789,-1775],[-2767,-1767],[-2684,-1786],[-2460,-1978],[-2059,-2273],[-1965,-2241],[-1932,-2201],[-1718,-2197]]]},{"n":"가리봉동","g":"구로구","r":[[[-2407,289],[-2278,305],[-1971,408],[-1921,432],[-1941,466],[-1872,768],[-1751,812],[-1671,818],[-1524,974],[-1513,1000],[-1540,1011],[-1597,1009],[-2041,918],[-2140,882],[-2221,825],[-2268,775],[-2458,526],[-2741,284],[-2883,180],[-2928,28],[-2687,110],[-2407,289]]]},{"n":"구로2동","g":"구로구","r":[[[-2833,-1812],[-2957,-1704],[-2869,-1595],[-2630,-1332],[-2589,-1299],[-2527,-1266],[-2303,-1058],[-2162,-850],[-2022,-620],[-2088,-496],[-2236,-257],[-2454,-292],[-2571,-327],[-2582,-322],[-2549,-147],[-2517,-33],[-2407,289],[-2687,110],[-2928,28],[-2957,-412],[-2943,-503],[-2980,-1119],[-2967,-1244],[-2927,-1380],[-3087,-1350],[-3531,-1149],[-3718,-1035],[-3965,-977],[-3999,-1046],[-3713,-1993],[-3517,-2313],[-3204,-1978],[-3081,-1915],[-2929,-1916],[-2833,-1812]]]},{"n":"가산동","g":"금천구","r":[[[-2883,180],[-2741,284],[-2458,526],[-2257,787],[-2171,862],[-2101,900],[-2047,917],[-1633,1005],[-1540,1011],[-1482,1310],[-1700,1446],[-1716,1699],[-1812,1696],[-1893,1691],[-2043,1697],[-2313,1721],[-2137,2215],[-2111,2415],[-2344,2534],[-2884,1741],[-3077,1426],[-3237,1110],[-3328,897],[-3479,472],[-3473,282],[-3406,245],[-3265,220],[-3199,195],[-3109,144],[-2883,180]]]},{"n":"독산1동","g":"금천구","r":[[[-1351,1788],[-1411,2656],[-1403,2759],[-1378,2861],[-1286,3118],[-1456,3180],[-1784,3342],[-1745,3495],[-1702,3614],[-1629,3757],[-1596,3849],[-1664,3876],[-1698,3865],[-1826,3944],[-2091,3896],[-2104,3852],[-2308,3540],[-2378,3471],[-2394,3430],[-2476,3044],[-2407,2980],[-2352,2943],[-2268,2926],[-2200,2959],[-2177,2959],[-2159,2949],[-2150,2934],[-2139,2881],[-2177,2777],[-2344,2534],[-2111,2415],[-2137,2215],[-2313,1721],[-1893,1691],[-1716,1699],[-1700,1446],[-1482,1310],[-1540,1011],[-1513,1000],[-1267,956],[-1351,1788]]]},{"n":"독산2동","g":"금천구","r":[[[-80,2387],[-76,2423],[-206,2470],[-298,2419],[-321,2425],[-532,2559],[-789,2797],[-919,2807],[-949,2870],[-956,2986],[-1015,3113],[-1162,3254],[-1231,3275],[-1378,2861],[-1406,2716],[-1411,2656],[-1384,2331],[-1021,2336],[-705,2278],[-606,2237],[-576,2231],[-492,2242],[-80,2387]]]},{"n":"독산3동","g":"금천구","r":[[[-448,1655],[-525,1693],[-616,1726],[-893,1685],[-1135,1803],[-1351,1788],[-1267,956],[-1222,802],[-1115,915],[-316,735],[-395,902],[-395,966],[-337,1039],[-234,1050],[-148,1043],[-120,1182],[-147,1335],[-209,1523],[-228,1543],[-302,1585],[-448,1655]]]},{"n":"독산4동","g":"금천구","r":[[[-80,2387],[-492,2242],[-576,2231],[-606,2237],[-705,2278],[-793,2298],[-1021,2336],[-1097,2336],[-1384,2331],[-1351,1788],[-1135,1803],[-893,1685],[-616,1726],[-525,1693],[-448,1655],[-412,1715],[-280,2048],[-149,2318],[-80,2387]]]},{"n":"시흥1동","g":"금천구","r":[[[-633,3746],[-651,4056],[-671,4174],[-700,4223],[-755,4269],[-917,4320],[-871,4473],[-859,4544],[-866,4561],[-1117,4767],[-1151,4782],[-1220,4777],[-1332,4747],[-1517,4615],[-1608,4330],[-1632,4063],[-1698,3865],[-1664,3876],[-1596,3849],[-1629,3757],[-1702,3614],[-1745,3495],[-1784,3342],[-1456,3180],[-1286,3118],[-1231,3275],[-1162,3254],[-1015,3113],[-956,2986],[-949,2870],[-919,2807],[-789,2797],[-768,2880],[-643,3653],[-633,3746]]]},{"n":"시흥4동","g":"금천구","r":[[[-76,2423],[40,2467],[-24,2564],[-39,2612],[59,3201],[75,3262],[-6,3266],[-252,3415],[-303,3480],[-369,3721],[-395,3798],[-633,3746],[-643,3653],[-768,2880],[-789,2797],[-532,2559],[-321,2425],[-298,2419],[-206,2470],[-76,2423]]]},{"n":"신길1동","g":"영등포구","r":[[[1123,-3150],[903,-2784],[808,-2491],[778,-2349],[774,-2255],[641,-2164],[339,-2058],[249,-1995],[134,-2232],[38,-2629],[242,-2681],[332,-2717],[449,-2873],[489,-2943],[438,-2981],[388,-3034],[349,-3115],[299,-3260],[296,-3300],[370,-3521],[442,-3461],[569,-3389],[1056,-3166],[1123,-3150]]]},{"n":"신길3동","g":"영등포구","r":[[[-277,-1795],[-389,-1838],[-422,-1868],[-512,-1896],[-906,-1836],[-1095,-1734],[-1132,-1705],[-1332,-1960],[-792,-2255],[-265,-2554],[-231,-2441],[-213,-2351],[-199,-2042],[-277,-1795]]]},{"n":"신길4동","g":"영등포구","r":[[[249,-1995],[190,-1834],[-20,-1840],[-32,-1847],[-157,-1820],[-180,-1793],[-209,-1798],[-233,-1779],[-240,-1784],[-257,-1779],[-256,-1772],[-272,-1771],[-277,-1795],[-199,-2042],[-213,-2351],[-231,-2441],[-265,-2554],[38,-2629],[134,-2232],[249,-1995]]]},{"n":"신길5동","g":"영등포구","r":[[[-277,-1795],[-266,-1723],[-269,-1595],[-307,-1509],[-363,-1423],[-376,-1406],[-403,-1391],[-445,-1197],[-453,-1089],[-531,-1056],[-844,-1071],[-899,-1101],[-1024,-1238],[-1072,-1302],[-1084,-1343],[-1028,-1430],[-983,-1529],[-1132,-1705],[-1100,-1730],[-906,-1836],[-512,-1896],[-422,-1868],[-389,-1838],[-277,-1795]]]},{"n":"신길6동","g":"영등포구","r":[[[190,-1834],[103,-1685],[22,-1566],[-34,-1535],[-59,-1509],[-113,-1432],[-129,-1388],[199,-1405],[380,-1580],[615,-1544],[665,-1525],[608,-1172],[564,-1116],[448,-1078],[159,-1003],[-68,-971],[-131,-918],[-266,-658],[-340,-551],[-453,-1089],[-445,-1197],[-403,-1391],[-376,-1406],[-363,-1423],[-307,-1509],[-269,-1595],[-266,-1723],[-272,-1771],[-256,-1772],[-258,-1784],[-233,-1779],[-209,-1798],[-180,-1793],[-157,-1820],[-32,-1847],[-20,-1840],[190,-1834]]]},{"n":"신길7동","g":"영등포구","r":[[[665,-1525],[615,-1544],[380,-1580],[199,-1405],[-129,-1388],[-128,-1402],[-59,-1509],[-34,-1535],[22,-1566],[103,-1685],[190,-1834],[249,-1995],[339,-2058],[641,-2164],[774,-2255],[778,-2349],[808,-2491],[903,-2784],[1048,-3018],[1215,-2910],[1219,-2808],[1158,-2779],[1068,-2769],[665,-1525]]]},{"n":"대림1동","g":"영등포구","r":[[[-340,-551],[-616,-147],[-1005,-531],[-1181,-799],[-844,-1071],[-531,-1056],[-453,-1089],[-340,-551]]]},{"n":"대림2동","g":"영등포구","r":[[[-616,-147],[-890,289],[-931,287],[-1135,214],[-1299,96],[-1403,-18],[-1584,-498],[-1181,-799],[-1005,-531],[-616,-147]]]},{"n":"대림3동","g":"영등포구","r":[[[-1332,-1960],[-1132,-1705],[-983,-1529],[-1028,-1430],[-1085,-1336],[-1072,-1302],[-990,-1194],[-899,-1101],[-844,-1071],[-1181,-799],[-1584,-498],[-1657,-743],[-1747,-1119],[-1753,-1178],[-1763,-1649],[-1733,-1859],[-1718,-2197],[-1604,-2272],[-1332,-1960]]]},{"n":"영등포본동","g":"영등포구","r":[[[38,-2629],[-265,-2554],[-274,-2756],[-501,-2736],[-649,-2603],[-705,-2524],[-1006,-2477],[-1120,-2726],[-1338,-2637],[-1370,-2693],[-821,-2989],[-834,-3021],[-647,-3104],[-186,-3247],[232,-3279],[296,-3300],[299,-3260],[349,-3115],[388,-3034],[438,-2981],[489,-2943],[441,-2858],[332,-2717],[242,-2681],[38,-2629]]]},{"n":"도림동","g":"영등포구","r":[[[-265,-2554],[-792,-2255],[-1332,-1960],[-1604,-2272],[-1796,-2417],[-1338,-2637],[-1120,-2726],[-1006,-2477],[-705,-2524],[-649,-2603],[-501,-2736],[-274,-2756],[-265,-2554]]]},{"n":"문래동","g":"영등포구","r":[[[-1859,-3663],[-1202,-3525],[-1122,-3502],[-1078,-3475],[-1005,-3216],[-967,-3120],[-919,-3058],[-873,-3030],[-834,-3021],[-821,-2989],[-1196,-2787],[-1370,-2693],[-1338,-2637],[-1796,-2417],[-1904,-2462],[-1998,-2623],[-2091,-2707],[-2189,-2771],[-2788,-3119],[-2988,-3225],[-2959,-3734],[-2499,-3646],[-2468,-3780],[-1965,-3674],[-1859,-3663]]]},{"n":"노량진2동","g":"동작구","r":[[[2411,-2031],[2292,-1967],[2212,-1975],[2202,-1980],[2201,-2007],[2167,-2047],[2030,-2150],[1996,-2158],[1939,-2149],[1904,-2367],[1904,-2538],[1862,-2817],[1744,-2977],[1744,-3002],[1744,-3113],[2224,-3227],[2282,-2940],[2380,-2835],[2510,-2409],[2606,-2460],[2694,-2421],[2715,-2350],[2573,-2134],[2562,-2123],[2438,-2121],[2385,-2050],[2411,-2031]]]},{"n":"상도2동","g":"동작구","r":[[[3054,-1288],[2339,-1422],[2037,-1732],[1755,-1773],[1710,-1823],[1703,-1857],[1715,-1992],[1751,-1995],[1782,-1950],[1823,-1946],[1870,-1991],[1881,-2057],[1892,-2067],[1908,-2119],[1939,-2149],[1996,-2158],[2030,-2150],[2167,-2047],[2201,-2007],[2202,-1980],[2239,-1968],[2292,-1967],[2411,-2031],[2578,-2070],[3005,-2107],[3222,-2161],[3270,-2232],[3259,-2123],[3272,-2084],[3225,-1989],[3177,-1912],[3061,-1826],[2928,-1621],[3000,-1519],[3057,-1414],[3054,-1288]]]},{"n":"상도3동","g":"동작구","r":[[[2037,-1732],[1647,-1428],[1975,-985],[2334,-637],[2504,-514],[2315,-362],[2283,-440],[2016,-531],[1780,-599],[1574,-643],[1464,-708],[1421,-856],[1421,-888],[1449,-1037],[1490,-1132],[1451,-1128],[1350,-1245],[1391,-1259],[1501,-1321],[1509,-1341],[1485,-1415],[1463,-1436],[1377,-1459],[1327,-1698],[1328,-1732],[1337,-1744],[1358,-1753],[1572,-1772],[1657,-1789],[1710,-1823],[1755,-1773],[2037,-1732]]]},{"n":"상도4동","g":"동작구","r":[[[3054,-1288],[3090,-1227],[3090,-1036],[3052,-937],[3011,-697],[2658,-495],[2608,-513],[2504,-514],[2334,-637],[2260,-703],[1975,-985],[1647,-1428],[2037,-1732],[2339,-1422],[3054,-1288]]]},{"n":"대방동","g":"동작구","r":[[[1744,-3113],[1744,-2977],[1862,-2817],[1904,-2538],[1904,-2367],[1939,-2149],[1908,-2119],[1892,-2067],[1881,-2057],[1870,-1991],[1829,-1950],[1804,-1945],[1782,-1950],[1751,-1995],[1715,-1992],[1702,-1878],[1710,-1823],[1657,-1789],[1572,-1772],[1358,-1753],[1331,-1737],[1327,-1698],[1377,-1459],[1418,-1453],[1468,-1432],[1485,-1415],[1502,-1367],[1509,-1341],[1501,-1321],[1391,-1259],[1350,-1245],[1222,-1286],[1171,-1286],[786,-1135],[769,-1134],[693,-1164],[612,-1206],[665,-1525],[1068,-2769],[1158,-2779],[1219,-2808],[1215,-2910],[1048,-3018],[1123,-3150],[1665,-3101],[1744,-3113]]]},{"n":"신대방1동","g":"동작구","r":[[[236,-128],[-5,44],[-189,125],[-516,249],[-648,289],[-721,291],[-890,289],[-616,-147],[-266,-658],[-131,-918],[-68,-971],[83,-993],[115,-603],[199,-321],[236,-128]]]},{"n":"신대방2동","g":"동작구","r":[[[1350,-1245],[1451,-1128],[1490,-1132],[1449,-1037],[1421,-888],[1421,-856],[1464,-708],[1307,-811],[1274,-817],[1242,-810],[1175,-721],[1107,-553],[972,-261],[494,-217],[236,-128],[199,-321],[115,-603],[83,-993],[241,-1023],[564,-1116],[608,-1172],[612,-1206],[693,-1164],[769,-1134],[786,-1135],[1171,-1286],[1222,-1286],[1350,-1245]]]},{"n":"노량진1동","g":"동작구","r":[[[3878,-3075],[4337,-2847],[3868,-2462],[3621,-2217],[3593,-2221],[3572,-2247],[3270,-2232],[3222,-2161],[3005,-2107],[2578,-2070],[2411,-2031],[2385,-2050],[2438,-2121],[2562,-2123],[2594,-2158],[2715,-2350],[2694,-2421],[2606,-2460],[2510,-2409],[2380,-2835],[2282,-2940],[2224,-3227],[2620,-3334],[2856,-3434],[3277,-3584],[3544,-3309],[3878,-3075]]]},{"n":"보라매동","g":"관악구","r":[[[1464,-708],[1574,-643],[1780,-599],[2016,-531],[2283,-440],[2315,-362],[2269,-205],[2242,-68],[2263,-25],[2279,-29],[2303,-54],[2326,-48],[2371,-12],[2299,154],[1909,133],[1240,-214],[972,-261],[1107,-553],[1175,-721],[1242,-810],[1274,-817],[1307,-811],[1340,-795],[1464,-708]]]},{"n":"서원동","g":"관악구","r":[[[2169,386],[2168,473],[2099,589],[2071,621],[1982,682],[1974,695],[1982,749],[2107,900],[2199,929],[2312,1048],[2202,1142],[1936,1251],[1494,1355],[1635,978],[1180,416],[1846,305],[2169,386]]]},{"n":"신원동","g":"관악구","r":[[[1494,1355],[1423,1387],[1174,1452],[961,1153],[858,965],[731,495],[1180,416],[1635,978],[1494,1355]]]},{"n":"서림동","g":"관악구","r":[[[2937,1642],[2955,1678],[2958,1940],[2840,2005],[2777,1949],[2076,1829],[1918,1792],[1841,1747],[1787,1606],[1426,1439],[1423,1387],[1494,1355],[1936,1251],[2202,1142],[2312,1048],[2368,1139],[2636,1380],[2650,1383],[2677,1348],[2755,1423],[2937,1642]]]},{"n":"신사동","g":"관악구","r":[[[1138,422],[731,495],[109,640],[2,39],[236,-128],[494,-217],[573,-204],[676,-158],[782,-54],[882,124],[1047,329],[1138,422]]]},{"n":"신림동","g":"관악구","r":[[[1909,133],[1846,305],[1138,422],[1047,329],[882,124],[798,-25],[738,-103],[676,-158],[573,-204],[494,-217],[972,-261],[1240,-214],[1909,133]]]},{"n":"난향동","g":"관악구","r":[[[855,2668],[843,2721],[953,3083],[853,3290],[810,3355],[451,3365],[135,3309],[75,3262],[59,3201],[-39,2612],[-24,2564],[40,2467],[157,2370],[503,2324],[855,2668]]]},{"n":"조원동","g":"관악구","r":[[[109,640],[-1115,915],[-1222,802],[-890,289],[-648,289],[-380,200],[-189,125],[2,39],[109,640]]]},{"n":"대학동","g":"관악구","r":[[[3466,1824],[3519,1831],[3551,1856],[3739,2375],[3768,2468],[3745,2571],[3728,2766],[3741,2816],[3919,3213],[3969,3290],[4262,3543],[4416,3584],[4631,3600],[4984,4211],[4995,4257],[4986,4393],[4964,4443],[4893,4511],[4841,4516],[4617,4588],[4515,4645],[4478,4726],[4463,4795],[4486,4953],[4486,5020],[4399,5144],[4325,5189],[3981,5313],[3754,5359],[3678,5357],[3522,5312],[3395,5321],[3094,5362],[2477,5651],[2414,5688],[2317,5709],[2302,5699],[2207,5535],[2173,5421],[2172,5315],[2184,5291],[2211,5265],[2223,5227],[2114,5048],[1970,4905],[1579,4645],[1564,4622],[1553,4494],[1556,4411],[1813,4171],[1962,3962],[2214,3421],[2228,3323],[2234,3131],[2206,3045],[2146,2911],[1854,2499],[1676,2392],[1602,2413],[1599,2341],[1614,2257],[1841,1747],[1918,1792],[2076,1829],[2777,1949],[2840,2005],[2958,1940],[2955,1678],[2937,1642],[3025,1671],[3166,1672],[3230,1706],[3267,1761],[3329,1805],[3466,1824]]]},{"n":"은천동","g":"관악구","r":[[[2658,-495],[2798,-435],[2897,-280],[2900,-186],[2932,-25],[2973,74],[2918,622],[2624,584],[2169,386],[1846,305],[1909,133],[2299,154],[2371,-12],[2326,-48],[2303,-54],[2279,-29],[2263,-25],[2242,-68],[2269,-205],[2315,-362],[2504,-514],[2608,-513],[2658,-495]]]},{"n":"성현동","g":"관악구","r":[[[3781,-440],[3873,-242],[3945,-121],[3953,-89],[3946,-10],[3799,214],[2973,74],[2936,-8],[2900,-186],[2897,-280],[2798,-435],[2658,-495],[3011,-697],[3037,-679],[3111,-672],[3352,-532],[3547,-391],[3599,-380],[3666,-395],[3781,-440]]]},{"n":"청룡동","g":"관악구","r":[[[2918,622],[3441,691],[3467,789],[3516,1585],[3516,1634],[3466,1824],[3329,1805],[3267,1761],[3230,1706],[3166,1672],[3025,1671],[2937,1642],[2755,1423],[2677,1348],[2650,1383],[2636,1380],[2368,1139],[2312,1048],[2199,929],[2107,900],[2089,887],[1982,749],[1974,695],[1982,682],[2071,621],[2099,589],[2168,473],[2169,386],[2624,584],[2918,622]]]},{"n":"난곡동","g":"관악구","r":[[[1174,1452],[1184,1620],[1123,2167],[1006,2325],[895,2429],[852,2553],[855,2668],[503,2324],[157,2370],[87,2011],[100,1937],[150,1775],[397,1503],[549,1440],[961,1153],[1174,1452]]]},{"n":"삼성동","g":"관악구","r":[[[1841,1747],[1614,2257],[1599,2341],[1602,2413],[1676,2392],[1854,2499],[2146,2911],[2206,3045],[2234,3131],[2228,3323],[2214,3421],[1962,3962],[1813,4171],[1566,4397],[1365,4135],[1216,3970],[873,3667],[825,3544],[806,3412],[813,3388],[810,3355],[853,3290],[953,3083],[843,2721],[855,2668],[852,2553],[895,2429],[1006,2325],[1123,2167],[1184,1620],[1174,1452],[1423,1387],[1426,1439],[1787,1606],[1841,1747]]]},{"n":"미성동","g":"관악구","r":[[[961,1153],[549,1440],[397,1503],[150,1775],[100,1937],[87,2011],[157,2370],[40,2467],[-76,2423],[-80,2387],[-149,2318],[-280,2048],[-412,1715],[-448,1655],[-302,1585],[-220,1537],[-207,1519],[-147,1335],[-120,1182],[-148,1043],[-234,1050],[-337,1039],[-395,966],[-395,902],[-316,735],[731,495],[858,965],[961,1153]]]}];
 const SHELTER = { x: -330, y: -260, name: "○○초등학교 강당" };
 const FUZZ_R = 180;
+const OTHERS = [{ id: "#2", x: -650, y: -300 }, { id: "#3", x: 420, y: -520 }, { id: "#4", x: 260, y: 380 }, { id: "#5", x: -150, y: 640 }, { id: "#6", x: 820, y: 90 }, { id: "#7", x: -900, y: 420 }];
+const RAIN = { 0: [0,0,0,0,0,0,0,0,0,0,0,0], 1: [0,0,0,.5,1,1,2,2,3,3,4,5], 2: [1,2,3,4,6,7,9,11,13,14,16,17], 3: [2,4,6,9,11,13,15,16,17,15,14,12], 4: [9,7,5,3,2,1,1,.5,0,0,0,0] };
 const AGENCIES = ["재난안전부서", "자치구", "감사기관"];
 const SCENES = [
   { t: "21:30", short: "평소", title: "평소: 내 매칭 이웃을 미리", body: "박○○님은 동행파트너로 김○○님과 1:1로 매칭돼 있습니다. 평소엔 김○○님 댁 위치와 대피 준비만 볼 수 있고, 다른 가구 정보는 전혀 보이지 않습니다.", look: "앱 홈의 지도와 준비 체크리스트를 눌러 보세요. 활동·내 정보 탭도 열립니다." },
@@ -347,7 +437,7 @@ async function boot() {
       { at: "09.12", title: "모의훈련 · 김○○님 댁 대피 연습", sub: "도착 11분 · 창문 대피 경로 확인", kind: "drill" },
       { at: "08.21", title: "대기 요청 · 호우 예보", sub: "출동 없이 해제", kind: "wait" },
       { at: "07.30", title: "기본 교육 이수", sub: "재난약자 동행·휠체어 이동 보조 (2시간)", kind: "edu" },
-    ], unread: 0, view: null, me: { x: 0, y: 0 },
+    ], unread: 0, view: null, me: { x: 0, y: 0 }, others: OTHERS.map(o => ({ ...o, busy: null })), agencyTotals: [{ ok: 0, no: 0 }, { ok: 0, no: 0 }, { ok: 0, no: 0 }], smsCount: 0,
   };
   for (const h of HOUSES) {
     if (!h.rec) continue;
@@ -367,7 +457,7 @@ function log(type, detail) {
   const prev = S.chain.length ? S.chain[S.chain.length - 1].hash : "0".repeat(64);
   S.chain.push({ at: S.clock, type, detail, hash: hex(sha256(fields(prev, S.chain.length, S.clock, type, detail))) });
 }
-function sms(to, text, warn = false) { S.sms.unshift({ at: S.clock, to, text, warn }); }
+function sms(to, text, warn = false) { S.sms.unshift({ at: S.clock, to, text, warn }); S.smsCount++; }
 let toastTimer;
 function toast(title, text) {
   const el = document.getElementById("toast");
@@ -398,8 +488,8 @@ async function openHouse(id, role, evidence) {
     else if (S.clock >= evidence.exp) why = "유효 시간 지남";
     else if (evidence.kind === "alert" && evidence.level !== "WARNING") why = "예보만으로는 안 열림";
     else if (evidence.kind === "device" && evidence.device !== id) why = "다른 집 신호";
-    if (why) S.agencies[i] = { st: "no", txt: "거부 · " + why };
-    else { S.agencies[i] = { st: "ok", txt: "승인" }; parts.set(i + 1, d.shares[i].slice()); }
+    if (why) { S.agencies[i] = { st: "no", txt: "거부 · " + why }; S.agencyTotals[i].no++; }
+    else { S.agencies[i] = { st: "ok", txt: "승인" }; S.agencyTotals[i].ok++; parts.set(i + 1, d.shares[i].slice()); }
     renderKeys(); renderVerify();
   }
   if (parts.size < 2) return null;
@@ -438,7 +528,19 @@ async function runScene(n) {
 }
 function addReq(id, basis, evidence) {
   if (S.reqs.some(r => r.id === id)) return;
-  S.reqs.push({ id, basis, evidence, status: house(id).taken ? "taken" : "open", at: S.clock });
+  const h = house(id), r = { id, basis, evidence, status: h.taken ? "taken" : "open", at: S.clock, t0: Date.now(), tAssign: null, by: null, arrived: false };
+  if (h.taken) { const o = nearestOther(hpos(h)); if (o) { o.busy = id; r.by = o.id; r.tAssign = Date.now(); } }
+  S.reqs.push(r);
+  if (!h.match && !h.taken) setTimeout(() => autoAssign(id), id === "H3" ? 28000 : 34000);
+}
+function nearestOther(p) { return S.others.filter(o => !o.busy).sort((a, b) => Math.hypot(a.x - p.x, a.y - p.y) - Math.hypot(b.x - p.x, b.y - p.y))[0]; }
+function autoAssign(id) { // 박○○님이 받지 않으면 가까운 다른 조력자가 수락
+  const r = S.reqs.find(x => x.id === id); if (!r || r.status !== "open" || (S.mission && S.mission.id === id)) return;
+  const o = nearestOther(fuzz(house(id))); if (!o) return;
+  o.busy = id; r.status = "taken"; r.by = o.id; r.tAssign = Date.now();
+  log("수락", `조력자 ${o.id} → ${house(id).short} · 확장 조력자`);
+  if (S.sel === id) S.sel = null;
+  render();
 }
 const openReqs = () => S.reqs.filter(r => r.status === "open" && house(r.id).dist <= S.radius);
 async function accept(id) {
@@ -446,7 +548,7 @@ async function accept(id) {
   if (!r || r.status !== "open" || S.mission) return;
   const h = house(id);
   S.mission = { id, stage: "verify", attempts: 5, err: "", rec: null, openedAt: 0, steps: { door: false, move: false, shelter: false } };
-  r.status = "mine";
+  r.status = "mine"; r.by = "#1 박○○"; r.tAssign = Date.now();
   log("수락", `박○○ → ${h.match ? "김○○님 (지정 조력자)" : h.short + " (확장 조력자 A)"} · 다른 조력자 화면에서 삭제`);
   S.tab = "home"; render();
   const rec = await openHouse(id, "helper", r.evidence);
@@ -487,6 +589,7 @@ async function arriveCheck(auto = false) {
     render(); return;
   }
   m.stage = "onsite"; m.openedAt = Date.now(); m.err = ""; S.view = null;
+  const rq = S.reqs.find(x => x.id === m.id); if (rq) rq.arrived = true;
   const h = house(m.id), shown = m.rec.consent.map(k => LABEL[k]);
   log("도착·열람", `${auto ? "위치 자동 인식" : "도착 확인"} · ${h.match ? "지정 조력자" : "확장 조력자 A"} · ${shown.join("·")}`);
   sms(h.match ? "김○○님" : "당사자", `[비상봉투] ${hm(S.clock)} 이웃 조력자 1명이 도착해 정보를 확인했습니다 (${shown.join("·")}). 근거: ${S.reqs.find(r => r.id === m.id).basis}`);
@@ -503,7 +606,7 @@ async function endAll() {
     sms(h.match ? "김○○님" : "당사자", `[비상봉투] ${hm(S.clock)} 상황이 끝나 정보가 다시 잠겼습니다. 조력자 화면의 정보는 삭제됐습니다.`);
   }
   S.mission = m ? { ...m, stage: "closed", rec: null } : null;
-  S.reqs = []; S.sel = null; S.evidence = null; S.me = { x: 0, y: 0 };
+  S.reqs = []; S.sel = null; S.evidence = null; S.me = { x: 0, y: 0 }; S.others.forEach(o => o.busy = null);
   log("재봉인", "경보 해제 · 토큰 폐기 · 조력자 화면 정보 삭제");
   toast("경보 해제", "출동 중 열렸던 정보가 지워졌어요");
 }
@@ -595,9 +698,11 @@ function realMap(mode, height) {
     <div class="map-ctrl"><button type="button" data-map="in" aria-label="확대">+</button><button type="button" data-map="out" aria-label="축소">−</button><button type="button" class="me" data-map="me" aria-label="처음 위치로">나</button></div>
     <div class="map-note">${note}</div></div>`;
 }
-function drawMap() {
-  const svg = document.getElementById("rmap-svg"); if (!svg) return;
-  const mode = svg.dataset.mode, v = S.view, px = svg.clientWidth || 358, ph = svg.clientHeight || 300, f = v.w / px, h = v.w * ph / px;
+function drawMap() { const svg = document.getElementById("rmap-svg"); if (svg) drawMapInto(svg, svg.dataset.mode, S.view); }
+function cellOf(x, y) { return { r: Math.floor(y / 500), c: Math.floor(x / 500) }; }
+function cellLabel(x, y) { const c = cellOf(x, y); return `${10 - c.r}:${20 + c.c}`; }
+function drawMapInto(svg, mode, v) {
+  const px = svg.clientWidth || 358, ph = svg.clientHeight || 300, f = v.w / px, h = v.w * ph / px;
   svg.setAttribute("viewBox", `${v.x - v.w / 2} ${v.y - h / 2} ${v.w} ${h}`);
   const T = (x, y, t, size, col, w = 500, anchor = "middle") => `<text x="${x}" y="${y}" font-size="${size * f}" font-weight="${w}" fill="${col}" text-anchor="${anchor}" font-family="IBM Plex Sans KR, sans-serif" paint-order="stroke" stroke="var(--s-land)" stroke-width="${3 * f}">${esc(t)}</text>`;
   let g = `<rect x="-6000" y="-6000" width="12000" height="12000" fill="var(--s-map)"/>`;
@@ -630,6 +735,24 @@ function drawMap() {
     g += `<line x1="${S.me.x}" y1="${S.me.y}" x2="${t.x}" y2="${t.y}" stroke="var(--s-accent)" stroke-width="3.5" stroke-dasharray="1 8" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
     g += exact ? `<circle cx="${t.x}" cy="${t.y}" r="${9 * f}" fill="#ff6a2b" stroke="#fff" stroke-width="${2.5 * f}"/>` + T(t.x, t.y - 14 * f, hh.match ? "김○○님 댁" : "도착 확인된 집", 11, "var(--s-ink)", 700)
       : `<circle cx="${t.x}" cy="${t.y}" r="${FUZZ_R}" fill="#ff6a2b" fill-opacity=".2" stroke="#ff6a2b" stroke-width="2" stroke-dasharray="6 4" vector-effect="non-scaling-stroke"/>` + T(t.x, t.y + 4 * f, "이 근처 · 가까이 가면 정확한 집이 열려요", 10.5, "var(--s-ink)", 700);
+  }
+  if (mode === "ops") {
+    const alertOn = S.scene >= 1 && S.scene < 4, warn = S.evidence && S.evidence.kind === "alert" && S.evidence.level === "WARNING";
+    for (let r = -3; r < 3; r++) for (let c = -3; c < 3; c++) {
+      const inAlert = alertOn && r >= -2 && r < 2 && c >= -2 && c < 2;
+      g += `<rect x="${c * 500}" y="${r * 500}" width="500" height="500" fill="${inAlert ? (warn ? "rgba(255,106,43,.16)" : "rgba(232,154,31,.14)") : "none"}" stroke="var(--s-edge)" stroke-opacity=".9" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/>`;
+      g += T(c * 500 + 10 * f, r * 500 + 14 * f, `${10 - r}:${20 + c}`, 9, "var(--s-sub)", 500, "start");
+    }
+    if (alertOn) g += `<rect x="-1000" y="-1000" width="2000" height="2000" fill="none" stroke="${warn ? "#ff6a2b" : "#e89a1f"}" stroke-width="2" vector-effect="non-scaling-stroke"/>` + T(-1000 + 8 * f, -1000 - 6 * f, warn ? "침수 경보 발령 구역" : "호우 예보 구역", 11, warn ? "#ff6a2b" : "#e89a1f", 700, "start");
+    g += `<rect x="${SHELTER.x - 6 * f}" y="${SHELTER.y - 6 * f}" width="${12 * f}" height="${12 * f}" fill="#12a58a" stroke="#fff" stroke-width="${2 * f}"/>`;
+    for (const r of S.reqs) {
+      const hh = house(r.id), c = fuzz(hh), col = r.arrived ? "#2346e8" : r.status === "open" ? "#ff6a2b" : "#e89a1f";
+      g += `<circle cx="${c.x}" cy="${c.y}" r="${FUZZ_R}" fill="${col}" fill-opacity=".16" stroke="${col}" stroke-width="2" stroke-dasharray="${r.status === "open" ? "6 4" : "0"}" vector-effect="non-scaling-stroke"/>` + T(c.x, c.y + 4 * f, reqNo(r.id), 10.5, "var(--s-ink)", 700);
+    }
+    for (const o of S.others) g += `<circle cx="${o.x}" cy="${o.y}" r="${6 * f}" fill="${o.busy ? "#2346e8" : "#8a98ab"}" stroke="#fff" stroke-width="${2 * f}"/>` + T(o.x, o.y + 17 * f, o.id, 9.5, "var(--s-sub)", 700);
+    const mine = S.mission && S.mission.stage !== "closed";
+    g += `<circle cx="${S.me.x}" cy="${S.me.y}" r="${6.5 * f}" fill="${mine ? "#2346e8" : "#8a98ab"}" stroke="#fff" stroke-width="${2 * f}"/>` + T(S.me.x, S.me.y + 17 * f, "#1", 9.5, "var(--s-sub)", 700);
+    svg.innerHTML = g; return;
   }
   const me = S.me;
   g += `<circle cx="${me.x}" cy="${me.y}" r="${18 * f}" fill="#2346e8" fill-opacity=".18"/><circle cx="${me.x}" cy="${me.y}" r="${7 * f}" fill="#2346e8" stroke="#fff" stroke-width="${2.5 * f}"/>` + T(me.x, me.y + 20 * f, "나", 10.5, "var(--s-ink)", 700);
@@ -743,7 +866,50 @@ function meTab() {
     <div class="s-card"><b>활동 서약</b><p class="s-sub">출동 중 알게 된 정보를 저장하거나 다른 사람에게 알리지 않겠습니다. 물이 무릎 위로 차면 들어가지 않고 119에 알리겠습니다. · 2026.07.30 서약</p></div>`;
 }
 
-function render() { renderSide(); renderApp(); }
+function reqNo(id) { return "R-" + hex(sha256(enc.encode("req/" + id))).slice(0, 4).toUpperCase(); }
+function mmss(ms) { const s2 = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s2 / 60)}:${String(s2 % 60).padStart(2, "0")}`; }
+function renderOps() {
+  const stage = S.scene === 0 || S.scene === 4 ? (S.reqs.length ? ["공개", "#c2410c"] : ["평시", "#56657a"]) : S.scene === 1 ? ["준비 · 호우 예보", "#c67a0c"] : ["공개 · 침수 경보", "#c2410c"];
+  $("ops-stage").innerHTML = `<span class="stage-pill" style="background:${stage[1]}"><i></i>현재 단계: ${stage[0]}</span>`;
+  const reqs = S.reqs, open = reqs.filter(r => r.status === "open").length, going = reqs.filter(r => r.status !== "open" && !r.arrived).length, arrived = reqs.filter(r => r.arrived).length;
+  const idle = S.others.filter(o => !o.busy).length + (S.mission && S.mission.stage !== "closed" ? 0 : 1);
+  const assigned = reqs.filter(r => r.tAssign && r.status !== "taken" || (r.tAssign && r.t0 !== r.tAssign));
+  const times = reqs.filter(r => r.tAssign && r.tAssign > r.t0).map(r => r.tAssign - r.t0);
+  const avg = times.length ? mmss(times.reduce((a, b) => a + b, 0) / times.length) : "—";
+  const k = (label, val, sub, cls = "") => `<div class="kpi ${cls}"><span>${label}</span><b>${val}</b><small>${sub}</small></div>`;
+  $("kpis").innerHTML = [
+    k("도움 요청", reqs.length, "반경 1km 이내", reqs.length ? "warn" : ""),
+    k("미배정", open, open ? "조력자 호출 중" : "모두 배정됨", open ? "warn" : "ok"),
+    k("출동 중", going, "이동 중인 조력자"),
+    k("도착", arrived, "위치로 도착 인식", arrived ? "ok" : ""),
+    k("대기 조력자", idle, `전체 ${S.others.length + 1}명`),
+    k("평균 배정 시간", avg, `당사자 통지 ${S.smsCount}건`),
+  ].join("");
+  const statusCell = r => r.arrived ? `<span class="st here">도착</span>` : r.status === "open" ? `<span class="st wait">호출 중</span>` : `<span class="st go">출동 중</span>`;
+  const rows = reqs.slice().sort((a, b) => (a.status === "open") - (b.status === "open") ? (b.status === "open") - (a.status === "open") : house(b.id).risk - house(a.id).risk).map(r => {
+    const h = house(r.id), c = fuzz(h);
+    return `<tr><td class="mono">${reqNo(r.id)}</td><td>${cellLabel(c.x, c.y)} <span style="color:var(--sub)">${esc(dongAt(c.x, c.y))}</span></td><td>${esc(h.need)}</td><td>${statusCell(r)}</td><td class="mono">${r.by ? esc(r.by.split(" ")[0]) : "—"}</td><td class="mono">${mmss((r.tAssign || Date.now()) - r.t0)}</td></tr>`;
+  }).join("");
+  $("ops-table").innerHTML = `<thead><tr><th>요청</th><th>격자</th><th>필요</th><th>상태</th><th>담당</th><th>배정까지</th></tr></thead><tbody>${rows || `<tr><td colspan="6" style="color:var(--sub);white-space:normal">도움 요청이 없습니다. 평소에는 어떤 가구 정보도 관제탑에 올라오지 않습니다.</td></tr>`}</tbody>`;
+  renderRain();
+  $("agency-sum").innerHTML = AGENCIES.map((n, i) => `<div class="agency-row"><span>${n}</span><span class="n" style="color:var(--safe)">승인 ${S.agencyTotals[i].ok}</span><span class="n" style="color:var(--deny)">거부 ${S.agencyTotals[i].no}</span></div>`).join("");
+  const secTypes = ["증거 거부", "열람 차단", "도착 실패", "잠금"];
+  const sec = S.chain.filter(c => secTypes.includes(c.type)).slice(-5).reverse();
+  $("sec-list").innerHTML = sec.length ? sec.map(c => `<li class="bad"><time>${hm(c.at)}</time><span><b>${esc(c.type)}</b> ${esc(c.detail)}</span></li>`).join("") : `<li><time>—</time><span>차단된 시도가 없습니다</span></li>`;
+  const svg = $("ops-svg"); if (svg) drawMapInto(svg, "ops", { x: -30, y: 60, w: 3000 });
+}
+function renderRain() {
+  const vals = RAIN[S.scene], W = 360, H = 170, L = 30, R = 8, Tp = 12, B = 26, max = 20, bw = (W - L - R) / vals.length;
+  const y = v => Tp + (H - Tp - B) * (1 - v / max), end = hm2ms(SCENES[S.scene].t);
+  let g = "";
+  for (const t of [0, 5, 10, 15, 20]) g += `<line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${L - 6}" y="${y(t) + 3.5}" font-size="9.5" fill="var(--sub)" text-anchor="end">${t}</text>`;
+  vals.forEach((v, i) => { const x = L + i * bw + 3, over = v >= 13.3; g += `<rect x="${x}" y="${y(v)}" width="${bw - 6}" height="${Math.max(0, y(0) - y(v))}" rx="2" fill="${over ? "var(--alert)" : "var(--seal)"}" fill-opacity="${i === vals.length - 1 ? 1 : .7}"/>`; });
+  g += `<line x1="${L}" x2="${W - R}" y1="${y(13.3)}" y2="${y(13.3)}" stroke="var(--alert)" stroke-dasharray="4 3"/><text x="${L + 4}" y="${y(13.3) - 4}" font-size="9.5" fill="var(--alert)">침수 예보 기준</text>`;
+  [0, 6, 11].forEach(i => g += `<text x="${L + i * bw + bw / 2}" y="${H - 8}" font-size="9.5" fill="var(--sub)" text-anchor="middle">${hm(end - (11 - i) * 10 * MIN)}</text>`);
+  $("rain-meta").textContent = `지금 ${vals[vals.length - 1]}mm/10분 · 하수관로 수위 ${[18, 31, 74, 82, 22][S.scene]}% · 신대방1동 부근`;
+  $("rain-svg").innerHTML = g;
+}
+function render() { renderSide(); renderApp(); renderOps(); }
 
 /* ───────── 상호작용 ───────── */
 function bindSlider() {
@@ -804,6 +970,7 @@ document.addEventListener("keydown", ev => { const g = ev.target.closest?.("[dat
 
 setInterval(() => {
   if (!S) return;
+  if (S.reqs.length) renderOps();
   const dt = $("del-timer");
   if (dt && S.mission?.stage === "onsite") { const left = Math.max(0, 1800 - Math.floor((Date.now() - S.mission.openedAt) / 1000)); dt.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")} 뒤 삭제`; }
 }, 1000);
