@@ -151,6 +151,7 @@ button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--seal);
 
 /* 실제 지도 */
 .rmap { position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--s-line); background: var(--s-map); }
+.rmap svg text, .ops-map svg text { pointer-events: none; user-select: none; -webkit-user-select: none; }
 .rmap svg { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; user-select: none; }
 .rmap svg.dragging { cursor: grabbing; }
 .map-ctrl { position: absolute; right: 8px; top: 8px; display: grid; gap: 4px; }
@@ -217,7 +218,7 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
 .rowhead span { font-size: 12px; color: var(--sub); }
 .ops-map { height: 470px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
   --s-map: var(--panel-2); --s-land: var(--panel); --s-edge: var(--line); --s-sub: var(--sub); --s-ink: var(--ink); --s-accent: var(--alert); }
-.ops-map svg { display: block; width: 100%; height: 100%; }
+.ops-map svg { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; }
 .ops-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--sub); }
 .ops-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 .tbl-wrap { overflow-x: auto; }
@@ -311,7 +312,7 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
     <div class="ops-grid">
       <div class="card">
         <div class="rowhead"><b>격자 상황 지도</b><span>서울 관악·동작·구로 일대 · 500m 격자</span></div>
-        <div class="ops-map"><svg id="ops-svg" aria-label="관제 지도"></svg></div>
+        <div class="ops-map"><svg id="ops-svg" role="img" aria-label="관제 지도: 500m 격자별 경보 구역, 도움 요청 반경, 조력자 배치"></svg></div>
         <div class="ops-legend">
           <span><i style="background:rgba(232,154,31,.35)"></i>예보 격자</span>
           <span><i style="background:rgba(255,106,43,.4)"></i>경보 격자</span>
@@ -467,7 +468,7 @@ function toast(title, text) {
 }
 
 /* ───────── 증거·개봉 ───────── */
-async function issueAlert(level) { const e = { kind: "alert", level, cell: "10:20", at: S.clock, exp: S.clock + 180 * MIN, nonce: hex(rand(8)) }; e.sig = await signB(E.issuer.privateKey, evBytes(e)); return e; }
+async function issueAlert(level) { const e = { kind: "alert", level, cell: "C3", at: S.clock, exp: S.clock + 180 * MIN, nonce: hex(rand(8)) }; e.sig = await signB(E.issuer.privateKey, evBytes(e)); return e; }
 async function deviceSignal(id) { const d = E.houses[id]; const e = { kind: "device", type: "WATER", device: id, at: S.clock, exp: S.clock + 60 * MIN, counter: String(++d.counter) }; e.sig = await signB(d.device.privateKey, evBytes(e)); return e; }
 function pubFor(e) { return e.kind === "alert" ? E.issuer.publicKey : E.houses[e.device].device.publicKey; }
 async function ingest(e) {
@@ -508,7 +509,7 @@ async function runScene(n) {
   S.clock = Math.max(S.clock, hm2ms(SCENES[n].t));
   if (n === 1) {
     const e = await issueAlert("ADVISORY"); await ingest(e);
-    log("대기 요청", "10:20 격자 조력자 · 주소 없음");
+    log("대기 요청", "신대방1동 일대 조력자 · 주소 없음");
     toast("호우 예보", "김○○님 댁 근처에서 대기해 주세요");
   }
   if (n === 2) {
@@ -700,7 +701,8 @@ function realMap(mode, height) {
 }
 function drawMap() { const svg = document.getElementById("rmap-svg"); if (svg) drawMapInto(svg, svg.dataset.mode, S.view); }
 function cellOf(x, y) { return { r: Math.floor(y / 500), c: Math.floor(x / 500) }; }
-function cellLabel(x, y) { const c = cellOf(x, y); return `${10 - c.r}:${20 + c.c}`; }
+function gridName(r, c) { return "ABCDEF"[c + 3] + (r + 4); }
+function cellLabel(x, y) { const c = cellOf(x, y); return gridName(c.r, c.c); }
 function drawMapInto(svg, mode, v) {
   const px = svg.clientWidth || 358, ph = svg.clientHeight || 300, f = v.w / px, h = v.w * ph / px;
   svg.setAttribute("viewBox", `${v.x - v.w / 2} ${v.y - h / 2} ${v.w} ${h}`);
@@ -741,7 +743,7 @@ function drawMapInto(svg, mode, v) {
     for (let r = -3; r < 3; r++) for (let c = -3; c < 3; c++) {
       const inAlert = alertOn && r >= -2 && r < 2 && c >= -2 && c < 2;
       g += `<rect x="${c * 500}" y="${r * 500}" width="500" height="500" fill="${inAlert ? (warn ? "rgba(255,106,43,.16)" : "rgba(232,154,31,.14)") : "none"}" stroke="var(--s-edge)" stroke-opacity=".9" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/>`;
-      g += T(c * 500 + 10 * f, r * 500 + 14 * f, `${10 - r}:${20 + c}`, 9, "var(--s-sub)", 500, "start");
+      g += T(c * 500 + 10 * f, r * 500 + 14 * f, gridName(r, c), 9, "var(--s-sub)", 500, "start");
     }
     if (alertOn) g += `<rect x="-1000" y="-1000" width="2000" height="2000" fill="none" stroke="${warn ? "#ff6a2b" : "#e89a1f"}" stroke-width="2" vector-effect="non-scaling-stroke"/>` + T(-1000 + 8 * f, -1000 - 6 * f, warn ? "침수 경보 발령 구역" : "호우 예보 구역", 11, warn ? "#ff6a2b" : "#e89a1f", 700, "start");
     g += `<rect x="${SHELTER.x - 6 * f}" y="${SHELTER.y - 6 * f}" width="${12 * f}" height="${12 * f}" fill="#12a58a" stroke="#fff" stroke-width="${2 * f}"/>`;
@@ -888,7 +890,7 @@ function renderOps() {
   const statusCell = r => r.arrived ? `<span class="st here">도착</span>` : r.status === "open" ? `<span class="st wait">호출 중</span>` : `<span class="st go">출동 중</span>`;
   const rows = reqs.slice().sort((a, b) => (a.status === "open") - (b.status === "open") ? (b.status === "open") - (a.status === "open") : house(b.id).risk - house(a.id).risk).map(r => {
     const h = house(r.id), c = fuzz(h);
-    return `<tr><td class="mono">${reqNo(r.id)}</td><td>${cellLabel(c.x, c.y)} <span style="color:var(--sub)">${esc(dongAt(c.x, c.y))}</span></td><td>${esc(h.need)}</td><td>${statusCell(r)}</td><td class="mono">${r.by ? esc(r.by.split(" ")[0]) : "—"}</td><td class="mono">${mmss((r.tAssign || Date.now()) - r.t0)}</td></tr>`;
+    return `<tr><td class="mono">${reqNo(r.id)}</td><td>격자 ${cellLabel(c.x, c.y)} <span style="color:var(--sub)">${esc(dongAt(c.x, c.y))}</span></td><td>${esc(h.need)}</td><td>${statusCell(r)}</td><td class="mono">${r.by ? esc(r.by.split(" ")[0]) : "—"}</td><td class="mono">${mmss((r.tAssign || Date.now()) - r.t0)}</td></tr>`;
   }).join("");
   $("ops-table").innerHTML = `<thead><tr><th>요청</th><th>격자</th><th>필요</th><th>상태</th><th>담당</th><th>배정까지</th></tr></thead><tbody>${rows || `<tr><td colspan="6" style="color:var(--sub);white-space:normal">도움 요청이 없습니다. 평소에는 어떤 가구 정보도 관제탑에 올라오지 않습니다.</td></tr>`}</tbody>`;
   renderRain();
