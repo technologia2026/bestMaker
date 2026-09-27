@@ -194,6 +194,13 @@ button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--seal);
 .done-ic { width: 76px; height: 76px; border-radius: 50%; background: var(--s-accent); display: grid; place-items: center; margin: 18px auto 6px; }
 .center { text-align: center; justify-items: center; }
 footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
+/* 대기 조력자 */
+.citizen-sec { display: grid; gap: 14px; border-top: 2px solid var(--line); padding-top: 22px; }
+.cit-grid { display: grid; grid-template-columns: 392px minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 820px) { .cit-grid { grid-template-columns: minmax(0, 1fr); } }
+.cmp { display: grid; grid-template-columns: 72px 1fr; gap: 10px 14px; margin: 0; font-size: 14px; }
+.cmp dt { font-weight: 700; color: var(--seal); }
+.cmp dd { margin: 0; }
 /* 관제탑 */
 .ops { display: grid; gap: 14px; border-top: 2px solid var(--line); padding-top: 22px; }
 .ops-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; }
@@ -340,6 +347,31 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
     </div>
   </section>
 
+  <section class="citizen-sec" aria-label="대기 조력자 앱">
+    <div class="ops-head">
+      <div>
+        <div class="eyebrow">대기 조력자 앱 · 1:1 매칭 없이 등록한 시민</div>
+        <h2 class="ops-title">누구를 도울지 모른 채 기다리는 이웃</h2>
+        <p class="ops-privacy">같은 상황을 시민 조력자 이○○님(관제탑의 #4)의 폰으로 봅니다. 위 박○○님 폰·관제탑과 실시간으로 연결돼 있습니다.</p>
+      </div>
+    </div>
+    <div class="cit-grid">
+      <div class="phone-col"><div class="phone-label"><b>대기 조력자 앱</b> · 이○○님 (확장 조력자 B)</div>
+        <div class="phone"><div class="screen" id="capp" data-mood="calm"><div class="rain"></div><div id="capp-body" style="display:contents"></div></div></div></div>
+      <div class="card cit-notes">
+        <div class="eyebrow">박○○님(동행파트너)과 무엇이 다른가</div>
+        <dl class="cmp">
+          <dt>평소</dt><dd>매칭된 이웃이 없어 볼 수 있는 가구 정보가 전혀 없습니다. 지도에는 내 위치와 대피소만 보입니다.</dd>
+          <dt>비 예보</dt><dd>동네 이름만 있는 대기 요청을 받습니다.</dd>
+          <dt>폭우</dt><dd>동행파트너가 먼저 호출되고, <b>15초</b>(실제 서비스에서는 3분) 안에 응답이 없는 요청만 시민에게 열립니다. 다른 사람의 지정 가구는 수락할 수 없습니다.</dd>
+          <dt>도착 후</dt><dd>집 반경 50m 안에서 자동으로 도착이 인식되지만, <b>호수와 탈출 경로만</b> 보입니다. 상태와 연락처는 끝까지 보이지 않습니다.</dd>
+          <dt>함께</dt><dd>가능하면 가까운 동행파트너와 2인 1조로 움직입니다.</dd>
+        </dl>
+        <p class="device-note">시연: "다음: 폭우"를 누른 뒤 15초가 지나면 이 폰에서 요청을 수락할 수 있습니다. 30초 넘게 아무도 받지 않으면 다른 조력자가 자동으로 수락합니다.</p>
+      </div>
+    </div>
+  </section>
+
   <footer>
     모든 인물·주소·연락처는 가상입니다. 도움 요청 가구의 정보는 브라우저에서 AES-256-GCM으로 실제 암호화돼 있고, 열쇠는 세 기관에 나뉘어 두 곳 이상 승인해야 복원됩니다.
     경보는 <span id="sigalg">Ed25519</span>로 서명·검증하고, 도착은 조력자 위치가 집 반경 50m 안에 들어올 때 인식합니다.
@@ -424,7 +456,7 @@ const SCENES = [
   { t: "22:10", short: "이웃 도착", title: "가까이 가면 자동으로 도착 인식", body: "조력자가 집 반경 50m 안에 들어오면 코드 입력 없이 도착이 인식됩니다. 매칭이 아닌 봉인형 가구는 이때 처음으로 정확한 집과 당사자가 허락한 항목이 열립니다.", look: "지도에서 파란 점이 걸어가는 모습을 보세요. 왼쪽의 '목적지로 걸어가기'로 직접 해 볼 수도 있어요." },
   { t: "23:00", short: "비 그침", title: "다시 봉인", body: "경보가 해제되자 출동 중 열렸던 정보가 앱에서 지워지고 봉투가 다시 잠깁니다. 당사자에게는 누가 언제 왜 봤는지 문자가 갑니다.", look: "앱의 활동 탭에 이번 출동이 기록됩니다." },
 ];
-let E, S;
+let E, S, C;
 
 async function boot() {
   E = { issuer: await keyPair(), nonces: new Set(), houses: {} };
@@ -446,6 +478,8 @@ async function boot() {
     E.houses[h.id].env = await aesSeal(h.id, { ...h.rec, consent: h.consent }, key);
     E.houses[h.id].shares = split(key); key.fill(0);
   }
+  C = { tab: "home", sel: null, mission: null, home: { x: 260, y: 380 }, me: { x: 260, y: 380 }, view: null, radius: 1000, avail: true, unread: 0,
+    history: [{ at: "08.28", title: "활동 서약 · 시민 조력자 등록", sub: "본인인증 · 온라인 기본 교육 2시간 이수", kind: "edu" }, { at: "09.12", title: "모의훈련 참여", sub: "대피소까지 동행 연습", kind: "drill" }] };
   log("등록", "도움 요청 가능 가구 봉인 · 열쇠 3기관 분산");
   render();
 }
@@ -534,13 +568,14 @@ function addReq(id, basis, evidence) {
   S.reqs.push(r);
   if (!h.match && !h.taken) setTimeout(() => autoAssign(id), id === "H3" ? 28000 : 34000);
 }
-function nearestOther(p) { return S.others.filter(o => !o.busy).sort((a, b) => Math.hypot(a.x - p.x, a.y - p.y) - Math.hypot(b.x - p.x, b.y - p.y))[0]; }
+function nearestOther(p) { return S.others.filter(o => !o.busy && o.id !== "#4").sort((a, b) => Math.hypot(a.x - p.x, a.y - p.y) - Math.hypot(b.x - p.x, b.y - p.y))[0]; }
 function autoAssign(id) { // 박○○님이 받지 않으면 가까운 다른 조력자가 수락
-  const r = S.reqs.find(x => x.id === id); if (!r || r.status !== "open" || (S.mission && S.mission.id === id)) return;
+  const r = S.reqs.find(x => x.id === id); if (!r || r.status !== "open" || (S.mission && S.mission.id === id) || (C.mission && C.mission.id === id)) return;
   const o = nearestOther(fuzz(house(id))); if (!o) return;
   o.busy = id; r.status = "taken"; r.by = o.id; r.tAssign = Date.now();
   log("수락", `조력자 ${o.id} → ${house(id).short} · 확장 조력자`);
   if (S.sel === id) S.sel = null;
+  if (C.sel === id) C.sel = null;
   render();
 }
 const openReqs = () => S.reqs.filter(r => r.status === "open" && house(r.id).dist <= S.radius);
@@ -607,6 +642,8 @@ async function endAll() {
     sms(h.match ? "김○○님" : "당사자", `[비상봉투] ${hm(S.clock)} 상황이 끝나 정보가 다시 잠겼습니다. 조력자 화면의 정보는 삭제됐습니다.`);
   }
   S.mission = m ? { ...m, stage: "closed", rec: null } : null;
+  if (C.mission) { const ch = house(C.mission.id); C.history.unshift({ at: "07.15", title: `출동 · ${ch.short}`, sub: `22:00 요청 · ${C.mission.stage === "onsite" ? "도착 · 대피 도움" : "출동 중 해제"} · 23:00 재봉인`, kind: "go" }); C.unread++; C.mission = { ...C.mission, stage: "closed", rec: null }; }
+  C.sel = null; C.me = { ...C.home }; C.view = null;
   S.reqs = []; S.sel = null; S.evidence = null; S.me = { x: 0, y: 0 }; S.others.forEach(o => o.busy = null);
   log("재봉인", "경보 해제 · 토큰 폐기 · 조력자 화면 정보 삭제");
   toast("경보 해제", "출동 중 열렸던 정보가 지워졌어요");
@@ -702,8 +739,13 @@ function realMap(mode, height) {
     <div class="map-ctrl"><button type="button" data-map="in" aria-label="확대">+</button><button type="button" data-map="out" aria-label="축소">−</button><button type="button" class="me" data-map="me" aria-label="처음 위치로">나</button></div>
     <div class="map-note">${note}</div></div>`;
 }
-function drawMap() { const svg = document.getElementById("rmap-svg"); if (svg) drawMapInto(svg, svg.dataset.mode, S.view); }
-function drawMapInto(svg, mode, v) {
+const mainCtx = () => ({ me: S.me, home: { x: 0, y: 0 }, sel: S.sel, radius: S.radius, mission: S.mission, citizen: false });
+const citCtx = () => ({ me: C.me, home: C.home, sel: C.sel, radius: C.radius, mission: C.mission, citizen: true });
+function drawMap() {
+  const a = document.getElementById("rmap-svg"); if (a && S.view) drawMapInto(a, a.dataset.mode, S.view, mainCtx());
+  const b = document.getElementById("cmap-svg"); if (b && C && C.view) drawMapInto(b, b.dataset.mode, C.view, citCtx());
+}
+function drawMapInto(svg, mode, v, ctx = mainCtx()) {
   const px = svg.clientWidth || 358, ph = svg.clientHeight || 300, f = v.w / px, h = v.w * ph / px;
   svg.setAttribute("viewBox", `${v.x - v.w / 2} ${v.y - h / 2} ${v.w} ${h}`);
   const T = (x, y, t, size, col, w = 500, anchor = "middle") => `<text x="${x}" y="${y}" font-size="${size * f}" font-weight="${w}" fill="${col}" text-anchor="${anchor}" font-family="IBM Plex Sans KR, sans-serif" paint-order="stroke" stroke="var(--s-land)" stroke-width="${3 * f}">${esc(t)}</text>`;
@@ -713,16 +755,18 @@ function drawMapInto(svg, mode, v) {
   g += GU_C.map(c => `<text x="${c.x}" y="${c.y}" font-size="${17 * f}" font-weight="700" fill="var(--s-ink)" fill-opacity=".22" text-anchor="middle" letter-spacing="${3 * f}" font-family="IBM Plex Sans KR, sans-serif">${esc(c.g)}</text>`).join("");
   g += DONG_C.map(c => T(c.x, c.y, c.n, 10.5, "var(--s-ink)", 700)).join("");
   if (mode === "incident") {
-    g += [250, 500, 1000].map(r => `<circle cx="0" cy="0" r="${r}" fill="none" stroke="var(--s-accent)" stroke-opacity=".45" stroke-width="1.3" stroke-dasharray="5 5" vector-effect="non-scaling-stroke"/>` + T(-r * .71, -r * .71, r >= 1000 ? "1km" : r + "m", 10, "var(--s-accent)", 700)).join("");
+    const hx = ctx.home.x, hy = ctx.home.y;
+    g += [250, 500, 1000].map(r => `<circle cx="${hx}" cy="${hy}" r="${r}" fill="none" stroke="var(--s-accent)" stroke-opacity=".45" stroke-width="1.3" stroke-dasharray="5 5" vector-effect="non-scaling-stroke"/>` + T(hx - r * .71, hy - r * .71, r >= 1000 ? "1km" : r + "m", 10, "var(--s-accent)", 700)).join("");
     for (const r of S.reqs) {
-      const hh = house(r.id); if (hh.dist > S.radius) continue;
-      const col = pinColor(r, hh), sel = S.sel === r.id;
-      if (hh.match) {
+      const hh = house(r.id), hp = hpos(hh); if (Math.hypot(hp.x - hx, hp.y - hy) > ctx.radius) continue;
+      const col = ctx.citizen ? (r.citizen ? "#ff6a2b" : r.status === "open" ? "#f2b33d" : "#6b7b8f") : pinColor(r, hh), sel = ctx.sel === r.id;
+      const takenFor = ctx.citizen ? r.status !== "open" && !r.citizen : r.status === "taken";
+      if (hh.match && !ctx.citizen) {
         const p = hpos(hh);
         g += `<g class="pin" data-pick="${r.id}" tabindex="0" role="button" aria-label="김○○님 댁"><circle cx="${p.x}" cy="${p.y}" r="${16 * f}" fill="${col}" fill-opacity=".25"/><circle cx="${p.x}" cy="${p.y}" r="${8 * f}" fill="${col}" stroke="#fff" stroke-width="${(sel ? 3 : 2) * f}"/>${T(p.x, p.y - 14 * f, "김○○님 댁 · 내 매칭", 11, "var(--s-ink)", 700)}</g>`;
       } else {
         const c = fuzz(hh);
-        g += `<g class="pin" data-pick="${r.id}" tabindex="0" role="button" aria-label="${esc(hh.need)} 도움 요청, ${esc(dongAt(c.x, c.y))} 부근"><circle cx="${c.x}" cy="${c.y}" r="${FUZZ_R}" fill="${col}" fill-opacity="${sel ? .32 : .2}" stroke="${col}" stroke-width="${sel ? 2.5 : 1.5}" stroke-dasharray="${r.status === "taken" ? "0" : "6 4"}" vector-effect="non-scaling-stroke"/>${T(c.x, c.y + 4 * f, (r.status === "taken" ? "출동 중 · " : "") + hh.need, 11, "var(--s-ink)", 700)}</g>`;
+        g += `<g class="pin" data-pick="${r.id}" tabindex="0" role="button" aria-label="${esc(hh.need)} 도움 요청, ${esc(dongAt(c.x, c.y))} 부근"><circle cx="${c.x}" cy="${c.y}" r="${FUZZ_R}" fill="${col}" fill-opacity="${sel ? .32 : .2}" stroke="${col}" stroke-width="${sel ? 2.5 : 1.5}" stroke-dasharray="${takenFor ? "0" : "6 4"}" vector-effect="non-scaling-stroke"/>${T(c.x, c.y + 4 * f, (takenFor ? "출동 중 · " : "") + hh.need, 11, "var(--s-ink)", 700)}</g>`;
       }
     }
   }
@@ -733,11 +777,12 @@ function drawMapInto(svg, mode, v) {
     g += `<circle cx="${p.x}" cy="${p.y}" r="${9 * f}" fill="#ff6a2b" stroke="#fff" stroke-width="${2.5 * f}"/>` + T(p.x, p.y - 14 * f, "김○○님 댁", 11, "var(--s-ink)", 700);
     g += T(p.x / 2, p.y / 2 - 8 * f, "480m", 10, "var(--s-accent)", 700);
   }
-  if (mode === "mission" && S.mission) {
-    const hh = house(S.mission.id), exact = hh.match || S.mission.stage === "onsite", t = exact ? hpos(hh) : fuzz(hh);
-    if (S.mission.stage === "enroute") { const tp = hpos(hh); g += `<circle cx="${tp.x}" cy="${tp.y}" r="${ARRIVE_M}" fill="none" stroke="#12a58a" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke" opacity="${exact ? 1 : 0}"/>`; }
-    g += `<line x1="${S.me.x}" y1="${S.me.y}" x2="${t.x}" y2="${t.y}" stroke="var(--s-accent)" stroke-width="3.5" stroke-dasharray="1 8" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
-    g += exact ? `<circle cx="${t.x}" cy="${t.y}" r="${9 * f}" fill="#ff6a2b" stroke="#fff" stroke-width="${2.5 * f}"/>` + T(t.x, t.y - 14 * f, hh.match ? "김○○님 댁" : "도착 확인된 집", 11, "var(--s-ink)", 700)
+  if (mode === "cpeace") g += `<rect x="${SHELTER.x - 7 * f}" y="${SHELTER.y - 7 * f}" width="${14 * f}" height="${14 * f}" fill="#12a58a" stroke="#fff" stroke-width="${2 * f}"/>` + T(SHELTER.x, SHELTER.y - 11 * f, "대피소", 10, "var(--s-ink)", 700);
+  if (mode === "mission" && ctx.mission) {
+    const M = ctx.mission, hh = house(M.id), exact = (hh.match && !ctx.citizen) || M.stage === "onsite", t = exact ? hpos(hh) : fuzz(hh);
+    if (M.stage === "enroute") { const tp = hpos(hh); g += `<circle cx="${tp.x}" cy="${tp.y}" r="${ARRIVE_M}" fill="none" stroke="#12a58a" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke" opacity="${exact ? 1 : 0}"/>`; }
+    g += `<line x1="${ctx.me.x}" y1="${ctx.me.y}" x2="${t.x}" y2="${t.y}" stroke="var(--s-accent)" stroke-width="3.5" stroke-dasharray="1 8" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
+    g += exact ? `<circle cx="${t.x}" cy="${t.y}" r="${9 * f}" fill="#ff6a2b" stroke="#fff" stroke-width="${2.5 * f}"/>` + T(t.x, t.y - 14 * f, hh.match && !ctx.citizen ? "김○○님 댁" : "도착 확인된 집", 11, "var(--s-ink)", 700)
       : `<circle cx="${t.x}" cy="${t.y}" r="${FUZZ_R}" fill="#ff6a2b" fill-opacity=".2" stroke="#ff6a2b" stroke-width="2" stroke-dasharray="6 4" vector-effect="non-scaling-stroke"/>` + T(t.x, t.y + 4 * f, "이 근처 · 가까이 가면 정확한 집이 열려요", 10.5, "var(--s-ink)", 700);
   }
   if (mode === "ops") {
@@ -748,33 +793,34 @@ function drawMapInto(svg, mode, v) {
       const hh = house(r.id), c = fuzz(hh), col = r.arrived ? "#2346e8" : r.status === "open" ? "#ff6a2b" : "#e89a1f";
       g += `<circle cx="${c.x}" cy="${c.y}" r="${FUZZ_R}" fill="${col}" fill-opacity=".16" stroke="${col}" stroke-width="2" stroke-dasharray="${r.status === "open" ? "6 4" : "0"}" vector-effect="non-scaling-stroke"/>` + T(c.x, c.y + 4 * f, reqNo(r.id), 10.5, "var(--s-ink)", 700);
     }
-    for (const o of S.others) g += `<circle cx="${o.x}" cy="${o.y}" r="${6 * f}" fill="${o.busy ? "#2346e8" : "#8a98ab"}" stroke="#fff" stroke-width="${2 * f}"/>` + T(o.x, o.y + 17 * f, o.id, 9.5, "var(--s-sub)", 700);
+    for (const o0 of S.others) { const o = o0.id === "#4" ? { ...o0, x: C.me.x, y: C.me.y, busy: C.mission && C.mission.stage !== "closed" ? C.mission.id : null } : o0; g += `<circle cx="${o.x}" cy="${o.y}" r="${6 * f}" fill="${o.busy ? "#2346e8" : "#8a98ab"}" stroke="#fff" stroke-width="${2 * f}"/>` + T(o.x, o.y + 17 * f, o.id, 9.5, "var(--s-sub)", 700); }
     const mine = S.mission && S.mission.stage !== "closed";
     g += `<circle cx="${S.me.x}" cy="${S.me.y}" r="${6.5 * f}" fill="${mine ? "#2346e8" : "#8a98ab"}" stroke="#fff" stroke-width="${2 * f}"/>` + T(S.me.x, S.me.y + 17 * f, "#1", 9.5, "var(--s-sub)", 700);
     svg.innerHTML = g; return;
   }
-  const me = S.me;
+  const me = ctx.me;
   g += `<circle cx="${me.x}" cy="${me.y}" r="${18 * f}" fill="#2346e8" fill-opacity=".18"/><circle cx="${me.x}" cy="${me.y}" r="${7 * f}" fill="#2346e8" stroke="#fff" stroke-width="${2.5 * f}"/>` + T(me.x, me.y + 20 * f, "나", 10.5, "var(--s-ink)", 700);
   svg.innerHTML = g;
 }
 let mapDrag = null, mapMoved = false;
 document.addEventListener("pointerdown", e => {
-  const svg = e.target.closest?.("#rmap-svg"); if (!svg) return;
-  mapDrag = { x: e.clientX, y: e.clientY, vx: S.view.x, vy: S.view.y, id: e.pointerId }; mapMoved = false;
+  const svg = e.target.closest?.("#rmap-svg, #cmap-svg"); if (!svg) return;
+  const V = svg.id === "cmap-svg" ? C.view : S.view;
+  mapDrag = { x: e.clientX, y: e.clientY, vx: V.x, vy: V.y, id: e.pointerId, svg, V }; mapMoved = false;
 });
 document.addEventListener("pointermove", e => {
-  if (!mapDrag) return; const svg = document.getElementById("rmap-svg"); if (!svg) { mapDrag = null; return; }
+  if (!mapDrag) return; const svg = mapDrag.svg, V = mapDrag.V; if (!svg.isConnected) { mapDrag = null; return; }
   const dx = e.clientX - mapDrag.x, dy = e.clientY - mapDrag.y;
   if (!mapMoved && Math.hypot(dx, dy) < 5) return;
   if (!mapMoved) { mapMoved = true; svg.classList.add("dragging"); try { svg.setPointerCapture(mapDrag.id); } catch {} }
-  const f = S.view.w / svg.clientWidth;
-  S.view.x = mapDrag.vx - dx * f; S.view.y = mapDrag.vy - dy * f;
-  const h = S.view.w * svg.clientHeight / svg.clientWidth;
-  svg.setAttribute("viewBox", `${S.view.x - S.view.w / 2} ${S.view.y - h / 2} ${S.view.w} ${h}`);
+  const f = V.w / svg.clientWidth;
+  V.x = mapDrag.vx - dx * f; V.y = mapDrag.vy - dy * f;
+  const h = V.w * svg.clientHeight / svg.clientWidth;
+  svg.setAttribute("viewBox", `${V.x - V.w / 2} ${V.y - h / 2} ${V.w} ${h}`);
 });
-document.addEventListener("pointerup", () => { if (mapDrag) { document.getElementById("rmap-svg")?.classList.remove("dragging"); mapDrag = null; setTimeout(() => mapMoved = false, 0); } });
-document.addEventListener("wheel", e => { const svg = e.target.closest?.("#rmap-svg"); if (!svg) return; e.preventDefault(); zoomMap(e.deltaY > 0 ? 1.25 : .8); }, { passive: false });
-function zoomMap(k) { S.view.w = Math.max(500, Math.min(5000, S.view.w * k)); drawMap(); }
+document.addEventListener("pointerup", () => { if (mapDrag) { mapDrag.svg.classList.remove("dragging"); mapDrag = null; setTimeout(() => mapMoved = false, 0); } });
+document.addEventListener("wheel", e => { const svg = e.target.closest?.("#rmap-svg, #cmap-svg"); if (!svg) return; e.preventDefault(); zoomMap(e.deltaY > 0 ? 1.25 : .8, svg.id === "cmap-svg"); }, { passive: false });
+function zoomMap(k, cit = false) { const V = cit ? C.view : S.view; V.w = Math.max(500, Math.min(5000, V.w * k)); drawMap(); }
 function dirText(b) { return ["북", "북동", "동", "남동", "남", "남서", "서", "북서"][Math.round(b / 45) % 8]; }
 const pinColor = (r, h) => r.status === "taken" ? "#6b7b8f" : h.match ? "#ff6a2b" : "#f2b33d";
 function radarView() {
@@ -871,7 +917,8 @@ function renderOps() {
   const stage = S.scene === 0 || S.scene === 4 ? (S.reqs.length ? ["공개", "#c2410c"] : ["평시", "#56657a"]) : S.scene === 1 ? ["준비 · 호우 예보", "#c67a0c"] : ["공개 · 침수 경보", "#c2410c"];
   $("ops-stage").innerHTML = `<span class="stage-pill" style="background:${stage[1]}"><i></i>현재 단계: ${stage[0]}</span>`;
   const reqs = S.reqs, open = reqs.filter(r => r.status === "open").length, going = reqs.filter(r => r.status !== "open" && !r.arrived).length, arrived = reqs.filter(r => r.arrived).length;
-  const idle = S.others.filter(o => !o.busy).length + (S.mission && S.mission.stage !== "closed" ? 0 : 1);
+  const citBusy = C.mission && C.mission.stage !== "closed";
+  const idle = S.others.filter(o => !o.busy && o.id !== "#4").length + (citBusy ? 0 : 1) + (S.mission && S.mission.stage !== "closed" ? 0 : 1);
   const assigned = reqs.filter(r => r.tAssign && r.status !== "taken" || (r.tAssign && r.t0 !== r.tAssign));
   const times = reqs.filter(r => r.tAssign && r.tAssign > r.t0).map(r => r.tAssign - r.t0);
   const avg = times.length ? mmss(times.reduce((a, b) => a + b, 0) / times.length) : "—";
@@ -908,26 +955,174 @@ function renderRain() {
   $("rain-meta").textContent = `지금 ${vals[vals.length - 1]}mm/10분 · 하수관로 수위 ${[18, 31, 74, 82, 22][S.scene]}% · 신대방1동 부근`;
   $("rain-svg").innerHTML = g;
 }
-function render() { renderSide(); renderApp(); renderOps(); }
+function render() { renderSide(); renderApp(); renderOps(); renderCitizen(); }
+
+/* ───────── 대기 조력자(시민) 앱 ───────── */
+const B_OPEN_MS = 15000; // 동행파트너가 먼저 호출되고, 이 시간 뒤 시민에게도 열림
+function cDefaultView(mode) {
+  if (mode === "mission" && C.mission) { const p = hpos(house(C.mission.id)); if (C.mission.stage === "onsite") return { x: p.x, y: p.y + 40, w: 800 }; return { x: (p.x + C.home.x) / 2, y: (p.y + C.home.y) / 2, w: 1300 }; }
+  if (mode === "cpeace") return { x: C.home.x - 100, y: C.home.y - 200, w: 1500 };
+  return { x: C.home.x - 150, y: C.home.y - 250, w: 2500 };
+}
+function cMap(mode, height) {
+  if (!C.view || C.view.mode !== mode) C.view = { mode, ...cDefaultView(mode) };
+  return `<div class="rmap" style="height:${height}px"><svg id="cmap-svg" data-mode="${mode}" aria-label="실제 지도"></svg><span class="map-src">서울 관악·동작·구로 일대 행정동</span>
+    <div class="map-ctrl"><button type="button" data-map="in" data-who="c" aria-label="확대">+</button><button type="button" data-map="out" data-who="c" aria-label="축소">−</button><button type="button" class="me" data-map="me" data-who="c" aria-label="처음 위치로">나</button></div></div>`;
+}
+const bOpenIn = r => Math.max(0, B_OPEN_MS - (Date.now() - r.t0));
+function citizenReqs() { return S.reqs.filter(r => { const p = hpos(house(r.id)); return Math.hypot(p.x - C.home.x, p.y - C.home.y) <= C.radius; }).sort((a, b) => house(b.id).risk - house(a.id).risk); }
+function cStatus(r) {
+  const h = house(r.id);
+  if (r.citizen) return ["내 출동", "open"];
+  if (r.status !== "open") return ["다른 이웃이 출동 중", "taken"];
+  if (h.match) return ["지정 조력자 호출 중", "locked"];
+  if (bOpenIn(r) > 0) return [`동행파트너 먼저 호출 중 · ${Math.ceil(bOpenIn(r) / 1000)}초 뒤 열림`, "locked"];
+  return ["지금 수락할 수 있어요", "open"];
+}
+function renderCitizen() {
+  const root = document.getElementById("capp-body"); if (!root || !C) return;
+  const scr = document.getElementById("capp");
+  scr.dataset.mood = C.mission?.stage === "closed" || S.scene === 4 ? "dawn" : ["calm", "dusk", "storm", "storm", "dawn"][S.scene];
+  scr.dataset.rain = S.scene === 1 ? "light" : (S.scene === 2 || S.scene === 3) ? "heavy" : "";
+  const busy = C.mission && C.mission.stage !== "closed", inc = S.reqs.length > 0;
+  const chip = busy ? `<span class="s-chip">출동 중</span>` : inc ? `<span class="s-chip">도움 요청 ${citizenReqs().filter(r => r.status === "open").length}건</span>` : S.scene === 1 ? `<span class="s-chip">대기</span>` : `<span class="s-chip gray">평시</span>`;
+  const head = `<div class="appbar"><div class="who">시민 조력자<b>이○○님</b></div>${chip}</div>`;
+  const body = C.tab === "activity" ? cActivity() : C.tab === "me" ? cMe() : cHome();
+  const tabs = `<nav class="tabbar" role="tablist"><button type="button" role="tab" data-ctab="home" aria-selected="${C.tab === "home"}">${ic("home")}홈</button><button type="button" role="tab" data-ctab="activity" aria-selected="${C.tab === "activity"}">${ic("list")}활동${C.unread ? `<span class="badge">${C.unread}</span>` : ""}</button><button type="button" role="tab" data-ctab="me" aria-selected="${C.tab === "me"}">${ic("user")}내 정보</button></nav>`;
+  const prev = document.getElementById("ccontent"), keep = prev && prev.dataset.tab === C.tab ? prev.scrollTop : 0;
+  root.innerHTML = statusBar() + head + `<div class="content" id="ccontent" data-tab="${C.tab}">${body}</div>` + tabs;
+  document.getElementById("ccontent").scrollTop = keep;
+  drawMap();
+  if (C.tab === "home" && C.sel && !busy && inc) bindSliderFor("c", () => act(() => cAccept(C.sel)));
+}
+function cHome() {
+  const m = C.mission;
+  if (m && m.stage !== "closed") return cMission(m);
+  if (m && m.stage === "closed") return `<div class="done-ic">${checkIc(38)}</div><div class="center" style="display:grid;gap:6px"><p class="s-title">정보가 다시 잠겼어요</p><p class="s-sub">출동 중 본 정보는 이 폰에서 지워졌고, 열람 기록은 당사자에게 문자로 전달됐어요.</p></div><button type="button" class="s-btn ghost" data-ctab="activity">활동 기록 보기</button>`;
+  if (S.reqs.length) {
+    const list = citizenReqs(), cur = list.find(r => r.id === C.sel);
+    return `<div class="banner"><span class="dot"></span>${esc(S.alertBasis || "도움 요청")} · 동행파트너가 먼저 호출되고, 응답이 없으면 시민에게 열려요</div>
+      ${cMap("incident", 320)}
+      ${cur ? cSelected(cur) : `<p class="s-sub">지도의 원이나 아래 목록을 눌러 보세요.</p>`}
+      <div class="section-t">내 주변 도움 요청</div>
+      <div class="req-list">${list.map(r => { const h = house(r.id), [txt, st] = cStatus(r), col = r.citizen ? "#ff6a2b" : st === "taken" ? "#6b7b8f" : st === "locked" ? "#9aa8bb" : "#f2b33d", p = hpos(h), d = Math.round(Math.hypot(p.x - C.home.x, p.y - C.home.y));
+        return `<button type="button" class="req" data-cpick="${r.id}" aria-pressed="${C.sel === r.id}"><i style="background:${col}"></i><span><b>${esc(h.need)} · ${esc(dongAt(fuzz(h).x, fuzz(h).y))} 부근</b><small data-bopen="${r.id}">${esc(txt)}</small></span><span class="d">${d}m</span></button>`; }).join("")}</div>`;
+  }
+  const standby = S.scene === 1;
+  return `${standby ? `<div class="banner"><span class="dot"></span>호우 예보 · 21:40 · ${esc(dongAt(C.home.x, C.home.y))} 일대에서 대기해 주세요</div>` : ""}
+    <div class="s-card"><div class="s-row between"><b>아직 돕기로 정해진 이웃이 없어요</b><span class="s-chip">확장 조력자 B</span></div>
+      <p class="s-sub">평소에는 어떤 가구 정보도 받지 않아요. 재난이 나면 동행파트너가 먼저 호출되고, 비어 있는 곳이 생기면 가장 가까운 한 곳에만 배정돼요.</p></div>
+    ${cMap("cpeace", 230)}
+    <div class="stat3"><div><b>이수</b>기본 교육</div><div><b>완료</b>활동 서약</div><div><b>1회</b>모의훈련</div></div>
+    ${standby ? `<div class="s-card"><b>대기하는 동안</b><p class="s-sub">근처에 도움이 필요할 수 있는 가구가 몇 곳 있어요. 주소는 실제 상황에서, 그것도 도착한 뒤에만 열려요. 손전등과 우비를 준비해 주세요.</p></div>`
+      : `<div class="s-card"><b>가까운 대피소</b><p class="s-sub">${SHELTER.name} · 약 ${Math.round(Math.hypot(SHELTER.x - C.home.x, SHELTER.y - C.home.y))}m</p></div>`}`;
+}
+function cSelected(r) {
+  const h = house(r.id), [txt, st] = cStatus(r);
+  const top = `<div class="s-row between"><b>${esc(h.need)} 도움 요청</b><span class="s-chip ${st === "open" ? "" : "gray"}">확장 조력자 B</span></div>
+    <dl class="kv"><dt>위치</dt><dd>${esc(dongAt(fuzz(h).x, fuzz(h).y))} 부근 (반경 ${FUZZ_R}m)</dd><dt>주소·상태</dt><dd class="hidden-f">도착하면 호수·탈출 경로만 공개</dd></dl>`;
+  if (st !== "open") return `<div class="s-card">${top}<p class="s-sub">${esc(txt)}</p></div>`;
+  return `<div class="s-card">${top}<p class="s-sub">가능하면 가까운 동행파트너와 2인 1조로 움직여요.</p>
+    <div class="slider" id="cslider"><div class="track-fill" id="cslider-fill"></div><span class="label">밀어서 출동하기</span><button class="thumb" id="cthumb" type="button" aria-label="출동 수락">${arrowIc()}</button></div></div>`;
+}
+async function cAccept(id) {
+  const r = S.reqs.find(x => x.id === id);
+  if (!r || r.status !== "open" || C.mission || house(id).match || bOpenIn(r) > 0) return;
+  C.mission = { id, stage: "verify", attempts: 5, err: "", rec: null, openedAt: 0 };
+  r.status = "taken"; r.citizen = true; r.by = "#4 이○○"; r.tAssign = Date.now();
+  if (S.sel === id) S.sel = null;
+  log("수락", `조력자 #4 이○○ → ${house(id).short} (확장 조력자 B)`);
+  render();
+  const rec = await openHouse(id, "helper", r.evidence);
+  if (!rec) { C.mission = null; r.status = "open"; r.citizen = false; r.by = null; render(); return; }
+  C.mission.rec = rec; C.mission.stage = "enroute"; C.view = null;
+  log("열쇠 복원", "3곳 승인 · 확장 조력자 B · 도착 전엔 방향만");
+  render();
+}
+const cRemain = () => { if (!C.mission) return null; const t = hpos(house(C.mission.id)); return Math.round(Math.hypot(t.x - C.me.x, t.y - C.me.y)); };
+async function cWalk() {
+  const m = C.mission; if (!m || m.stage !== "enroute") return;
+  const t = hpos(house(m.id));
+  while (C.mission === m && m.stage === "enroute") {
+    const dx = t.x - C.me.x, dy = t.y - C.me.y, d = Math.hypot(dx, dy);
+    if (d <= ARRIVE_M * .6) break;
+    const step = Math.min(28, d - ARRIVE_M * .5);
+    C.me = { x: C.me.x + dx / d * step, y: C.me.y + dy / d * step };
+    drawMap(); const el = document.getElementById("cremain"); if (el) el.textContent = `${cRemain()}m`;
+    if (d - step <= ARRIVE_M) { await cArrive(true); break; }
+    await wait(90);
+  }
+}
+async function cArrive(auto) {
+  const m = C.mission; if (!m || m.stage !== "enroute") return;
+  const r = cRemain();
+  if (r > ARRIVE_M) { m.attempts--; m.err = `아직 약 ${r}m 남았어요 · ${m.attempts}회 남음`; log("도착 실패", `#4 위치 불일치 (${r}m)`); if (m.attempts <= 0) m.stage = "locked"; render(); return; }
+  m.stage = "onsite"; m.openedAt = Date.now(); m.err = ""; C.view = null;
+  const rq = S.reqs.find(x => x.id === m.id); if (rq) rq.arrived = true;
+  const shown = m.rec.consent.filter(k => k === "UNIT" || k === "ESCAPE").map(k => LABEL[k]);
+  log("도착·열람", `${auto ? "위치 자동 인식" : "도착 확인"} · 확장 조력자 B · ${shown.join("·")}`);
+  sms("당사자", `[비상봉투] ${hm(S.clock)} 이웃 조력자 1명이 도착해 정보를 확인했습니다 (${shown.join("·")}). 근거: ${rq ? rq.basis : ""}`);
+  render();
+}
+function cMission(m) {
+  const h = house(m.id);
+  if (m.stage === "verify") return `<div class="s-card"><span class="s-chip" style="justify-self:start">${esc(h.need)} 도움 · 출동</span><p class="s-title">기관 확인 중</p><p class="s-sub">세 기관이 경보 서명과 이○○님의 자격을 각자 확인하고 있어요.</p></div>`;
+  if (m.stage === "locked") return `<div class="s-card center"><p class="s-title">도착 확인이 잠겼어요</p><p class="s-sub">위치가 5번 맞지 않아 다른 이웃에게 넘어갔어요.</p></div>`;
+  const allowed = ["UNIT", "ESCAPE"], on = m.stage === "onsite";
+  const rows = ["UNIT", "STATUS", "ESCAPE", "CONTACT"].map(k => {
+    if (!on) return k === "UNIT" ? `<dt>호수·탈출 경로</dt><dd class="hidden-f">도착하면 자동으로 공개</dd>` : "";
+    if (!allowed.includes(k)) return `<dt>${LABEL[k]}</dt><dd class="hidden-f">확장 조력자 B에게는 공개되지 않음</dd>`;
+    return m.rec.consent.includes(k) ? `<dt>${LABEL[k]}</dt><dd>${esc(m.rec[k])}</dd>` : `<dt>${LABEL[k]}</dt><dd class="hidden-f">당사자가 공개하지 않음</dd>`;
+  }).join("");
+  const wm = Array.from({ length: 40 }, () => `<span>이○○ · ${hm(S.clock)}</span>`).join("");
+  const info = `<div class="s-card info"><div class="wm" aria-hidden="true">${wm}</div><div class="s-row between"><b>${on ? "도착 확인된 집" : esc(h.need) + " 도움 요청"}</b><span class="s-chip">확장 조력자 B</span></div>
+    <dl class="kv"><dt>필요한 도움</dt><dd>${esc(h.need)}</dd>${on ? "" : `<dt>방향</dt><dd>${esc(dongAt(fuzz(h).x, fuzz(h).y))} 부근</dd>`}${rows}</dl>
+    <div class="timer"><span>저장·복사 불가 · 워터마크</span><span>경보 해제 시 삭제</span></div></div>`;
+  if (m.stage === "enroute") return `${cMap("mission", 240)}
+    <div class="s-card" style="gap:8px"><div class="s-row between"><b>목적지까지</b><span class="s-chip" id="cremain">${cRemain()}m</span></div>
+      <p class="s-sub">집 반경 50m 안에 들어오면 자동으로 도착이 인식돼요. 근처 동행파트너 #3에게 합류 요청을 보냈어요.</p>
+      <p class="err-msg">${esc(m.err)}</p>
+      <div class="btn-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button type="button" class="s-btn" id="cwalk">걸어가기 (시연)</button><button type="button" class="s-btn ghost" id="chere">도착했어요</button></div></div>${info}`;
+  return `<div class="banner"><span class="dot"></span>도착 확인 완료 · 호수와 탈출 경로만 보여요</div>${cMap("mission", 170)}${info}
+    <div class="s-card"><div class="s-row between"><span class="s-sub" style="color:var(--s-ink)">동행파트너 #3이 곧 합류해요.<br>물이 차오르면 들어가지 말고 119에 알려 주세요</span><b style="font-family:var(--mono);font-size:20px">119</b></div></div>`;
+}
+function cActivity() {
+  C.unread = 0;
+  const icon = { go: "go", drill: "pin", edu: "book" };
+  return `<p class="s-title">내 활동</p>
+    <div class="stat3"><div><b>${C.history.filter(x => x.kind === "go").length}</b>출동</div><div><b>${C.history.filter(x => x.kind === "drill").length}</b>모의훈련</div><div><b>2시간</b>교육</div></div>
+    ${C.history.map(x => `<div class="act"><div class="ic">${ic(icon[x.kind] || "clock")}</div><div><time>2026.${x.at}</time><b>${esc(x.title)}</b><small>${esc(x.sub)}</small></div></div>`).join("")}`;
+}
+function cMe() {
+  return `<div class="s-card"><div class="profile"><div class="avatar">이</div><div><b style="font-size:17px">이○○님</b><p class="s-sub">활동 서약 시민 · ${esc(dongAt(C.home.x, C.home.y))}<br>확장 조력자 B · 2026.08.28 등록</p></div></div></div>
+    <div class="s-card" style="gap:0"><div class="toggle-row"><span>지금 출동할 수 있어요<small>끄면 요청을 받지 않아요</small></span><button type="button" class="switch" role="switch" data-cavail="1" aria-checked="${C.avail}" aria-label="출동 가능"></button></div></div>
+    <div class="s-card"><b>출동 가능 반경</b><div class="seg">${[500, 1000, 2000].map(v => `<button type="button" data-cradius="${v}" aria-pressed="${C.radius === v}">${v >= 1000 ? v / 1000 + "km" : v + "m"}</button>`).join("")}</div></div>
+    <div class="s-card"><b>시민 조력자는 이렇게 달라요</b><p class="s-sub">동행파트너가 먼저 호출되고, 비어 있을 때만 요청이 와요. 도착한 뒤에도 호수와 탈출 경로만 보이고, 상태·연락처는 보이지 않아요. 가능하면 동행파트너와 2인 1조로 움직여요.</p></div>
+    <div class="s-card"><b>활동 서약</b><p class="s-sub">출동 중 알게 된 정보를 저장하거나 다른 사람에게 알리지 않겠습니다. 위험하면 들어가지 않고 119에 알리겠습니다.</p></div>`;
+}
 
 /* ───────── 상호작용 ───────── */
-function bindSlider() {
-  const slider = $("slider"), thumb = $("thumb"), fill = $("slider-fill"); if (!thumb) return;
+function bindSlider() { bindSliderFor("", () => act(() => accept(S.sel))); }
+function bindSliderFor(pfx, onAccept) {
+  const slider = $(pfx + "slider"), thumb = $(pfx + "thumb"), fill = $(pfx + "slider-fill"); if (!thumb) return;
   let drag = false, x0 = 0, max = 0;
   const set = x => { thumb.style.transform = `translateX(${x}px)`; fill.style.width = `${x + 55}px`; };
   thumb.addEventListener("pointerdown", e => { drag = true; x0 = e.clientX; max = slider.clientWidth - 60; thumb.setPointerCapture(e.pointerId); });
   thumb.addEventListener("pointermove", e => { if (drag) set(Math.max(0, Math.min(max, e.clientX - x0))); });
-  const end = e => { if (!drag) return; drag = false; const x = Math.max(0, Math.min(max, e.clientX - x0)); if (x > max * .8) { set(max); act(() => accept(S.sel)); } else { thumb.style.transition = "transform .25s"; set(0); setTimeout(() => thumb.style.transition = "", 260); } };
+  const end = e => { if (!drag) return; drag = false; const x = Math.max(0, Math.min(max, e.clientX - x0)); if (x > max * .8) { set(max); onAccept(); } else { thumb.style.transition = "transform .25s"; set(0); setTimeout(() => thumb.style.transition = "", 260); } };
   thumb.addEventListener("pointerup", end); thumb.addEventListener("pointercancel", end);
-  thumb.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(() => accept(S.sel)); } });
+  thumb.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onAccept(); } });
 }
 async function act(fn) { if (S.busy) return; S.busy = true; renderSide(); try { await fn(); } finally { S.busy = false; render(); } }
 
 document.addEventListener("click", ev => {
-  if (mapMoved && ev.target.closest("#rmap-svg")) return;
+  if (mapMoved && ev.target.closest("#rmap-svg, #cmap-svg")) return;
   const mb = ev.target.closest("[data-map]");
-  if (mb) { const k = mb.dataset.map; if (k === "in") zoomMap(.7); else if (k === "out") zoomMap(1.4); else { S.view = { mode: S.view.mode, ...defaultView(S.view.mode) }; drawMap(); } return; }
+  if (mb) { const k = mb.dataset.map, cit = mb.dataset.who === "c"; if (k === "in") zoomMap(.7, cit); else if (k === "out") zoomMap(1.4, cit); else if (cit) { C.view = { mode: C.view.mode, ...cDefaultView(C.view.mode) }; drawMap(); } else { S.view = { mode: S.view.mode, ...defaultView(S.view.mode) }; drawMap(); } return; }
+  const cp = ev.target.closest("[data-cpick]");
+  if (cp) { C.sel = cp.dataset.cpick; renderCitizen(); return; }
   const pick = ev.target.closest("[data-pick]");
+  if (pick && pick.closest("#cmap-svg")) { C.sel = pick.dataset.pick; renderCitizen(); return; }
   if (pick) { S.sel = pick.dataset.pick; renderApp(); return; }
   const b = ev.target.closest("button"); if (!b || b.disabled) return;
   if (b.id === "btn-next") return goScene(S.scene + 1);
@@ -941,6 +1136,11 @@ document.addEventListener("click", ev => {
   if (b.dataset.cap) { S.caps[b.dataset.cap] = !S.caps[b.dataset.cap]; return renderApp(); }
   if (b.id === "btn-drill") { S.drillJoined = !S.drillJoined; toast("모의훈련", S.drillJoined ? "10월 18일 훈련을 신청했어요" : "신청을 취소했어요"); return renderApp(); }
   if (b.id === "btn-walk") return act(walk);
+  if (b.dataset.ctab) { C.tab = b.dataset.ctab; renderCitizen(); document.getElementById("ccontent").scrollTop = 0; return; }
+  if (b.id === "cwalk") return act(cWalk);
+  if (b.id === "chere") return act(() => cArrive(false));
+  if (b.dataset.cavail) { C.avail = !C.avail; return renderCitizen(); }
+  if (b.dataset.cradius) { C.radius = Number(b.dataset.cradius); return renderCitizen(); }
   if (b.id === "btn-here") return act(() => arriveCheck(false));
   if (b.id === "btn-water") return act(async () => {
     const e = await deviceSignal("H2");
@@ -970,6 +1170,9 @@ document.addEventListener("keydown", ev => { const g = ev.target.closest?.("[dat
 setInterval(() => {
   if (!S) return;
   if (S.reqs.length) renderOps();
+  let reopen = false;
+  for (const r of S.reqs) { const el = document.querySelector(`[data-bopen="${r.id}"]`); if (el) el.textContent = cStatus(r)[0]; if (!r.bOpen && bOpenIn(r) === 0) { r.bOpen = true; reopen = true; } }
+  if (reopen && !(C.tab === "home" && document.getElementById("cthumb") && mapDrag)) renderCitizen();
   const dt = $("del-timer");
   if (dt && S.mission?.stage === "onsite") { const left = Math.max(0, 1800 - Math.floor((Date.now() - S.mission.openedAt) / 1000)); dt.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")} 뒤 삭제`; }
 }, 1000);
