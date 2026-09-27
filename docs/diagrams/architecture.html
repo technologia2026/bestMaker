@@ -1,0 +1,140 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css">
+<style>
+.canvas { width: 1656px; }
+svg text { font-family: "Noto Sans KR", sans-serif; }
+.legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 24px; font-size: 13px; margin-top: 6px; }
+.legend div { display: flex; gap: 8px; }
+.legend b { color: #0d6b63; min-width: 20px; }
+</style></head><body><div class="canvas">
+<h1>[그림 3] 비상봉투 시스템 아키텍처</h1>
+<p class="cap">외부에 노출되는 것은 웹·API 서비스 하나뿐이다. 정책 엔진·매칭·키 조합기는 내부망에, 열쇠 보관 기관 3곳은 각자 별도 서버·DB·서명 키로 분리한다.</p>
+<svg id="arch" width="1600" height="985" viewBox="0 0 1600 985"></svg>
+<div class="legend" id="legend"></div>
+</div>
+<script>
+const C = { ink: "#14212b", sub: "#4a5a63", line: "#b9c7c4", accent: "#0d6b63", accentBg: "#e6f1ef", amber: "#a86b12", amberBg: "#fbf1de", open: "#c2410c", openBg: "#fdf1ea", blue: "#2f5d7c", blueBg: "#e8f0f6", arrow: "#33424a" };
+const zones = [
+  { x: 20, y: 128, w: 285, h: 832, label: "외부 공공데이터 · API", fill: "#f6f8f8", stroke: C.line },
+  { x: 330, y: 128, w: 900, h: 832, label: "비상봉투 서비스", fill: "#fbfcfc", stroke: C.accent, sw: 2 },
+  { x: 345, y: 262, w: 880, h: 545, label: "내부망 (외부 비노출)", fill: "#ffffff", stroke: "#9aa9ae", dash: "6 5" },
+  { x: 345, y: 818, w: 880, h: 118, label: "데이터 저장", fill: "#ffffff", stroke: "#9aa9ae", dash: "6 5" },
+  { x: 1255, y: 128, w: 325, h: 832, label: "열쇠 보관 기관 (별도 서버·네트워크)", fill: C.amberBg, stroke: C.amber, sw: 2 },
+];
+const boxes = [
+  // 사용자
+  { x: 350, y: 20, w: 195, h: 90, t: "재난약자 (당사자)", l: ["등록 · 열람 통지 수신", "웹 알림 · 문자"], s: "user" },
+  { x: 572, y: 20, w: 195, h: 90, t: "조력자 웹앱 (PWA)", l: ["지정 · 확장 A · 확장 B", "출동 수락 · 도착 확인"], s: "user" },
+  { x: 794, y: 20, w: 195, h: 90, t: "담당 공무원 웹", l: ["대면 등록 · 조력자 자격", "관리 (열람 권한 없음)"], s: "user" },
+  { x: 1016, y: 20, w: 195, h: 90, t: "가정 기기", l: ["Raspberry Pi · 수위 센서", "긴급버튼 · 도착 코드 표시"], s: "user" },
+  // 웹
+  { x: 350, y: 160, w: 860, h: 80, t: "웹·API 서비스 — Nginx(HTTPS) + Django · Django REST framework", l: ["외부에 노출되는 유일한 서비스 · 인증 · CSRF 보호 · 시도 횟수 제한 · 기기 바인딩 · Cache-Control: no-store · CSP"], s: "web" },
+  // 내부망 Row A
+  { x: 360, y: 295, w: 210, h: 90, t: "경보 수집기", l: ["Celery 주기 작업", "특보·강우·수위 수집, 수집기 키 서명"] },
+  { x: 600, y: 295, w: 260, h: 90, t: "증거 검증 · 정책 엔진", l: ["서명·시각·nonce 검증, 재전송 방지", "평시/준비/공개/종료 판정"], s: "key" },
+  { x: 890, y: 295, w: 260, h: 90, t: "위험도 분석", l: ["GeoPandas · Shapely, 규칙 기반 점수", "입력: 공공데이터 + 격자 (명단 미사용)"] },
+  // Row B
+  { x: 360, y: 470, w: 210, h: 90, t: "매칭 엔진", l: ["지정 → 확장 A → 확장 B", "입력: 격자·필요 유형만"] },
+  { x: 600, y: 470, w: 260, h: 90, t: "키 조합기", l: ["조각 2개 이상으로 메모리 내 복원", "AES-256-GCM 복호화 후 키 즉시 삭제"], s: "key" },
+  { x: 890, y: 470, w: 260, h: 90, t: "전달 서비스", l: ["공개 매트릭스 · 도착 코드 확인", "단기 토큰 · 워터마크"] },
+  // Row C
+  { x: 360, y: 640, w: 210, h: 90, t: "당사자 통지", l: ["누가·언제·어떤 근거로", "열었는지 알림"] },
+  { x: 600, y: 640, w: 260, h: 90, t: "감사 로그 (해시 체인)", l: ["모든 판정·개봉·열람을 SHA-256", "체인으로 기록"], s: "key" },
+  { x: 890, y: 640, w: 260, h: 90, t: "열람 이상 탐지", l: ["수락·포기 반복, 격자 밖 시도", "심야 관리자 조회 → 계정 정지"] },
+  // 데이터
+  { x: 360, y: 843, w: 410, h: 82, t: "PostgreSQL + PostGIS", l: ["평문 층(랜덤 ID·500m 격자) · 봉투 암호문 · 감사 로그", "공간 질의 · 행 잠금으로 중복 배정 방지"] },
+  { x: 800, y: 843, w: 410, h: 82, t: "Redis", l: ["Celery 작업 큐 (JSON 직렬화, pickle 금지)", "경보·요청 폭주 시 속도 제한"] },
+  // 외부
+  { x: 35, y: 160, w: 255, h: 90, t: "기상청 기상특보", l: ["예보·경보 → 수집기 서명", "(MVP: 모의 발령기)"], s: "ext" },
+  { x: 35, y: 295, w: 255, h: 90, t: "서울 열린데이터광장", l: ["강우량 · 하천 수위", "하수관로 수위 (282개 지점, 1분)"], s: "ext" },
+  { x: 35, y: 430, w: 255, h: 90, t: "행정안전부 생활안전지도", l: ["침수흔적도", "(평시 취약도 · 분석 검증)"], s: "ext" },
+  { x: 35, y: 565, w: 255, h: 90, t: "공공데이터포털", l: ["건축물대장", "(지하층 여부)"], s: "ext" },
+  { x: 35, y: 700, w: 255, h: 90, t: "기상청 기상자료개방포털", l: ["2022년 8월 강우 기록", "(재생 검증 · 시연)"], s: "ext" },
+  { x: 35, y: 835, w: 255, h: 90, t: "긴급재난문자", l: ["보조 증거 (교차 확인)", "단독으로는 개봉 불가"], s: "ext" },
+  // 보관 기관
+  { x: 1270, y: 180, w: 295, h: 100, t: "조각 A · 재난안전 부서", l: ["증거·유효 시간·격자·조력자 자격", "독립 검증 후 조각 제공", "자체 DB · 서명 키"], s: "cust" },
+  { x: 1270, y: 390, w: 295, h: 100, t: "조각 B · 자치구", l: ["증거·유효 시간·격자·조력자 자격", "독립 검증 후 조각 제공", "자체 DB · 서명 키"], s: "cust" },
+  { x: 1270, y: 560, w: 295, h: 100, t: "조각 C · 감사 기관", l: ["증거·유효 시간·격자·조력자 자격", "독립 검증 후 조각 제공", "자체 DB · 서명 키"], s: "cust" },
+  { x: 1270, y: 730, w: 295, h: 80, t: "감사 로그 앵커", l: ["체인 끝 해시를 3곳이 각자 기록", "→ 메인 DB 관리자의 로그 조작 탐지"], s: "cust2" },
+  { x: 1270, y: 840, w: 295, h: 95, t: "Shamir 2-of-3", l: ["한 기관·한 관리자 단독으로는", "복원 불가, 공무원·관리자 요청은", "항상 거부"], s: "cust2" },
+];
+// 화살표: pts, n(번호), label, lx/ly(라벨 위치), dash
+const arrows = [
+  { pts: [[447, 110], [447, 160]], label: "HTTPS", lx: 452, ly: 140, small: true },
+  { pts: [[669, 110], [669, 160]], label: "HTTPS", lx: 674, ly: 140, small: true },
+  { pts: [[891, 110], [891, 160]], label: "HTTPS", lx: 896, ly: 140, small: true },
+  { pts: [[1113, 110], [1113, 160]], label: "서명 신호", lx: 1118, ly: 140, small: true },
+  { pts: [[317, 340], [360, 340]], n: 1, nx: 338, ny: 326 },
+  { pts: [[570, 340], [600, 340]], n: 2, nx: 585, ny: 322 },
+  { pts: [[890, 340], [860, 340]], n: 3, nx: 875, ny: 322 },
+  { pts: [[730, 240], [730, 295]], n: 5, nx: 748, ny: 268 },
+  { pts: [[640, 385], [640, 430], [465, 430], [465, 470]], n: 4, nx: 552, ny: 430 },
+  { pts: [[820, 385], [820, 430], [1270, 430]], n: 6, nx: 1040, ny: 430, bridgeAt: 1185 },
+  { pts: [[1270, 600], [730, 600], [730, 560]], n: 7, nx: 1000, ny: 600 },
+  { pts: [[570, 515], [600, 515]], n: 8, nx: 585, ny: 497 },
+  { pts: [[860, 515], [890, 515]], n: 9, nx: 875, ny: 497 },
+  { pts: [[1150, 515], [1185, 515], [1185, 205], [1210, 205]], n: 10, nx: 1185, ny: 360 },
+  { pts: [[730, 730], [730, 770], [1270, 770]], n: 11, nx: 1000, ny: 770 },
+  { pts: [[600, 685], [570, 685]] },
+  { pts: [[860, 685], [890, 685]] },
+  { pts: [[680, 560], [680, 640]], dash: "4 4" },
+];
+const svg = document.getElementById("arch");
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+const txt = (x, y, s, size, weight, fill, anchor = "start") => { const t = el("text", { x, y, "font-size": size, "font-weight": weight, fill, "text-anchor": anchor }); t.textContent = s; return t; };
+const defs = el("defs", {});
+const m = el("marker", { id: "ah", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" }, defs);
+el("path", { d: "M0,0 L10,5 L0,10 z", fill: C.arrow }, m);
+for (const z of zones) {
+  el("rect", { x: z.x, y: z.y, width: z.w, height: z.h, rx: 12, fill: z.fill, stroke: z.stroke, "stroke-width": z.sw || 1.5, "stroke-dasharray": z.dash || "" });
+  txt(z.x + 12, z.y + 19, z.label, 13, 700, z.stroke === C.line ? C.sub : z.stroke);
+}
+const styles = {
+  user: { fill: C.blueBg, stroke: C.blue, title: C.blue },
+  web: { fill: C.accentBg, stroke: C.accent, title: C.accent },
+  key: { fill: "#fff", stroke: C.accent, title: C.ink, sw: 2 },
+  ext: { fill: "#fff", stroke: C.line, title: C.ink },
+  cust: { fill: "#fff", stroke: C.amber, title: C.amber, sw: 1.8 },
+  cust2: { fill: "#fffaf0", stroke: "#d8b77a", title: C.amber },
+  def: { fill: "#fff", stroke: C.line, title: C.ink },
+};
+for (const b of boxes) {
+  const s = styles[b.s || "def"];
+  el("rect", { x: b.x, y: b.y, width: b.w, height: b.h, rx: 9, fill: s.fill, stroke: s.stroke, "stroke-width": s.sw || 1.5 });
+  const lh = 17, total = 20 + b.l.length * lh, top = b.y + (b.h - total) / 2 + 15;
+  txt(b.x + b.w / 2, top, b.t, 14.5, 700, s.title, "middle");
+  b.l.forEach((line, i) => txt(b.x + b.w / 2, top + 21 + i * lh, line, 12, 400, C.sub, "middle"));
+}
+for (const a of arrows) {
+  let d = "M" + a.pts.map(p => p.join(",")).join(" L");
+  if (a.bridgeAt) {
+    const [p0, p1, p2] = a.pts, y = p1[1], bx = a.bridgeAt;
+    d = `M${p0[0]},${p0[1]} L${p1[0]},${y} L${bx - 7},${y} A7,7 0 0 1 ${bx + 7},${y} L${p2[0]},${p2[1]}`;
+  }
+  el("path", { d, fill: "none", stroke: C.arrow, "stroke-width": 1.6, "stroke-dasharray": a.dash || "", "marker-end": "url(#ah)" });
+  if (a.label) txt(a.lx, a.ly, a.label, 11, 500, C.sub);
+  if (a.n) {
+    el("circle", { cx: a.nx, cy: a.ny, r: 10, fill: C.accent });
+    txt(a.nx, a.ny + 4, String(a.n), 11.5, 700, "#fff", "middle");
+  }
+}
+txt(1220, 953, "Docker Compose · Ubuntu 서버 · 역할별 컨테이너", 11.5, 500, C.accent, "end");
+// 외부 데이터 → 수집기 버스
+el("path", { d: "M317,205 L317,880", fill: "none", stroke: C.arrow, "stroke-width": 1.6 });
+for (const y of [205, 340, 475, 610, 745, 880]) el("path", { d: `M290,${y} L317,${y}`, fill: "none", stroke: C.arrow, "stroke-width": 1.6 });
+txt(686, 625, "기록", 11, 500, C.sub);
+const legend = [
+  "공공데이터·특보를 주기적으로 수집 (강우 10분·하수관로 1분 단위)",
+  "수집기가 서명한 경보를 정책 엔진이 검증 (서명·시각·nonce)",
+  "건물 위험도와 항목별 기여도 (예보 격자 안에서만 공개 근거)",
+  "공개 단계 가구의 격자·필요 유형만 매칭 엔진에 전달",
+  "조력자 수락, 가정 기기 서명 신호",
+  "개봉 요청 + 서명된 증거를 보관 기관 3곳에 각각 제출",
+  "각자 검증한 기관이 조각 제공, 2개 이상이면 복원",
+  "배정된 조력자 1인 확인",
+  "신뢰 등급이 허용하는 항목만 전달 서비스로",
+  "기기 바인딩 단기 토큰으로 조력자 화면에 표시",
+  "감사 로그 체인 끝 해시를 보관 기관에 주기적으로 기록",
+];
+document.getElementById("legend").innerHTML = legend.map((s, i) => `<div><b>${"①②③④⑤⑥⑦⑧⑨⑩⑪"[i]}</b><span>${s}</span></div>`).join("");
+</script></body></html>

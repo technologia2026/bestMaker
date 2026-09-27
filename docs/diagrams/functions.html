@@ -1,0 +1,87 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css">
+<style>
+.canvas { width: 1480px; }
+.root { margin: 0 auto; width: 520px; text-align: center; border: 2px solid #0d6b63; background: #0d6b63; color: #fff; border-radius: 10px; padding: 12px; }
+.root b { font-size: 21px; display: block; }
+.root span { font-size: 13px; opacity: .9; }
+.actors { display: flex; justify-content: center; gap: 8px; margin: 10px 0 6px; font-size: 12px; }
+.actors span { border: 1px solid #b9c7c4; border-radius: 999px; padding: 2px 10px; color: #4a5a63; background: #f6f8f8; }
+.trunk { width: 2px; height: 46px; background: #6b7b84; margin: 0 auto; }
+.band { position: relative; margin-top: 0; padding-top: 18px; }
+.band::before { content: ""; position: absolute; top: 0; left: 12.5%; right: 12.5%; height: 2px; background: #6b7b84; }
+.band-label { position: absolute; top: -36px; left: 0; font-size: 13px; font-weight: 700; padding: 1px 10px; border-radius: 6px; color: #fff; }
+.cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.col { position: relative; border: 1.5px solid #b9c7c4; border-radius: 10px; background: #fff; }
+.col::before { content: ""; position: absolute; top: -18px; left: 50%; width: 2px; height: 18px; background: #6b7b84; }
+.col h2 { border-radius: 8px 8px 0 0; margin: 0; font-size: 16px; padding: 9px 12px; color: #fff; display: flex; justify-content: space-between; align-items: baseline; }
+.col h2 small { font-size: 12px; font-weight: 400; opacity: .9; }
+.col ul { list-style: none; margin: 0; padding: 8px 12px 10px; display: grid; gap: 7px; }
+.col li { font-size: 13px; line-height: 1.4; display: grid; grid-template-columns: 44px 1fr; gap: 4px; }
+.col li b { font-weight: 700; }
+.col li .id { font-size: 11.5px; color: #4a5a63; padding-top: 2px; font-variant-numeric: tabular-nums; }
+.col li .d { color: #4a5a63; font-size: 12px; display: block; }
+.col .who { border-radius: 0 0 8px 8px; font-size: 11.5px; color: #4a5a63; border-top: 1px dashed #d3dcda; padding: 6px 12px; background: #f6f8f8; }
+.peace h2, .peace-l { background: #2f5d7c; }
+.act h2, .act-l { background: #b4471a; }
+.link { height: 46px; position: relative; }
+.link::before { content: ""; position: absolute; left: 50%; top: 0; width: 2px; height: 46px; background: #6b7b84; }
+.band.second::before { top: 0; }
+.note { margin-top: 14px; font-size: 12px; color: #4a5a63; display: flex; gap: 22px; }
+</style></head><body><div class="canvas">
+<h1>[그림 1] 비상봉투 상세 기능구성도</h1>
+<p class="cap">8개 기능군 · 28개 세부 기능. 위 줄은 평시·준비 단계에서 명단 없이 대비하는 기능, 아래 줄은 재난 시 이웃이 함께 구조하는 기능이다.</p>
+<div class="root"><b>비상봉투</b><span>평소엔 봉인, 재난 땐 가장 가까운 이웃이 여는 재난약자 구조 플랫폼</span></div>
+<div class="actors"><span>재난약자(당사자)</span><span>지정 조력자</span><span>확장 조력자 A·B</span><span>담당 공무원</span><span>열쇠 보관 기관 3곳</span><span>가정 기기</span></div>
+<div class="trunk"></div>
+<div class="band peace"><span class="band-label peace-l">평시·준비 — 명단 없이 대비한다</span>
+<div class="cols">
+ <div class="col peace"><h2>F1 등록·동의 <small>주민센터·웹</small></h2><ul>
+  <li><span class="id">F1-1</span><span><b>재난약자 등록</b><span class="d">대면·강한 본인인증, 가구 랜덤 ID·500m 격자 부여</span></span></li>
+  <li><span class="id">F1-2</span><span><b>공개 항목·유형 선택</b><span class="d">공개 항목 본인 선택, 관계형/봉인형</span></span></li>
+  <li><span class="id">F1-3</span><span><b>조력자 등록</b><span class="d">확장 A 동행파트너 자격 연동, 확장 B 인증·교육·서약</span></span></li>
+  <li><span class="id">F1-4</span><span><b>가정 기기 등록</b><span class="d">기기 공개키·도착 코드 비밀 등록</span></span></li>
+ </ul><div class="who">사용자: 당사자, 담당 공무원, 조력자</div></div>
+ <div class="col peace"><h2>F2 봉인·열쇠 분산 <small>봉인 서비스</small></h2><ul>
+  <li><span class="id">F2-1</span><span><b>3층 봉투 구성</b><span class="d">평문(ID·격자) / 봉투 1(건물·필요 유형) / 봉투 2(호수·상태·탈출 경로·연락처)</span></span></li>
+  <li><span class="id">F2-2</span><span><b>봉투 암호화</b><span class="d">봉투별 데이터 키, AES-256-GCM, AAD = 가구 ID·층·버전</span></span></li>
+  <li><span class="id">F2-3</span><span><b>열쇠 분산</b><span class="d">Shamir 2-of-3, 기관 3곳에 조각 보관</span></span></li>
+ </ul><div class="who">사용자: 시스템, 열쇠 보관 기관</div></div>
+ <div class="col peace"><h2>F3 개봉 증거 검증 <small>정책 엔진·보관 기관</small></h2><ul>
+  <li><span class="id">F3-1</span><span><b>공식 경보 검증</b><span class="d">Ed25519 서명·발령 시각·유효 시간·nonce</span></span></li>
+  <li><span class="id">F3-2</span><span><b>가정 기기 신호 검증</b><span class="d">기기 키 서명, 단조 증가 카운터</span></span></li>
+  <li><span class="id">F3-3</span><span><b>보조 증거 교차 확인</b><span class="d">긴급재난문자 (단독 개봉 불가)</span></span></li>
+  <li><span class="id">F3-4</span><span><b>보관 기관 독립 검증</b><span class="d">증거·격자·조력자 자격 확인 후 조각 제공, 관리자 요청 거부</span></span></li>
+ </ul><div class="who">사용자: 시스템, 열쇠 보관 기관</div></div>
+ <div class="col peace"><h2>F4 위험도 분석 <small>공공데이터만</small></h2><ul>
+  <li><span class="id">F4-1</span><span><b>평시 건물 취약도</b><span class="d">침수흔적·지하층·저지대·빗물펌프장 거리</span></span></li>
+  <li><span class="id">F4-2</span><span><b>실시간 위험도</b><span class="d">10분·1시간 강우, 하수관로·하천 수위 상승</span></span></li>
+  <li><span class="id">F4-3</span><span><b>기여도 기록·앞당기기</b><span class="d">항목별 근거 기록, 예보 + 고위험 시 서명된 앞당기기 선언</span></span></li>
+ </ul><div class="who">사용자: 시스템 (개인정보 미사용)</div></div>
+</div></div>
+<div class="link"></div>
+<div class="band act second"><span class="band-label act-l">재난 시 — 이웃이 함께 구한다</span>
+<div class="cols">
+ <div class="col act"><h2>F5 단계 판정 <small>정책 엔진</small></h2><ul>
+  <li><span class="id">F5-1</span><span><b>단계 판정</b><span class="d">평시 → 준비(예보) → 공개(경보·고위험) → 종료</span></span></li>
+  <li><span class="id">F5-2</span><span><b>즉시 공개</b><span class="d">센서·긴급버튼은 단계 무관, 그 가구만</span></span></li>
+  <li><span class="id">F5-3</span><span><b>보수 모드</b><span class="d">준비 중 데이터 두절 시 예보 격자 공개</span></span></li>
+  <li><span class="id">F5-4</span><span><b>대기 호출</b><span class="d">준비 단계, 주소 없이 "○○동 일대 대기"</span></span></li>
+ </ul><div class="who">사용자: 시스템 → 조력자</div></div>
+ <div class="col act"><h2>F6 조력자 매칭 <small>매칭 엔진</small></h2><ul>
+  <li><span class="id">F6-1</span><span><b>순차 확장 배정</b><span class="d">지정 → 확장 A → 확장 B, 위험도·거리·역량 기준</span></span></li>
+  <li><span class="id">F6-2</span><span><b>잠금 배정</b><span class="d">먼저 수락한 1명, 조력자당 동시 1건</span></span></li>
+  <li><span class="id">F6-3</span><span><b>자동 재배정</b><span class="d">무응답(3분)·거절·포기 시 다음 조력자</span></span></li>
+ </ul><div class="who">사용자: 지정·확장 조력자</div></div>
+ <div class="col act"><h2>F7 도착 확인·최소 전달 <small>전달 서비스</small></h2><ul>
+  <li><span class="id">F7-1</span><span><b>공개 매트릭스</b><span class="d">신뢰 등급 × 단계 × 도착 여부 × 당사자 동의</span></span></li>
+  <li><span class="id">F7-2</span><span><b>도착 확인</b><span class="d">위치 격자 + 가정 기기 1분 일회용 코드, 5회 실패 잠금</span></span></li>
+  <li><span class="id">F7-3</span><span><b>단기 토큰 전달</b><span class="d">경보 유효 시간 내, 기기 바인딩, 캐시 금지, 워터마크</span></span></li>
+ </ul><div class="who">사용자: 배정된 조력자 1인</div></div>
+ <div class="col act"><h2>F8 재봉인·감사·통지 <small>감사 서비스</small></h2><ul>
+  <li><span class="id">F8-1</span><span><b>자동 재봉인</b><span class="d">종료 시 토큰 폐기, 조력자 화면 삭제</span></span></li>
+  <li><span class="id">F8-2</span><span><b>해시 체인 감사 로그</b><span class="d">체인 끝 해시를 보관 기관 3곳에 앵커 기록</span></span></li>
+  <li><span class="id">F8-3</span><span><b>당사자 열람 통지</b><span class="d">"22:14, 확장 조력자 1명 열람, 근거: 공식 침수경보"</span></span></li>
+  <li><span class="id">F8-4</span><span><b>열람 이상 탐지</b><span class="d">수락·포기 반복, 격자 밖 시도, 심야 관리자 조회 → 계정 정지</span></span></li>
+ </ul><div class="who">사용자: 당사자, 감사 기관</div></div>
+</div></div>
+</div></body></html>
