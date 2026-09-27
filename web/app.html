@@ -304,18 +304,18 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
       <div>
         <div class="eyebrow">관제탑 · 재난안전상황실 (담당 공무원 화면)</div>
         <h2 class="ops-title">지금 우리 구, 한눈에</h2>
-        <p class="ops-privacy">이름·주소·연락처는 관제탑에도 보이지 않습니다. 500m 격자와 요청 상태, 조력자 배치만 표시합니다.</p>
+        <p class="ops-privacy">이름·주소·연락처는 관제탑에도 보이지 않습니다. 대략적인 위치(반경 원)와 요청 상태, 조력자 배치만 표시합니다.</p>
       </div>
       <div id="ops-stage"></div>
     </div>
     <div class="kpis" id="kpis"></div>
     <div class="ops-grid">
       <div class="card">
-        <div class="rowhead"><b>격자 상황 지도</b><span>서울 관악·동작·구로 일대 · 500m 격자</span></div>
-        <div class="ops-map"><svg id="ops-svg" role="img" aria-label="관제 지도: 500m 격자별 경보 구역, 도움 요청 반경, 조력자 배치"></svg></div>
+        <div class="rowhead"><b>상황 지도</b><span>서울 관악·동작·구로 일대</span></div>
+        <div class="ops-map"><svg id="ops-svg" role="img" aria-label="관제 지도: 경보 구역, 도움 요청 반경, 조력자 배치"></svg></div>
         <div class="ops-legend">
-          <span><i style="background:rgba(232,154,31,.35)"></i>예보 격자</span>
-          <span><i style="background:rgba(255,106,43,.4)"></i>경보 격자</span>
+          <span><i style="background:rgba(232,154,31,.35)"></i>예보 구역</span>
+          <span><i style="background:rgba(255,106,43,.4)"></i>경보 구역</span>
           <span><i style="border:2px dashed #ff6a2b;background:transparent;border-radius:50%"></i>도움 요청 (반경 180m)</span>
           <span><i style="background:#2346e8;border-radius:50%"></i>출동 중 조력자</span>
           <span><i style="background:#8a98ab;border-radius:50%"></i>대기 조력자</span>
@@ -700,9 +700,6 @@ function realMap(mode, height) {
     <div class="map-note">${note}</div></div>`;
 }
 function drawMap() { const svg = document.getElementById("rmap-svg"); if (svg) drawMapInto(svg, svg.dataset.mode, S.view); }
-function cellOf(x, y) { return { r: Math.floor(y / 500), c: Math.floor(x / 500) }; }
-function gridName(r, c) { return "ABCDEF"[c + 3] + (r + 4); }
-function cellLabel(x, y) { const c = cellOf(x, y); return gridName(c.r, c.c); }
 function drawMapInto(svg, mode, v) {
   const px = svg.clientWidth || 358, ph = svg.clientHeight || 300, f = v.w / px, h = v.w * ph / px;
   svg.setAttribute("viewBox", `${v.x - v.w / 2} ${v.y - h / 2} ${v.w} ${h}`);
@@ -740,12 +737,7 @@ function drawMapInto(svg, mode, v) {
   }
   if (mode === "ops") {
     const alertOn = S.scene >= 1 && S.scene < 4, warn = S.evidence && S.evidence.kind === "alert" && S.evidence.level === "WARNING";
-    for (let r = -3; r < 3; r++) for (let c = -3; c < 3; c++) {
-      const inAlert = alertOn && r >= -2 && r < 2 && c >= -2 && c < 2;
-      g += `<rect x="${c * 500}" y="${r * 500}" width="500" height="500" fill="${inAlert ? (warn ? "rgba(255,106,43,.16)" : "rgba(232,154,31,.14)") : "none"}" stroke="var(--s-edge)" stroke-opacity=".9" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/>`;
-      g += T(c * 500 + 10 * f, r * 500 + 14 * f, gridName(r, c), 9, "var(--s-sub)", 500, "start");
-    }
-    if (alertOn) g += `<rect x="-1000" y="-1000" width="2000" height="2000" fill="none" stroke="${warn ? "#ff6a2b" : "#e89a1f"}" stroke-width="2" vector-effect="non-scaling-stroke"/>` + T(-1000 + 8 * f, -1000 - 6 * f, warn ? "침수 경보 발령 구역" : "호우 예보 구역", 11, warn ? "#ff6a2b" : "#e89a1f", 700, "start");
+    if (alertOn) g += `<rect x="-1000" y="-1000" width="2000" height="2000" rx="120" fill="${warn ? "rgba(255,106,43,.14)" : "rgba(232,154,31,.12)"}" stroke="${warn ? "#ff6a2b" : "#e89a1f"}" stroke-width="2" vector-effect="non-scaling-stroke"/>` + T(-1000 + 8 * f, -1000 - 6 * f, warn ? "침수 경보 발령 구역" : "호우 예보 구역", 11, warn ? "#ff6a2b" : "#e89a1f", 700, "start");
     g += `<rect x="${SHELTER.x - 6 * f}" y="${SHELTER.y - 6 * f}" width="${12 * f}" height="${12 * f}" fill="#12a58a" stroke="#fff" stroke-width="${2 * f}"/>`;
     for (const r of S.reqs) {
       const hh = house(r.id), c = fuzz(hh), col = r.arrived ? "#2346e8" : r.status === "open" ? "#ff6a2b" : "#e89a1f";
@@ -890,9 +882,9 @@ function renderOps() {
   const statusCell = r => r.arrived ? `<span class="st here">도착</span>` : r.status === "open" ? `<span class="st wait">호출 중</span>` : `<span class="st go">출동 중</span>`;
   const rows = reqs.slice().sort((a, b) => (a.status === "open") - (b.status === "open") ? (b.status === "open") - (a.status === "open") : house(b.id).risk - house(a.id).risk).map(r => {
     const h = house(r.id), c = fuzz(h);
-    return `<tr><td class="mono">${reqNo(r.id)}</td><td>격자 ${cellLabel(c.x, c.y)} <span style="color:var(--sub)">${esc(dongAt(c.x, c.y))}</span></td><td>${esc(h.need)}</td><td>${statusCell(r)}</td><td class="mono">${r.by ? esc(r.by.split(" ")[0]) : "—"}</td><td class="mono">${mmss((r.tAssign || Date.now()) - r.t0)}</td></tr>`;
+    return `<tr><td class="mono">${reqNo(r.id)}</td><td>${esc(dongAt(c.x, c.y))} 부근</td><td>${esc(h.need)}</td><td>${statusCell(r)}</td><td class="mono">${r.by ? esc(r.by.split(" ")[0]) : "—"}</td><td class="mono">${mmss((r.tAssign || Date.now()) - r.t0)}</td></tr>`;
   }).join("");
-  $("ops-table").innerHTML = `<thead><tr><th>요청</th><th>격자</th><th>필요</th><th>상태</th><th>담당</th><th>배정까지</th></tr></thead><tbody>${rows || `<tr><td colspan="6" style="color:var(--sub);white-space:normal">도움 요청이 없습니다. 평소에는 어떤 가구 정보도 관제탑에 올라오지 않습니다.</td></tr>`}</tbody>`;
+  $("ops-table").innerHTML = `<thead><tr><th>요청</th><th>위치</th><th>필요</th><th>상태</th><th>담당</th><th>배정까지</th></tr></thead><tbody>${rows || `<tr><td colspan="6" style="color:var(--sub);white-space:normal">도움 요청이 없습니다. 평소에는 어떤 가구 정보도 관제탑에 올라오지 않습니다.</td></tr>`}</tbody>`;
   renderRain();
   $("agency-sum").innerHTML = AGENCIES.map((n, i) => `<div class="agency-row"><span>${n}</span><span class="n" style="color:var(--safe)">승인 ${S.agencyTotals[i].ok}</span><span class="n" style="color:var(--deny)">거부 ${S.agencyTotals[i].no}</span></div>`).join("");
   const secTypes = ["증거 거부", "열람 차단", "도착 실패", "잠금"];
