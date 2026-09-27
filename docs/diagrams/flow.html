@@ -1,48 +1,83 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css">
 <style>
 .canvas { width: 1480px; }
-.steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; position: relative; }
-.step { position: relative; padding: 0 6px; }
-.chev { height: 64px; color: #fff; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 700; font-size: 16px; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%, 18px 50%); padding-left: 14px; }
-.step:first-child .chev { clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%); padding-left: 0; }
-.chev small { font-weight: 400; font-size: 12px; opacity: .92; }
-.s1 { background: #6b7b84; } .s2 { background: #2f5d7c; } .s3 { background: #a86b12; } .s4 { background: #c2410c; } .s5 { background: #0d6b63; } .s6 { background: #3b4b55; }
-.box { margin-top: 12px; border: 1.5px solid #d3dcda; border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.5; min-height: 132px; }
-.box b { display: block; font-size: 12px; color: #4a5a63; font-weight: 500; margin-bottom: 2px; }
-.sec { margin-top: 8px; border-radius: 10px; padding: 8px 12px; font-size: 13px; background: #e6f1ef; border: 1.5px solid #9cc9c2; min-height: 96px; }
-.sec b { display: block; font-size: 12px; color: #0d6b63; margin-bottom: 2px; }
-.bypass { margin-top: 18px; display: grid; grid-template-columns: repeat(6, 1fr); align-items: center; }
-.dev { grid-column: 1 / span 2; border: 2px dashed #c2410c; border-radius: 10px; padding: 8px 12px; font-size: 13px; color: #14212b; background: #fdf1ea; }
-.dev b { color: #c2410c; }
-.arrow { grid-column: 3 / span 2; height: 2px; background: #c2410c; position: relative; margin: 0 120px 0 8px; }
-.arrow::after { content: ""; position: absolute; right: -2px; top: -6px; border-left: 12px solid #c2410c; border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
-.arrow span { position: absolute; left: 50%; transform: translateX(-50%); top: -24px; font-size: 12.5px; color: #c2410c; font-weight: 700; white-space: nowrap; background: #fff; padding: 0 6px; }
-.to4 { grid-column: 4; }
+.grid { display: grid; grid-template-columns: 150px repeat(5, 1fr); gap: 8px; }
+.head { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 62px; color: #fff; font-weight: 700; font-size: 17px; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%, 16px 50%); }
+.head small { font-weight: 400; font-size: 12.5px; opacity: .95; }
+.h1 { background: #6b7b84; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%); }
+.h2 { background: #a86b12; } .h3 { background: #c2410c; } .h4 { background: #9a2f0a; } .h5 { background: #0d6b63; }
+.lane { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 14px; border-radius: 10px; padding: 8px; line-height: 1.35; }
+.lane small { display: block; font-weight: 400; font-size: 11.5px; color: #4a5a63; margin-top: 2px; }
+.l-env { background: #f1f4f4; }
+.l-me { background: #e8f0f6; color: #2f5d7c; }
+.l-sys { background: #e6f1ef; color: #0d6b63; }
+.l-nb { background: #fbf1de; color: #8a560c; }
+.cell { border: 1.5px solid #d3dcda; border-radius: 10px; padding: 10px 12px; font-size: 13.5px; line-height: 1.55; background: #fff; }
+.cell q { quotes: "“" "”"; font-weight: 500; }
+.env { border-radius: 10px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 700; border: 2px solid; }
+.env span small { display: block; font-weight: 400; font-size: 12px; color: #4a5a63; }
+.env svg { flex: none; }
+.e1, .e2 { border-color: #6b7b84; color: #3b4b55; background: #f6f8f8; }
+.e3 { border-color: #c2410c; color: #c2410c; background: #fdf1ea; }
+.e4 { border-color: #9a2f0a; color: #9a2f0a; background: #fbe6dc; }
+.e5 { border-color: #0d6b63; color: #0d6b63; background: #e6f1ef; }
+.notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+.note { border: 2px dashed #b9c7c4; border-radius: 10px; padding: 10px 14px; font-size: 13.5px; line-height: 1.5; }
+.note b { display: block; margin-bottom: 2px; }
+.note.o { border-color: #c2410c; } .note.o b { color: #c2410c; }
+.note.t { border-color: #0d6b63; } .note.t b { color: #0d6b63; }
+.note.g { border-color: #6b7b84; } .note.g b { color: #3b4b55; }
 </style></head><body><div class="canvas">
-<h1>[그림 2] 비상봉투 전체 흐름</h1>
-<p class="cap">등록부터 사후 통지까지 6단계. 단계마다 존재 이유가 분명한 보안 장치를 하나씩 둔다.</p>
-<div class="steps">
- <div class="step"><div class="chev s1">① 등록·동의<small>평시</small></div>
-  <div class="box"><b>하는 일</b>주민센터 대면 등록, 공개 항목·관계형/봉인형 선택, 조력자 풀 등록, 가정 기기 설치</div>
-  <div class="sec"><b>보안 장치</b>평문엔 랜덤 ID·500m 격자만. 시민 조력자는 가구 정보 없이 등록</div></div>
- <div class="step"><div class="chev s2">② 봉인·열쇠 분산<small>평시</small></div>
-  <div class="box"><b>하는 일</b>봉투 1·2를 AES-256-GCM으로 봉인, 데이터 키를 Shamir 2-of-3으로 기관 3곳에 분산</div>
-  <div class="sec"><b>보안 장치</b>구청장도 혼자 못 연다. DB 탈취 시 드러나는 것은 "칸 어딘가에 가구가 있다"뿐</div></div>
- <div class="step"><div class="chev s3">③ 준비<small>예보</small></div>
-  <div class="box"><b>하는 일</b>서명된 예보 검증, 정책 엔진만 봉투 1을 열어 위험도 계산·가배정, 조력자에 "○○동 일대 대기"</div>
-  <div class="sec"><b>보안 장치</b>봉투 2(상세 정보)는 열리지 않음. 대기 호출에 주소 없음</div></div>
- <div class="step"><div class="chev s4">④ 공개<small>실제 상황</small></div>
-  <div class="box"><b>하는 일</b>경보 또는 예보+고위험 → 지정 → 확장 A → 확장 B 순 1인 배정, 도착 확인 후 봉투 2의 허용 항목 공개</div>
-  <div class="sec"><b>보안 장치</b>보관 기관 3곳 독립 검증, 신뢰 등급별 최소 공개, 기기 바인딩 단기 토큰</div></div>
- <div class="step"><div class="chev s5">⑤ 재봉인<small>종료</small></div>
-  <div class="box"><b>하는 일</b>경보 해제·유효 시간 만료 시 자동으로 다시 잠금, 토큰 폐기, 조력자 화면 정보 삭제</div>
-  <div class="sec"><b>보안 장치</b>공개는 위험이 확인된 시간 동안만 유지</div></div>
- <div class="step"><div class="chev s6">⑥ 사후 통지<small>종료 후</small></div>
-  <div class="box"><b>하는 일</b>누가·언제·어떤 근거로 열었는지 당사자에게 통지, 열람 이상 탐지</div>
-  <div class="sec"><b>보안 장치</b>해시 체인 로그 + 보관 기관 앵커로 로그 조작 탐지</div></div>
+<h1>[그림 2] 비상봉투 전체 흐름 — 폭우가 온 날 저녁</h1>
+<p class="cap">반지하에 혼자 사는 휠체어 사용자(가상 인물)의 집에 비가 들이치기까지, 누가 무엇을 하고 봉투가 얼마나 열리는지를 시간 순서로 보여준다.</p>
+<div class="grid">
+  <div></div>
+  <div class="head h1">평소<small>비 없음</small></div>
+  <div class="head h2">비 예보<small>21:40 호우 예보</small></div>
+  <div class="head h3">폭우<small>22:00 침수 위험</small></div>
+  <div class="head h4">이웃 도착<small>22:10</small></div>
+  <div class="head h5">비 그침<small>23:00 경보 해제</small></div>
+
+  <div class="lane l-env">봉투 상태<small>재난약자 정보</small></div>
+  <div class="env e1">LOCK<span>잠김<small>누구도 볼 수 없음</small></span></div>
+  <div class="env e2">LOCK<span>잠김<small>주소는 여전히 안 열림</small></span></div>
+  <div class="env e3">OPEN<span>조금 열림<small>방향·필요 유형만</small></span></div>
+  <div class="env e4">OPEN<span>필요한 만큼 열림<small>배정된 한 사람에게만</small></span></div>
+  <div class="env e5">LOCK<span>다시 잠김<small>자동으로</small></span></div>
+
+  <div class="lane l-me">재난약자<small>반지하 · 휠체어 사용</small></div>
+  <div class="cell">등록할 때 이웃에게 알려도 되는 항목을 <b>직접 고른다</b> (호수, 휠체어, 탈출 창문 등)</div>
+  <div class="cell">평소처럼 지낸다. 아무에게도 정보가 가지 않는다</div>
+  <div class="cell">집에 물이 차면 <b>수위 센서·긴급버튼</b>이 바로 도움을 요청한다</div>
+  <div class="cell">문 앞 기기에 뜬 <b>6자리 코드</b>로 진짜 배정된 이웃인지 확인된다</div>
+  <div class="cell">알림을 받는다: <q>22:10, 이웃 조력자 1명이 내 정보 열람, 근거: 침수경보</q></div>
+
+  <div class="lane l-sys">비상봉투<small>시스템</small></div>
+  <div class="cell">정보를 봉투에 잠그고 <b>열쇠를 세 기관에 나눠</b> 맡긴다. 구청 담당자도 혼자 못 연다</div>
+  <div class="cell">공식 예보를 확인한다. 주소는 열지 않고 동네 조력자들에게 <b>대기만</b> 요청한다</div>
+  <div class="cell">경보와 강우를 확인한다. <b>세 기관 중 두 곳이 각자 확인</b>해야 열쇠가 맞춰진다. 가장 가까운 이웃 1명을 고른다</div>
+  <div class="cell">도착이 확인되면 그 이웃에게만, <b>당사자가 허락한 항목만</b> 보여준다</div>
+  <div class="cell">봉투를 <b>다시 잠그고</b>, 누가 언제 왜 봤는지 기록해 당사자에게 알린다</div>
+
+  <div class="lane l-nb">이웃 조력자<small>동행파트너 · 시민</small></div>
+  <div class="cell">조력자로 등록만 해 둔다. <b>누구를 돕게 될지 모른다</b></div>
+  <div class="cell">알림: <q>○○동 근처에서 대기해 주세요</q> (주소·이름 없음)</div>
+  <div class="cell">출동 요청: <q>서쪽 500m, 휠체어</q>. <b>먼저 수락한 한 명</b>만 배정된다</div>
+  <div class="cell"><q>B01호, 창문 쪽 방</q>을 확인하고 대피를 돕는다</div>
+  <div class="cell">화면의 정보가 <b>지워진다</b></div>
 </div>
-<div class="bypass">
- <div class="dev"><b>가정 센서·긴급버튼</b> — 기기 키로 서명된 신호는 예보 단계와 관계없이 그 가구만 즉시 공개 단계로</div>
- <div class="arrow"><span>단계 무관 즉시 → ④ 공개</span></div>
+<div class="notes">
+  <div class="note o"><b>담당 이웃이 못 오면?</b>지정된 이웃이 3분 안에 응답하지 않으면 가장 가까운 다른 이웃에게 자동으로 넘어간다.</div>
+  <div class="note t"><b>예보가 늦으면?</b>집 수위 센서·긴급버튼이 울리면 예보 단계를 건너뛰고 곧바로 폭우 단계로 간다.</div>
+  <div class="note g"><b>누가 몰래 열어 보면?</b>평소 담당자나 관리자가 열람을 시도하면 세 기관이 모두 거부하고, 시도 자체가 당사자에게 통지된다.</div>
 </div>
+</div>
+<script>
+const lock = (open, color) => `<svg width="26" height="30" viewBox="0 0 26 30" aria-hidden="true"><path d="M7 13 V9 a6 6 0 0 1 12 0 ${open ? "V6" : "V13"}" fill="none" stroke="${color}" stroke-width="2.6" stroke-linecap="round" ${open ? 'transform="translate(7 -3) rotate(18 13 9)"' : ""}/><rect x="3" y="13" width="20" height="15" rx="3" fill="${color}"/><circle cx="13" cy="20" r="2.2" fill="#fff"/></svg>`;
+document.querySelectorAll(".env").forEach(e => {
+  const open = e.firstChild.textContent === "OPEN";
+  e.firstChild.remove();
+  e.insertAdjacentHTML("afterbegin", lock(open, getComputedStyle(e).color));
+});
+</script>
 </div></body></html>

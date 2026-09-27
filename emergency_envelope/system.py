@@ -21,7 +21,7 @@ CUSTODIAN_NAMES = ("재난안전부서", "자치구", "감사기관")
 
 @dataclass(frozen=True)
 class Registration:
-    """주민센터 대면 등록 입력. designated_helper_id가 None이면 봉인형. 공개 항목은 본인이 고른다."""
+    """등록 입력. designated_helper_id가 None이면 봉인형. 공개 항목은 본인이 고른다."""
 
     cell: GridCell
     building_id: str
