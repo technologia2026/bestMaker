@@ -7,7 +7,7 @@ from datetime import timedelta
 
 from . import anomaly
 from .audit import AuditType, HashChainLog, notifications_for
-from .common import Capability, Denied, GridCell, Stage, decode_json, encode_json, random_hex
+from .common import Capability, Denied, GridCell, Position, Stage, decode_json, encode_json, random_hex
 from .crypto import Layer, SealedEnvelope, new_data_key, seal, split_key, wipe
 from .custodian import KeyCombiner, KeyCustodian, OpenRequest, Opened, Requester
 from .disclosure import DisclosureService, Field, HelperView
@@ -24,6 +24,7 @@ class Registration:
     """등록 입력. designated_helper_id가 None이면 봉인형. 공개 항목은 본인이 고른다."""
 
     cell: GridCell
+    position: Position
     building_id: str
     need: Capability
     details: dict[Field, str]
@@ -58,7 +59,7 @@ class EmergencyEnvelopeSystem:
         policy_trust = TrustStore().trust_alert_key(self.alert_issuer.key_id, self.alert_issuer.public_key)
         self.policy = PolicyEngine(EvidenceVerifier(policy_trust, self.devices, clock), ReplayGuard(), esc, self.log, clock)
         self.matching = MatchingEngine(self.helpers, self.log, clock, timedelta(minutes=3), 2)
-        self.disclosure = DisclosureService(self.helpers, self.devices, self.log, clock, timedelta(minutes=30))
+        self.disclosure = DisclosureService(self.helpers, self.log, clock, timedelta(minutes=30))
         self.analyzer = RiskAnalyzer()
 
         self._households: dict[str, HouseholdRecord] = {}
@@ -77,6 +78,7 @@ class EmergencyEnvelopeSystem:
         env1 = {"building_id": r.building_id, "need": r.need.name}
         env2 = {f.name: v for f, v in r.details.items()}
         env2["consented"] = sorted(f.name for f in r.consented)
+        env2["position"] = [r.position.lat, r.position.lon]
         self._seal(hid, r.cell, Layer.ENVELOPE_1, encode_json(env1))
         self._seal(hid, r.cell, Layer.ENVELOPE_2, encode_json(env2))
         self.log.append(AuditType.REGISTERED, hid, "registrar", "봉인형" if r.designated_helper_id is None else "관계형")
@@ -222,10 +224,11 @@ class EmergencyEnvelopeSystem:
             raise
         env2 = decode_json(o.plaintext)
         consented = {Field[n] for n in env2.pop("consented", [])}
+        position = Position(*env2.pop("position"))
         record = {Field[k]: v for k, v in env2.items()}
         h = self._households[household_id]
         need = Capability[self._env1_cache.get(household_id, {}).get("need", "GENERAL")]
-        return self.disclosure.issue(household_id, helper_id, a.tier, helper_device_id, h.cell, need, record,
+        return self.disclosure.issue(household_id, helper_id, a.tier, helper_device_id, h.cell, position, need, record,
                                      consented, o.valid_until, o.basis)
 
     def decline(self, helper_id: str, household_id: str) -> None:
@@ -243,8 +246,8 @@ class EmergencyEnvelopeSystem:
     def view(self, token: str, helper_device_id: str) -> HelperView:
         return self.disclosure.view(token, helper_device_id)
 
-    def confirm_arrival(self, token: str, helper_device_id: str, helper_cell: GridCell, code: str) -> None:
-        self.disclosure.confirm_arrival(token, helper_device_id, helper_cell, code)
+    def confirm_arrival(self, token: str, helper_device_id: str, helper_position: Position) -> None:
+        self.disclosure.confirm_arrival(token, helper_device_id, helper_position)
 
     # ── 재봉인·감사·통지 ──────────────────────────────────
     def _reseal(self, household_id: str) -> None:

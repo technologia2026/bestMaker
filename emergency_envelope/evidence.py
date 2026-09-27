@@ -1,9 +1,6 @@
 """개봉 근거가 되는 서명된 외부 증거와 그 검증."""
 from __future__ import annotations
 
-import hashlib
-import hmac
-import secrets
 import threading
 from dataclasses import dataclass, replace
 from datetime import datetime, timedelta
@@ -142,11 +139,10 @@ class DeviceRecord:
     device_id: str
     household_id: str
     public_key: Ed25519PublicKey
-    arrival_secret: bytes
 
 
 class DeviceRegistry:
-    """설치 시 등록한 가정 기기의 공개키와 도착 코드 비밀."""
+    """설치 시 등록한 가정 기기(선택)의 공개키."""
 
     def __init__(self) -> None:
         self._devices: dict[str, DeviceRecord] = {}
@@ -261,53 +257,22 @@ class EscalationSigner:
         return replace(x, signature=self._key.sign(x.signed_bytes()))
 
 
-# ── 도착 코드 ────────────────────────────────────────────────
-ARRIVAL_WINDOW_SECONDS = 60
-
-
-def _arrival_code_for_window(secret: bytes, household_id: str, window: int) -> str:
-    h = hmac.new(secret, fields("arrival-v1", household_id, window), hashlib.sha256).digest()
-    off = h[-1] & 0x0F
-    code = int.from_bytes(h[off:off + 4], "big") & 0x7FFFFFFF
-    return f"{code % 1_000_000:06d}"
-
-
-def arrival_code(secret: bytes, household_id: str, at: datetime) -> str:
-    """가정 기기가 재난 중에만 표시하는 일회용 도착 코드 (TOTP 방식, 60초 창)."""
-    return _arrival_code_for_window(secret, household_id, int(at.timestamp()) // ARRIVAL_WINDOW_SECONDS)
-
-
-def verify_arrival_code(secret: bytes, household_id: str, now: datetime, submitted: str | None) -> bool:
-    """현재 창과 직전 창을 허용한다. 상수 시간 비교."""
-    if not submitted or len(submitted) != 6 or not submitted.isdigit():
-        return False
-    w = int(now.timestamp()) // ARRIVAL_WINDOW_SECONDS
-    ok = False
-    for i in (w - 1, w):
-        ok |= hmac.compare_digest(_arrival_code_for_window(secret, household_id, i), submitted)
-    return ok
-
-
 class HomeDevice:
-    """가정 침수경보기·긴급버튼 시뮬레이터 (시연에서는 Raspberry Pi가 이 역할)."""
+    """가정 침수경보기·긴급버튼 시뮬레이터 (선택 설치, 시연에서는 Raspberry Pi가 이 역할)."""
 
     def __init__(self, household_id: str, clock):
         self.device_id = f"DEV-{random_hex(4)}"
         self.household_id = household_id
         self.clock = clock
         self._key = Ed25519PrivateKey.generate()
-        self._arrival_secret = secrets.token_bytes(32)
         self._counter = 0
         self._lock = threading.Lock()
 
     def registration(self) -> DeviceRecord:
-        return DeviceRecord(self.device_id, self.household_id, self._key.public_key(), self._arrival_secret)
+        return DeviceRecord(self.device_id, self.household_id, self._key.public_key())
 
     def signal(self, type_: SignalType) -> DeviceSignal:
         with self._lock:
             self._counter += 1
             d = DeviceSignal(self.device_id, self.household_id, type_, self._counter, self.clock.now())
             return replace(d, signature=self._key.sign(d.signed_bytes()))
-
-    def arrival_code(self) -> str:
-        return arrival_code(self._arrival_secret, self.household_id, self.clock.now())

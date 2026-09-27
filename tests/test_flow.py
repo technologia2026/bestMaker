@@ -3,17 +3,13 @@ from datetime import timedelta
 
 import pytest
 
-from conftest import CELL, FAR, NEXT
+from conftest import CELL, NEXT, POS_REL, POS_SEALED
 from emergency_envelope.common import Denied, Stage, TrustTier
 from emergency_envelope.crypto import Layer
 from emergency_envelope.custodian import OpenRequest, Requester
 from emergency_envelope.disclosure import MAX_ARRIVAL_ATTEMPTS, Field
 from emergency_envelope.evidence import SignalType
 from emergency_envelope.policy import RainObservation
-
-
-def wrong_code(dev):
-    return "111111" if dev.arrival_code() == "000000" else "000000"
 
 
 def to_citizen(f):
@@ -81,38 +77,41 @@ def test_designated_sees_consented_fields_immediately(f):
 
 
 def test_extended_b_sees_only_direction_before_arrival_and_minimum_after(f):
-    dev = f.sys.install_device(f.sealed)
     to_citizen(f)
     assert f.sys.offers_for("C-2")[0].tier is TrustTier.EXTENDED_B
     token = f.sys.accept("C-2", f.sealed, "phone-c2")
     assert set(f.sys.view(token, "phone-c2").fields) == {Field.DIRECTION, Field.NEED_TYPE}
     with pytest.raises(Denied):
-        f.sys.confirm_arrival(token, "phone-c2", NEXT, wrong_code(dev))
-    with pytest.raises(Denied):
-        f.sys.confirm_arrival(token, "phone-c2", FAR, dev.arrival_code())
-    f.sys.confirm_arrival(token, "phone-c2", NEXT, dev.arrival_code())
+        f.sys.confirm_arrival(token, "phone-c2", POS_SEALED.offset(0, 400))
+    assert set(f.sys.view(token, "phone-c2").fields) == {Field.DIRECTION, Field.NEED_TYPE}
+    f.sys.confirm_arrival(token, "phone-c2", POS_SEALED.offset(15, -10))
     assert set(f.sys.view(token, "phone-c2").fields) == {Field.DIRECTION, Field.NEED_TYPE, Field.UNIT, Field.ESCAPE_ROUTE}
 
 
-def test_extended_b_without_home_device_cannot_confirm_arrival(f):
-    to_citizen(f)
-    token = f.sys.accept("C-2", f.sealed, "phone-c2")
-    with pytest.raises(Denied):
-        f.sys.confirm_arrival(token, "phone-c2", NEXT, "123456")
-
-
-def test_arrival_attempts_are_limited(f):
-    dev = f.sys.install_device(f.relational)
+def test_arrival_is_recognized_only_within_50m(f):
     f.sys.ingest(f.warning(CELL))
     f.sys.evaluate()
     f.clock.advance(timedelta(minutes=3))
     f.sys.tick()
     token = f.sys.accept("P-2", f.relational, "phone-2")
-    for _ in range(MAX_ARRIVAL_ATTEMPTS):
-        with pytest.raises(Denied):
-            f.sys.confirm_arrival(token, "phone-2", CELL, wrong_code(dev))
     with pytest.raises(Denied):
-        f.sys.confirm_arrival(token, "phone-2", CELL, dev.arrival_code())
+        f.sys.confirm_arrival(token, "phone-2", POS_REL.offset(60, 0))
+    f.sys.confirm_arrival(token, "phone-2", POS_REL.offset(30, 20))
+    assert Field.UNIT in f.sys.view(token, "phone-2").fields
+
+
+def test_arrival_attempts_are_limited(f):
+    # 위치를 바꿔 가며 집을 더듬어 찾는 시도는 5회까지만
+    f.sys.ingest(f.warning(CELL))
+    f.sys.evaluate()
+    f.clock.advance(timedelta(minutes=3))
+    f.sys.tick()
+    token = f.sys.accept("P-2", f.relational, "phone-2")
+    for i in range(MAX_ARRIVAL_ATTEMPTS):
+        with pytest.raises(Denied):
+            f.sys.confirm_arrival(token, "phone-2", POS_REL.offset(100 + i * 50, 0))
+    with pytest.raises(Denied):
+        f.sys.confirm_arrival(token, "phone-2", POS_REL)
 
 
 def test_token_is_bound_to_device_and_expires(f):

@@ -24,6 +24,7 @@ class AuditType(Enum):
     ACCEPTED = "수락"
     ABANDONED = "포기"
     ARRIVED = "도착"
+    ARRIVAL_FAILED = "도착 실패"
     VIEWED = "열람"
     RESEALED = "재봉인"
     ACCOUNT_SUSPENDED = "계정 정지"

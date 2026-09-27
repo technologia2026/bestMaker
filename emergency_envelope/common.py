@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 import secrets
 import struct
 from dataclasses import dataclass
@@ -83,6 +84,25 @@ class GridCell:
         ns = "북" if dr > 0 else "남" if dr < 0 else ""
         ew = "동" if dc > 0 else "서" if dc < 0 else ""
         return f"{ns}{ew}쪽 약 {self.distance(origin) * self.SIZE_M}m"
+
+
+@dataclass(frozen=True)
+class Position:
+    """위도·경도. 집의 정확한 위치는 봉투 2 안에만 있고, 도착 인식에만 쓴다."""
+
+    lat: float
+    lon: float
+
+    def distance_m(self, other: "Position") -> float:
+        r = 6_371_000.0
+        p1, p2 = math.radians(self.lat), math.radians(other.lat)
+        dp, dl = p2 - p1, math.radians(other.lon - self.lon)
+        a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+        return 2 * r * math.asin(math.sqrt(a))
+
+    def offset(self, north_m: float, east_m: float) -> "Position":
+        return Position(self.lat + north_m / 111_320.0,
+                        self.lon + east_m / (111_320.0 * math.cos(math.radians(self.lat))))
 
 
 class Capability(Enum):

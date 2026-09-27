@@ -185,14 +185,6 @@ button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--seal);
 .v-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--s-accent) 14%, transparent); }
 .spin { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid var(--s-line); border-top-color: var(--s-accent); }
 @media (prefers-reduced-motion: no-preference) { .spin { animation: spin .8s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } } }
-.codebox { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.codebox span { height: 46px; border-radius: 12px; border: 1.5px solid var(--s-line); background: var(--s-bg); display: grid; place-items: center; font-family: var(--mono); font-size: 21px; }
-.codebox span.cur { border-color: var(--s-accent); }
-.codebox.err span { border-color: #ff5a4a; }
-@media (prefers-reduced-motion: no-preference) { .codebox.err { animation: shake .35s; } @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } } }
-.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.keypad button { border-radius: 14px; padding: 10px 0; font-size: 19px; font-weight: 500; background: var(--s-bg); color: var(--s-ink); border: 1px solid var(--s-line); font-family: var(--mono); }
-.keypad button.fn { font-size: 13px; font-family: var(--sans); color: var(--s-sub); }
 .err-msg { color: #ff7a6a; font-size: 12.5px; text-align: center; min-height: 18px; margin: 0; }
 .info { position: relative; overflow: hidden; }
 .wm { position: absolute; inset: -40px; pointer-events: none; display: flex; flex-wrap: wrap; gap: 26px 30px; transform: rotate(-24deg); opacity: .08; font-family: var(--mono); font-size: 12px; align-content: flex-start; }
@@ -225,10 +217,10 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
         </div>
       </div>
       <div class="card">
-        <div class="eyebrow" id="device-title">현관 기기</div>
-        <div class="device"><div class="lcd" id="lcd"></div><p class="device-note">출동 중인 집의 현관 기기입니다. 재난 중에만 도착 코드가 뜨고 1분마다 바뀝니다.</p></div>
+        <div class="eyebrow">조력자 위치 · GPS</div>
+        <p class="device-note" id="gps-note">출동하면 목적지까지 남은 거리가 여기에 표시됩니다. 집 반경 50m 안에 들어오면 코드 입력 없이 도착이 자동으로 인식됩니다.</p>
         <div class="btn-row">
-          <button class="btn mini" id="btn-autocode" type="button">코드 대신 입력 (시연용)</button>
+          <button class="btn mini" id="btn-walk" type="button">목적지로 걸어가기 (시연)</button>
           <button class="btn mini" id="btn-water" type="button">다른 집 수위 센서 울리기</button>
         </div>
       </div>
@@ -261,7 +253,7 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
 
   <footer>
     모든 인물·주소·연락처는 가상입니다. 도움 요청 가구의 정보는 브라우저에서 AES-256-GCM으로 실제 암호화돼 있고, 열쇠는 세 기관에 나뉘어 두 곳 이상 승인해야 복원됩니다.
-    경보는 <span id="sigalg">Ed25519</span>로 서명·검증하고, 도착 코드는 HMAC-SHA256으로 1분마다 만들어집니다.
+    경보는 <span id="sigalg">Ed25519</span>로 서명·검증하고, 도착은 조력자 위치가 집 반경 50m 안에 들어올 때 인식합니다.
     지도는 실제 행정동 경계(2023.7, vuski/admdongkor)로 그린 서울 관악·동작·구로 일대이며, 가구 위치는 가상입니다.
   </footer>
 </div>
@@ -317,7 +309,6 @@ const keyPair = () => crypto.subtle.generateKey(SIG.gen, false, ["sign", "verify
 const signB = async (k, m) => new Uint8Array(await crypto.subtle.sign(SIG.sign, k, m));
 const verifyB = async (k, m, s) => { try { return await crypto.subtle.verify(SIG.sign, k, s, m); } catch { return false; } };
 const evBytes = e => fields(e.kind, e.level || e.type, e.cell || e.device, String(e.at), String(e.exp), e.nonce || e.counter);
-function arrivalCode(secret, hid, t) { const h = hmac(secret, fields("arrival-v1", hid, String(Math.floor(t / 60000)))), o = h[31] & 15; return String((((h[o] & 0x7f) << 24) | (h[o + 1] << 16) | (h[o + 2] << 8) | h[o + 3]) % 1000000).padStart(6, "0"); }
 
 /* ───────── 데이터 (가상) ───────── */
 const MIN = 60000;
@@ -339,14 +330,14 @@ const SCENES = [
   { t: "21:30", short: "평소", title: "평소: 내 매칭 이웃을 미리", body: "박○○님은 동행파트너로 김○○님과 1:1로 매칭돼 있습니다. 평소엔 김○○님 댁 위치와 대피 준비만 볼 수 있고, 다른 가구 정보는 전혀 보이지 않습니다.", look: "앱 홈의 지도와 준비 체크리스트를 눌러 보세요. 활동·내 정보 탭도 열립니다." },
   { t: "21:40", short: "비 예보", title: "비 예보: 대기", body: "서명된 호우 예보가 도착했습니다. 앱이 노을빛으로 바뀌고, 김○○님 댁 근처에서 대기해 달라는 요청이 옵니다. 주변 다른 가구는 숫자만 보입니다.", look: "주소 없는 대기 요청을 확인하세요." },
   { t: "22:00", short: "폭우", title: "폭우: 지금 도움이 필요한 이웃", body: "침수 경보가 발령됐습니다. 앱 홈이 실제 동네 지도로 바뀌고, 내 위치를 중심으로 250m·500m·1km 원 안에 도움을 요청한 가구가 뜹니다. 정확한 집은 숨기고 반경 180m 큰 원으로만 보여 줍니다. 내 매칭인 김○○님이 맨 위입니다.", look: "지도를 끌어 보거나 확대하고, 원이나 아래 목록을 눌러 고른 뒤 버튼을 밀어 출동하세요." },
-  { t: "22:10", short: "이웃 도착", title: "문 앞 코드로 도착 확인", body: "현관 기기에 뜬 6자리 코드를 넣으면 도착이 확인됩니다. 매칭이 아닌 봉인형 가구는 이때 처음으로 당사자가 허락한 항목이 열립니다.", look: "앱 키패드에 왼쪽 현관 기기의 코드를 입력하세요." },
+  { t: "22:10", short: "이웃 도착", title: "가까이 가면 자동으로 도착 인식", body: "조력자가 집 반경 50m 안에 들어오면 코드 입력 없이 도착이 인식됩니다. 매칭이 아닌 봉인형 가구는 이때 처음으로 정확한 집과 당사자가 허락한 항목이 열립니다.", look: "지도에서 파란 점이 걸어가는 모습을 보세요. 왼쪽의 '목적지로 걸어가기'로 직접 해 볼 수도 있어요." },
   { t: "23:00", short: "비 그침", title: "다시 봉인", body: "경보가 해제되자 출동 중 열렸던 정보가 앱에서 지워지고 봉투가 다시 잠깁니다. 당사자에게는 누가 언제 왜 봤는지 문자가 갑니다.", look: "앱의 활동 탭에 이번 출동이 기록됩니다." },
 ];
 let E, S;
 
 async function boot() {
   E = { issuer: await keyPair(), nonces: new Set(), houses: {} };
-  for (const h of HOUSES) E.houses[h.id] = { device: await keyPair(), secret: rand(32), counter: 0 };
+  for (const h of HOUSES) E.houses[h.id] = { device: await keyPair(), counter: 0 };
   S = {
     scene: 0, clock: hm2ms("21:30"), tab: "home", reqs: [], sel: null, mission: null, busy: false,
     agencies: AGENCIES.map(() => ({ st: "", txt: "대기" })), chain: [], sms: [], evidence: null, alertBasis: "",
@@ -356,7 +347,7 @@ async function boot() {
       { at: "09.12", title: "모의훈련 · 김○○님 댁 대피 연습", sub: "도착 11분 · 창문 대피 경로 확인", kind: "drill" },
       { at: "08.21", title: "대기 요청 · 호우 예보", sub: "출동 없이 해제", kind: "wait" },
       { at: "07.30", title: "기본 교육 이수", sub: "재난약자 동행·휠체어 이동 보조 (2시간)", kind: "edu" },
-    ], unread: 0, view: null,
+    ], unread: 0, view: null, me: { x: 0, y: 0 },
   };
   for (const h of HOUSES) {
     if (!h.rec) continue;
@@ -441,7 +432,7 @@ async function runScene(n) {
   }
   if (n === 3) {
     if (!S.mission) { S.sel = "H1"; await accept("H1"); }
-    if (S.mission && S.mission.stage === "enroute") { S.tab = "home"; await typeCode(currentCode()); }
+    if (S.mission && S.mission.stage === "enroute") await walk();
   }
   if (n === 4) await endAll();
 }
@@ -454,7 +445,7 @@ async function accept(id) {
   const r = S.reqs.find(x => x.id === id);
   if (!r || r.status !== "open" || S.mission) return;
   const h = house(id);
-  S.mission = { id, stage: "verify", code: "", attempts: 5, err: false, rec: null, openedAt: 0, steps: { door: false, move: false, shelter: false } };
+  S.mission = { id, stage: "verify", attempts: 5, err: "", rec: null, openedAt: 0, steps: { door: false, move: false, shelter: false } };
   r.status = "mine";
   log("수락", `박○○ → ${h.match ? "김○○님 (지정 조력자)" : h.short + " (확장 조력자 A)"} · 다른 조력자 화면에서 삭제`);
   S.tab = "home"; render();
@@ -464,21 +455,42 @@ async function accept(id) {
   log("열쇠 복원", "3곳 승인 · 메모리에서만 복원");
   render();
 }
-function currentCode() { return S.mission ? arrivalCode(E.houses[S.mission.id].secret, S.mission.id, Date.now()) : ""; }
-async function typeCode(code) { for (const d of code) { S.mission.code += d; renderApp(); await wait(100); } await checkCode(); }
-async function checkCode() {
-  const m = S.mission; if (!m || m.code.length < 6) return;
-  const sec = E.houses[m.id].secret, now = Date.now();
-  if (![0, -MIN].some(dt => arrivalCode(sec, m.id, now + dt) === m.code)) {
-    m.attempts--; m.err = true; m.code = "";
-    log("도착 실패", `코드 불일치 · ${m.attempts}회 남음`);
-    if (m.attempts <= 0) { m.stage = "locked"; log("잠금", "도착 확인 5회 실패 · 다른 이웃에게 넘김"); }
-    render(); setTimeout(() => { if (S.mission) { S.mission.err = false; renderApp(); } }, 600); return;
+const ARRIVE_M = 50;
+function remaining() { if (!S.mission) return null; const t = hpos(house(S.mission.id)); return Math.round(Math.hypot(t.x - S.me.x, t.y - S.me.y)); }
+async function walk() {
+  const m = S.mission; if (!m || m.stage !== "enroute") return;
+  S.tab = "home"; renderApp();
+  const t = hpos(house(m.id));
+  while (S.mission === m && m.stage === "enroute") {
+    const dx = t.x - S.me.x, dy = t.y - S.me.y, d = Math.hypot(dx, dy);
+    if (d <= ARRIVE_M * .6) break;
+    const step = Math.min(28, d - ARRIVE_M * .5);
+    S.me = { x: S.me.x + dx / d * step, y: S.me.y + dy / d * step };
+    drawMap(); updateRemain();
+    if (d - step <= ARRIVE_M) { await arriveCheck(true); break; }
+    await wait(90);
   }
-  m.stage = "onsite"; m.openedAt = Date.now();
+}
+function updateRemain() {
+  const r = remaining(), el = document.getElementById("remain"), note = document.getElementById("gps-note");
+  if (el && r != null) el.textContent = r <= ARRIVE_M ? "도착" : `${r}m`;
+  if (note) note.textContent = r == null || !S.mission || S.mission.stage === "closed" ? "출동하면 목적지까지 남은 거리가 여기에 표시됩니다. 집 반경 50m 안에 들어오면 코드 입력 없이 도착이 자동으로 인식됩니다." : S.mission.stage === "onsite" ? "도착 인식 완료 · 반경 50m 안" : `목적지까지 약 ${r}m · 50m 안에 들어오면 자동으로 도착 인식`;
+}
+/** 도착 인식: 집 반경 50m 안이면 통과. 위치를 바꿔 가며 집을 더듬는 시도를 막기 위해 실패는 5회까지. */
+async function arriveCheck(auto = false) {
+  const m = S.mission; if (!m || m.stage !== "enroute") return;
+  const r = remaining();
+  if (r > ARRIVE_M) {
+    m.attempts--; m.err = `아직 약 ${r}m 남았어요 · ${m.attempts}회 남음`;
+    log("도착 실패", `위치 불일치 (${r}m) · ${m.attempts}회 남음`);
+    if (m.attempts <= 0) { m.stage = "locked"; log("잠금", "도착 확인 5회 실패 · 다른 이웃에게 넘김"); }
+    render(); return;
+  }
+  m.stage = "onsite"; m.openedAt = Date.now(); m.err = ""; S.view = null;
   const h = house(m.id), shown = m.rec.consent.map(k => LABEL[k]);
-  log("도착·열람", `${h.match ? "지정 조력자" : "확장 조력자 A"} · ${shown.join("·")}`);
+  log("도착·열람", `${auto ? "위치 자동 인식" : "도착 확인"} · ${h.match ? "지정 조력자" : "확장 조력자 A"} · ${shown.join("·")}`);
   sms(h.match ? "김○○님" : "당사자", `[비상봉투] ${hm(S.clock)} 이웃 조력자 1명이 도착해 정보를 확인했습니다 (${shown.join("·")}). 근거: ${S.reqs.find(r => r.id === m.id).basis}`);
+  toast("도착했어요", "집 반경 50m 안에 들어와 정보가 열렸어요");
   render();
 }
 async function endAll() {
@@ -486,12 +498,12 @@ async function endAll() {
   const m = S.mission;
   if (m) {
     const h = house(m.id);
-    S.history.unshift({ at: "07.15", title: `출동 · ${h.match ? "김○○님 (내 매칭)" : h.short}`, sub: `22:00 요청 · ${m.stage === "onsite" ? "도착 확인 · 대피 도움" : "출동 중 해제"} · 23:00 재봉인`, kind: "go" });
+    S.history.unshift({ at: "07.15", title: `출동 · ${h.match ? "김○○님 (내 매칭)" : h.short}`, sub: `22:00 요청 · ${m.stage === "onsite" ? "위치로 도착 인식 · 대피 도움" : "출동 중 해제"} · 23:00 재봉인`, kind: "go" });
     S.unread++;
     sms(h.match ? "김○○님" : "당사자", `[비상봉투] ${hm(S.clock)} 상황이 끝나 정보가 다시 잠겼습니다. 조력자 화면의 정보는 삭제됐습니다.`);
   }
   S.mission = m ? { ...m, stage: "closed", rec: null } : null;
-  S.reqs = []; S.sel = null; S.evidence = null;
+  S.reqs = []; S.sel = null; S.evidence = null; S.me = { x: 0, y: 0 };
   log("재봉인", "경보 해제 · 토큰 폐기 · 조력자 화면 정보 삭제");
   toast("경보 해제", "출동 중 열렸던 정보가 지워졌어요");
 }
@@ -515,21 +527,13 @@ function renderSide() {
   $("scene-title").textContent = sc.title; $("scene-body").textContent = sc.body; $("scene-look").textContent = sc.look;
   $("btn-next").disabled = S.busy || S.scene >= 4;
   $("btn-next").textContent = S.scene >= 4 ? "시연 끝" : `다음: ${SCENES[S.scene + 1].short}`;
-  $("btn-autocode").disabled = S.busy || S.mission?.stage !== "enroute";
+  $("btn-walk").disabled = S.busy || S.mission?.stage !== "enroute";
   $("btn-water").disabled = S.busy || S.reqs.some(r => r.id === "H2") || S.scene >= 4;
-  renderKeys(); renderDevice();
+  renderKeys(); updateRemain();
   $("sms").innerHTML = S.sms.length ? S.sms.map(m => `<li class="${m.warn ? "warn" : ""}"><small>${hm(m.at)} · ${esc(m.to)}에게</small>${esc(m.text)}</li>`).join("") : `<li class="empty">아직 보낸 문자가 없어요. 누군가 정보를 열거나 열려고 하면 당사자에게 바로 문자가 갑니다.</li>`;
   $("chain").innerHTML = S.chain.slice().reverse().map(c => `<li><time>${hm(c.at)}</time><span><b>${esc(c.type)}</b> ${esc(c.detail)}<br><span class="h">${c.hash.slice(0, 20)}…</span></span></li>`).join("");
 }
 function renderKeys() { $("keys").innerHTML = AGENCIES.map((n, i) => `<div class="key-row">${lockSvg(S.agencies[i].st)}<span>${n}</span><span class="chip ${S.agencies[i].st}">${esc(S.agencies[i].txt)}</span></div>`).join(""); }
-function renderDevice() {
-  const m = S.mission, lcd = $("lcd");
-  $("device-title").textContent = m && m.stage !== "closed" ? `현관 기기 · ${house(m.id).match ? "김○○님 댁" : house(m.id).short}` : "현관 기기 · 출동 중인 집";
-  if (!m || !["enroute", "onsite"].includes(m.stage)) { lcd.className = "lcd off"; lcd.innerHTML = "대기 중<br>코드 없음"; return; }
-  const left = 60 - Math.floor(Date.now() / 1000) % 60;
-  lcd.className = "lcd"; lcd.innerHTML = `<div>도착 코드</div><div class="digits">${currentCode()}</div><div class="bar"><i style="width:${left / 60 * 100}%"></i></div>`;
-}
-
 function statusBar() { return `<div class="status"><span>${hm(S.clock)}</span><span class="icons"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><i style="width:22px;height:11px;border-radius:3px;margin-left:5px"></i></span></div>`; }
 function renderApp() {
   const scr = $("app");
@@ -580,7 +584,7 @@ function dongAt(x, y) { const d = DONGS.find(d => d.r.some(r => inPoly(x, y, r))
 const DONG_C = DONGS.map(d => { const r = d.r.reduce((a, b) => b.length > a.length ? b : a); let x = 0, y = 0; r.forEach(p => { x += p[0]; y += p[1]; }); return { n: d.n, x: x / r.length, y: y / r.length }; });
 function defaultView(mode) {
   if (mode === "peace") return { x: -230, y: -80, w: 1500 };
-  if (mode === "mission" && S.mission) { const t = house(S.mission.id), p = hpos(t); return { x: p.x / 2, y: p.y / 2, w: Math.max(1100, t.dist * 2.2) }; }
+  if (mode === "mission" && S.mission) { const t = house(S.mission.id), p = hpos(t); if (S.mission.stage === "onsite") return { x: p.x, y: p.y + 40, w: 800 }; return { x: p.x / 2, y: p.y / 2, w: Math.max(1100, t.dist * 2.2) }; }
   return { x: 60, y: 120, w: 2500 };
 }
 function realMap(mode, height) {
@@ -622,11 +626,13 @@ function drawMap() {
   }
   if (mode === "mission" && S.mission) {
     const hh = house(S.mission.id), exact = hh.match || S.mission.stage === "onsite", t = exact ? hpos(hh) : fuzz(hh);
-    g += `<line x1="0" y1="0" x2="${t.x}" y2="${t.y}" stroke="var(--s-accent)" stroke-width="3.5" stroke-dasharray="1 8" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
+    if (S.mission.stage === "enroute") { const tp = hpos(hh); g += `<circle cx="${tp.x}" cy="${tp.y}" r="${ARRIVE_M}" fill="none" stroke="#12a58a" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke" opacity="${exact ? 1 : 0}"/>`; }
+    g += `<line x1="${S.me.x}" y1="${S.me.y}" x2="${t.x}" y2="${t.y}" stroke="var(--s-accent)" stroke-width="3.5" stroke-dasharray="1 8" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
     g += exact ? `<circle cx="${t.x}" cy="${t.y}" r="${9 * f}" fill="#ff6a2b" stroke="#fff" stroke-width="${2.5 * f}"/>` + T(t.x, t.y - 14 * f, hh.match ? "김○○님 댁" : "도착 확인된 집", 11, "var(--s-ink)", 700)
-      : `<circle cx="${t.x}" cy="${t.y}" r="${FUZZ_R}" fill="#ff6a2b" fill-opacity=".2" stroke="#ff6a2b" stroke-width="2" stroke-dasharray="6 4" vector-effect="non-scaling-stroke"/>` + T(t.x, t.y + 4 * f, "이 근처 · 정확한 위치는 도착 후", 10.5, "var(--s-ink)", 700);
+      : `<circle cx="${t.x}" cy="${t.y}" r="${FUZZ_R}" fill="#ff6a2b" fill-opacity=".2" stroke="#ff6a2b" stroke-width="2" stroke-dasharray="6 4" vector-effect="non-scaling-stroke"/>` + T(t.x, t.y + 4 * f, "이 근처 · 가까이 가면 정확한 집이 열려요", 10.5, "var(--s-ink)", 700);
   }
-  g += `<circle cx="0" cy="0" r="${18 * f}" fill="#2346e8" fill-opacity=".18"/><circle cx="0" cy="0" r="${7 * f}" fill="#2346e8" stroke="#fff" stroke-width="${2.5 * f}"/>` + T(0, 20 * f, "나", 10.5, "var(--s-ink)", 700);
+  const me = S.me;
+  g += `<circle cx="${me.x}" cy="${me.y}" r="${18 * f}" fill="#2346e8" fill-opacity=".18"/><circle cx="${me.x}" cy="${me.y}" r="${7 * f}" fill="#2346e8" stroke="#fff" stroke-width="${2.5 * f}"/>` + T(me.x, me.y + 20 * f, "나", 10.5, "var(--s-ink)", 700);
   svg.innerHTML = g;
 }
 let mapDrag = null, mapMoved = false;
@@ -668,7 +674,7 @@ function selectedCard(r) {
   if (h.dist > S.radius) return "";
   const pre = h.match
     ? `<dl class="kv"><dt>필요한 도움</dt><dd>${esc(h.need)}</dd><dt>호수</dt><dd>${esc(h.rec.UNIT)}</dd><dt>탈출 경로</dt><dd>${esc(h.rec.ESCAPE)}</dd></dl><p class="s-sub">지정 조력자라 수락 즉시 동의 항목이 모두 보여요.</p>`
-    : `<dl class="kv"><dt>필요한 도움</dt><dd>${esc(h.need)}</dd><dt>위치</dt><dd>${esc(dongAt(fuzz(h).x, fuzz(h).y))} 부근 · ${dirText(h.bearing)}쪽 약 ${h.dist}m</dd><dt>주소</dt><dd class="hidden-f">도착 확인 후 공개</dd></dl><p class="s-sub">지도에는 반경 ${FUZZ_R}m 원으로만 보여요. 정확한 집은 원 안 어딘가이고, 문 앞 코드로 도착이 확인되면 허락한 항목과 함께 열려요.</p>`;
+    : `<dl class="kv"><dt>필요한 도움</dt><dd>${esc(h.need)}</dd><dt>위치</dt><dd>${esc(dongAt(fuzz(h).x, fuzz(h).y))} 부근 · ${dirText(h.bearing)}쪽 약 ${h.dist}m</dd><dt>주소</dt><dd class="hidden-f">도착 확인 후 공개</dd></dl><p class="s-sub">지도에는 반경 ${FUZZ_R}m 원으로만 보여요. 정확한 집은 원 안 어딘가이고, 집 반경 50m 안에 들어오면 허락한 항목과 함께 열려요.</p>`;
   return `<div class="s-card"><div class="s-row between"><b>${esc(h.match ? "김○○님 · 내 매칭" : h.short)}</b><span class="s-chip">${h.match ? "지정 조력자" : "확장 조력자 A"}</span></div>${pre}
     <div class="slider" id="slider"><div class="track-fill" id="slider-fill"></div><span class="label">밀어서 출동하기</span><button class="thumb" id="thumb" type="button" aria-label="출동 수락">${arrowIc()}</button></div></div>`;
 }
@@ -681,18 +687,18 @@ function missionView(m) {
   if (m.stage === "locked") return `<div class="s-card center"><p class="s-title">도착 확인이 잠겼어요</p><p class="s-sub">코드를 5번 틀려 이 출동은 다른 이웃에게 넘어갔어요.</p></div>`;
   const rec = m.rec, isOpen = m.stage === "onsite" || h.match;
   const rows = ["UNIT", "STATUS", "ESCAPE", "CONTACT"].map(k => {
-    if (!isOpen) return k === "UNIT" ? `<dt>주소·상태</dt><dd class="hidden-f">도착 확인 후 공개</dd>` : "";
+    if (!isOpen) return k === "UNIT" ? `<dt>주소·상태</dt><dd class="hidden-f">도착하면 자동으로 공개</dd>` : "";
     return rec.consent.includes(k) ? `<dt>${LABEL[k]}</dt><dd>${esc(rec[k])}</dd>` : `<dt>${LABEL[k]}</dt><dd class="hidden-f">당사자가 공개하지 않음</dd>`;
   }).join("");
   const wm = Array.from({ length: 40 }, () => `<span>박○○ · ${hm(S.clock)}</span>`).join("");
   const info = `<div class="s-card info"><div class="wm" aria-hidden="true">${wm}</div><div class="s-row between"><b>${esc(title)}</b><span class="s-chip">${h.match ? "지정 조력자" : "확장 조력자 A"}</span></div>
     <dl class="kv"><dt>필요한 도움</dt><dd>${esc(h.need)}</dd>${rows}</dl>
     <div class="timer"><span>저장·복사 불가 · 워터마크</span><span id="del-timer">${m.stage === "onsite" ? "30:00 뒤 삭제" : "경보 해제 시 삭제"}</span></div></div>`;
-  if (m.stage === "enroute") return `${realMap("mission", 230)}${info}
-    <div class="s-card" style="gap:8px"><b>문 앞에 도착하면</b><p class="s-sub">현관 기기 화면의 6자리 코드를 입력하세요.</p>
-      <div class="codebox ${m.err ? "err" : ""}">${Array.from({ length: 6 }, (_, i) => `<span class="${i === m.code.length ? "cur" : ""}">${m.code[i] ?? ""}</span>`).join("")}</div>
-      <p class="err-msg">${m.attempts < 5 ? `코드가 맞지 않아요 · ${m.attempts}회 남음` : ""}</p>
-      <div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(d => `<button type="button" data-key="${d}">${d}</button>`).join("")}<button type="button" class="fn" data-key="clear">지우기</button><button type="button" data-key="0">0</button><button type="button" class="fn" data-key="back">←</button></div></div>`;
+  if (m.stage === "enroute") return `${realMap("mission", 250)}
+    <div class="s-card" style="gap:8px"><div class="s-row between"><b>목적지까지</b><span class="s-chip" id="remain">${remaining()}m</span></div>
+      <p class="s-sub">집 반경 50m 안에 들어오면 코드 입력 없이 자동으로 도착이 인식되고, 허락된 항목이 열려요.</p>
+      <p class="err-msg">${esc(m.err)}</p>
+      <button type="button" class="s-btn ghost" id="btn-here">도착했어요 · 지금 위치로 확인</button></div>${info}`;
   const st = m.steps;
   return `<div class="banner"><span class="dot"></span>도착 확인 완료 · ${hm(S.clock)}</div>${realMap("mission", 180)}${info}
     <div class="s-card" style="gap:0"><b style="margin-bottom:4px">대피 도움</b>
@@ -769,12 +775,8 @@ document.addEventListener("click", ev => {
   if (b.dataset.radius) { S.radius = Number(b.dataset.radius); toast("반경 변경", `이제 ${b.textContent} 안의 요청만 받아요`); return renderApp(); }
   if (b.dataset.cap) { S.caps[b.dataset.cap] = !S.caps[b.dataset.cap]; return renderApp(); }
   if (b.id === "btn-drill") { S.drillJoined = !S.drillJoined; toast("모의훈련", S.drillJoined ? "10월 18일 훈련을 신청했어요" : "신청을 취소했어요"); return renderApp(); }
-  if (b.dataset.key && S.mission?.stage === "enroute") {
-    const m = S.mission, k = b.dataset.key;
-    if (k === "back") m.code = m.code.slice(0, -1); else if (k === "clear") m.code = ""; else if (m.code.length < 6) m.code += k;
-    renderApp(); if (m.code.length === 6) act(checkCode); return;
-  }
-  if (b.id === "btn-autocode") return act(async () => { S.mission.code = ""; S.tab = "home"; await typeCode(currentCode()); });
+  if (b.id === "btn-walk") return act(walk);
+  if (b.id === "btn-here") return act(() => arriveCheck(false));
   if (b.id === "btn-water") return act(async () => {
     const e = await deviceSignal("H2");
     if (await ingest(e)) {
@@ -802,7 +804,6 @@ document.addEventListener("keydown", ev => { const g = ev.target.closest?.("[dat
 
 setInterval(() => {
   if (!S) return;
-  renderDevice();
   const dt = $("del-timer");
   if (dt && S.mission?.stage === "onsite") { const left = Math.max(0, 1800 - Math.floor((Date.now() - S.mission.openedAt) / 1000)); dt.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")} 뒤 삭제`; }
 }, 1000);

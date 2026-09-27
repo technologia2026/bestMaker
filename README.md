@@ -20,28 +20,27 @@ bandit -r emergency_envelope         # 보안 자가진단
 요구 사항: Python 3.11+. 암호는 검증된 라이브러리만 쓴다.
 - `pycryptodome`: AES-256-GCM, Shamir 비밀분산 (16바이트 제한 → 32바이트 키를 두 덩어리로 나눠 각각 2-of-3 분산)
 - `cryptography`: Ed25519 서명
-- 표준 라이브러리 `secrets`, `hmac`, `hashlib`: 토큰·nonce, 도착 코드(HMAC-SHA256), 해시 체인
+- 표준 라이브러리 `secrets`, `hashlib`: 토큰·nonce, 해시 체인
 
-## 웹 시연 (설치 없이 브라우저로)
+## 조력자 앱 프로토타입 (설치 없이 브라우저로)
 
-`web/demo.html`은 코어의 판정·매칭·공개 규칙을 JavaScript로 옮긴 앱 형태 시연 페이지다.
-암호 연산은 브라우저 WebCrypto로 실제로 수행한다.
+`web/app.html`은 이웃 조력자용 웹앱(PWA) 프로토타입이다. 재난약자는 앱을 쓰지 않고 문자로 열람 통지를 받는다.
 
-- 상단 "다음 장면"으로 결선 시연 6장면(세부 10단계)을 차례로 진행
-- 조력자 폰(P-1 지정 / P-2 파트너 / C-1 시민)과 당사자(H1) 화면을 탭으로 전환해 수락·거절·포기·도착 코드 입력을 직접 조작
-- 가정 기기 패널에서 수위 센서·긴급버튼을 눌러 즉시 공개
-- "직접 공격해 보기"로 관리자 열람, 경보 위조·재전송, 봉투 끼워 넣기, 로그 조작을 시도하고 거부·탐지 확인
+- 평시: 1:1 매칭 이웃을 실제 행정동 지도(서울 관악·동작·구로 일대, vuski/admdongkor)에서 미리 확인, 대피 준비 체크리스트
+- 재난 시: 250m·500m·1km 원 안에 도움 요청 가구를 반경 180m 원으로만 표시 (정확한 집은 도착 후)
+- 출동: 세 기관 승인 → 이동 → 집 반경 50m 안에 들어오면 도착 자동 인식 → 허락된 항목 공개 → 경보 해제 시 자동 삭제
+- 활동·내 정보 탭, 관리자 열람 시도·가짜 경보·수위 센서 시연 버튼
 
 ## 구조 (기획서 ❷ 절과 대응)
 
 | 모듈 | 기획서 | 내용 |
 |---|---|---|
 | `crypto` | ② 봉인 | AES-256-GCM, AAD = 가구 ID·층·버전 (바꿔치기 차단) / Shamir 2-of-3 |
-| `evidence` | ③ 개봉 증거 검증 | 공식 경보·가정 기기 신호·앞당기기 선언의 Ed25519 서명, 유효 시간, nonce·단조 카운터 재전송 방지, 도착 코드 |
+| `evidence` | ③ 개봉 증거 검증 | 공식 경보·가정 기기 신호(선택 설치)·앞당기기 선언의 Ed25519 서명, 유효 시간, nonce·단조 카운터 재전송 방지 |
 | `custodian` | ③, 5. 보장 범위 | 보관 기관: 정책 엔진을 믿지 않고 증거·격자·자격을 직접 검증 후 조각 제공. 키 조합기: 메모리 내 복원 후 즉시 덮어쓰기 |
 | `policy` | ④ 위험도 분석, ⑤ 단계 판정 | 규칙 기반 가중 점수(항목별 기여도 기록), 평시/준비/공개 판정, 보수 모드 |
 | `matching` | ⑥ 조력자 매칭 | 지정 → 확장 A → 확장 B, 응답 시간 초과·거절·포기 시 자동 재배정, 선착순 잠금 배정, 동시 1건 |
-| `disclosure` | ⑦ 도착 확인과 최소 전달, 4. 공개 매트릭스 | 신뢰 등급 × 단계 × 도착 여부 매트릭스, 기기 바인딩 단기 토큰, 워터마크, 도착 시도 제한 |
+| `disclosure` | ⑦ 도착 확인과 최소 전달, 4. 공개 매트릭스 | 신뢰 등급 × 단계 × 도착 여부 매트릭스, 집 반경 50m 위치 도착 인식(코드 입력 없음), 기기 바인딩 단기 토큰, 워터마크, 도착 시도 제한 |
 | `audit` | ⑧ 재봉인·감사·통지 | 해시 체인 감사 로그 + 보관 기관 앵커, 당사자 통지 문구 |
 | `anomaly` | ⑨ 열람 이상 탐지 | 수락·포기 반복, 거부된 개봉 반복, 심야 관리자 조회 → 조력자 계정 정지 |
 | `system`, `demo` | 전체 흐름, 결선 시연 | 전체 조립, 6장면 콘솔 시연 |
@@ -57,7 +56,7 @@ bandit -r emergency_envelope         # 보안 자가진단
 4. **재전송 방지는 두 층이다.** 한 경보가 여러 가구 개봉의 근거가 되는 건 정상이므로, 수신 시점(정책 엔진)에 nonce 1회,
    보관 기관은 유효 시간·격자로 재사용을 제한한다.
 5. **보관 기관도 "조력자 1인 = 가구 1곳"을 강제한다.** 매칭 엔진이 오염돼도 한 조력자가 여러 가구를 열 수 없다.
-6. **가정 기기가 없는 가구:** 확장 A는 위치만으로 도착 인정, 확장 B는 도착 확인 불가(방향·필요 유형까지만).
+6. **도착은 위치로 인식한다.** 조력자가 집 반경 50m 안에 들어오면 코드 입력 없이 도착으로 인정한다. 집 좌표는 봉투 2 안에만 있고, 위치를 바꿔 가며 집을 더듬어 찾는 시도는 5회 실패 시 잠근다. 가정 기기는 수위 센서·긴급버튼용 선택 사항이다.
 7. **Shamir 조각 개수는 직접 강제한다.** pycryptodome `Shamir.combine`은 조각이 모자라도 오류 없이 엉뚱한 값을 낸다.
 
 ### 보안 자가진단 메모
@@ -78,7 +77,7 @@ bandit -r emergency_envelope         # 보안 자가진단
 | 만료 토큰 재사용 | `test_token_is_bound_to_device_and_expires`, `test_end_of_alert_reseals_and_notifies` |
 | 봉투 바꿔치기 | `test_swapping_envelope_to_another_household_fails` |
 | 동시 수락 | `test_concurrent_accepts_yield_exactly_one_assignment`, `test_helper_can_hold_only_one_household_at_a_time` |
-| 확장 B 도착 전 상세 요청 | `test_extended_b_sees_only_direction_before_arrival_and_minimum_after`, `test_extended_b_without_home_device_cannot_confirm_arrival`, `test_arrival_attempts_are_limited` |
+| 확장 B 도착 전 상세 요청 | `test_extended_b_sees_only_direction_before_arrival_and_minimum_after`, `test_arrival_is_recognized_only_within_50m`, `test_arrival_attempts_are_limited` |
 | 로그 조작 | `tests/test_audit.py` (수정·전체 재작성·잘라내기) |
 | 수락 반복 정보 수집 | `test_repeated_abandons_suspend_helper_and_custodians_stop_releasing` |
 

@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import datetime, timedelta
 
-from .common import KST, Capability, Denied, GridCell, HelperKind, MutableClock
+from .common import KST, Capability, Denied, GridCell, HelperKind, MutableClock, Position
 from .disclosure import Field
 from .evidence import AlertIssuer, AlertLevel, SignalType
 from .matching import Helper
@@ -16,6 +16,9 @@ from .system import EmergencyEnvelopeSystem, Registration
 
 CELL_A = GridCell(10, 20)
 CELL_B = GridCell(10, 21)
+BASE = Position(37.48760, 126.91330)  # 가상 기준점
+POS_H1 = BASE.offset(0, -480)
+POS_H2 = BASE.offset(180, 150)
 
 
 def scene(title: str) -> None:
@@ -41,16 +44,15 @@ def main() -> None:
     sys.register_building(BuildingProfile("B-002", CELL_B.id, False, False, False, 300))
 
     h1 = sys.register(Registration(
-        CELL_A, "B-001", Capability.WHEELCHAIR,
+        CELL_A, POS_H1, "B-001", Capability.WHEELCHAIR,
         {Field.UNIT: "B01호", Field.STATUS: "휠체어 사용, 야간 단독 거주",
          Field.ESCAPE_ROUTE: "창문 쪽 방 (골목 방향)", Field.EMERGENCY_CONTACT: "010-0000-0000 (가상)"},
         frozenset({Field.UNIT, Field.STATUS, Field.ESCAPE_ROUTE, Field.EMERGENCY_CONTACT}), "P-1"))
     h2 = sys.register(Registration(
-        CELL_B, "B-002", Capability.MOBILITY_AID,
+        CELL_B, POS_H2, "B-002", Capability.MOBILITY_AID,
         {Field.UNIT: "2층 201호", Field.ESCAPE_ROUTE: "현관 계단"},
         frozenset({Field.UNIT, Field.ESCAPE_ROUTE}), None))
-    device1 = sys.install_device(h1)
-    device2 = sys.install_device(h2)
+    device2 = sys.install_device(h2)  # 수위 센서는 선택 설치
     names = {h1: "H1", h2: "H2"}
 
     def stages(result) -> str:
@@ -83,8 +85,13 @@ def main() -> None:
     say(f"P-2 요청: {offer.tier.value}, {offer.direction}, {offer.need_label}")
     token = sys.accept("P-2", h1, "phone-P2")
     say(f"도착 전 화면: {fields_str(sys.view(token, 'phone-P2'))}")
+    try:
+        sys.confirm_arrival(token, "phone-P2", POS_H1.offset(0, 300))
+    except Denied as e:
+        say(f"300m 전에서 도착 확인: {e}")
     sys.move_helper("P-2", CELL_A)
-    sys.confirm_arrival(token, "phone-P2", CELL_A, device1.arrival_code())
+    sys.confirm_arrival(token, "phone-P2", POS_H1.offset(12, 8))
+    say("집 반경 50m 안에 들어와 도착 자동 인식")
     after = sys.view(token, "phone-P2")
     say(f"도착 확인 후: {fields_str(after)}  [워터마크 {after.watermark}]")
 

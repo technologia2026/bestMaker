@@ -8,11 +8,11 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 from .audit import AuditType, HashChainLog
-from .common import Capability, Denied, GridCell, Stage, TrustTier, hm, random_token
-from .evidence import DeviceRegistry, verify_arrival_code
+from .common import Capability, Denied, GridCell, Position, Stage, TrustTier, hm, random_token
 from .matching import HelperRegistry
 
 MAX_ARRIVAL_ATTEMPTS = 5
+ARRIVAL_RADIUS_M = 50.0
 
 
 class Field(Enum):
@@ -70,6 +70,7 @@ class _Session:
     tier: TrustTier
     device_id: str
     cell: GridCell
+    position: Position
     need: Capability
     record: dict[Field, str]
     consented: set[Field]
@@ -89,18 +90,17 @@ class DisclosureService:
     """복호화된 봉투 2는 이 서비스의 메모리에만 머물고 단기 토큰(기기 바인딩)으로만 조회된다.
     도착 전에는 방향과 필요 유형만, 도착 확인 후 신뢰 등급이 허용하는 항목만 연다."""
 
-    def __init__(self, helpers: HelperRegistry, devices: DeviceRegistry, log: HashChainLog, clock,
-                 token_ttl: timedelta):
-        self.helpers, self.devices, self.log, self.clock, self.token_ttl = helpers, devices, log, clock, token_ttl
+    def __init__(self, helpers: HelperRegistry, log: HashChainLog, clock, token_ttl: timedelta):
+        self.helpers, self.log, self.clock, self.token_ttl = helpers, log, clock, token_ttl
         self._sessions: dict[str, _Session] = {}
 
     def issue(self, household_id: str, helper_id: str, tier: TrustTier, device_id: str, cell: GridCell,
-              need: Capability, record: dict[Field, str], consented: set[Field], evidence_valid_until: datetime,
+              position: Position, need: Capability, record: dict[Field, str], consented: set[Field], evidence_valid_until: datetime,
               basis: str) -> str:
         """단기 토큰 발급. 토큰 원문은 저장하지 않고 해시만 보관한다."""
         expires = min(evidence_valid_until, self.clock.now() + self.token_ttl)
         token = random_token()
-        self._sessions[_digest(token)] = _Session(household_id, helper_id, tier, device_id, cell, need,
+        self._sessions[_digest(token)] = _Session(household_id, helper_id, tier, device_id, cell, position, need,
                                                   dict(record), set(consented), expires, basis)
         return token
 
@@ -139,22 +139,20 @@ class DisclosureService:
                                 f"{s.tier.value} 1명 열람 ({items}), 근거: {s.basis}")
             return HelperView(out, s.arrived, f"{s.helper_id} · {hm(self.clock.now())}", s.expires_at)
 
-    def confirm_arrival(self, token: str, device_id: str, helper_cell: GridCell, code: str) -> None:
-        """위치 격자 일치 + 가정 기기 일회용 코드. 반복 실패 시 세션 잠금."""
+    def confirm_arrival(self, token: str, device_id: str, helper_position: Position) -> None:
+        """조력자가 집 반경 50m 안에 들어오면 도착으로 인정한다 (별도 코드 입력 없음).
+        위치를 바꿔 가며 집을 더듬어 찾는 시도를 막기 위해 실패는 5회까지만 허용하고 모두 기록한다."""
         s = self._session(token, device_id)
         with s.lock:
             if s.failed_arrivals >= MAX_ARRIVAL_ATTEMPTS:
                 raise Denied("도착 확인 시도 초과로 잠김")
-            dev = self.devices.for_household(s.household_id)
-            code_ok = dev is not None and verify_arrival_code(dev.arrival_secret, s.household_id,
-                                                              self.clock.now(), code)
-            # 가정 기기가 없는 가구는 확장 A까지만 위치로 도착 인정, 확장 B는 불가
-            fallback = dev is None and s.tier is not TrustTier.EXTENDED_B
-            if helper_cell != s.cell or not (code_ok or fallback):
+            if helper_position.distance_m(s.position) > ARRIVAL_RADIUS_M:
                 s.failed_arrivals += 1
-                raise Denied("도착 확인 실패")
+                self.log.append(AuditType.ARRIVAL_FAILED, s.household_id, s.helper_id,
+                                f"도착 위치 불일치 ({s.failed_arrivals}/{MAX_ARRIVAL_ATTEMPTS})")
+                raise Denied("아직 도착 위치가 아님")
             s.arrived = True
-            self.log.append(AuditType.ARRIVED, s.household_id, s.helper_id, f"{s.tier.value} 도착 확인")
+            self.log.append(AuditType.ARRIVED, s.household_id, s.helper_id, f"{s.tier.value} 도착 인식 (반경 50m)")
 
     def reseal(self, household_id: str) -> None:
         for k in [k for k, s in self._sessions.items() if s.household_id == household_id]:
