@@ -4,45 +4,25 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
 <style>
 :root {
-  --bg: #e7ebef;
-  --panel: #ffffff;
-  --panel-2: #f3f5f8;
-  --ink: #0f1b2d;
-  --sub: #56657a;
-  --line: #d5dce4;
-  --seal: #2346e8;
-  --seal-ink: #ffffff;
-  --alert: #ff6a2b;
-  --amber: #e89a1f;
-  --safe: #12a58a;
-  --deny: #d6331f;
-  --shadow: 0 2px 6px rgba(15, 27, 45, .06), 0 18px 40px rgba(15, 27, 45, .10);
+  --bg: #e7ebef; --panel: #ffffff; --panel-2: #f3f5f8; --ink: #0f1b2d; --sub: #56657a; --line: #d5dce4;
+  --seal: #2346e8; --seal-ink: #ffffff; --alert: #ff6a2b; --amber: #e89a1f; --safe: #12a58a; --deny: #d6331f;
+  --shadow: 0 2px 6px rgba(15, 27, 45, .06), 0 18px 40px rgba(15, 27, 45, .12);
   --display: "Black Han Sans", "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif;
   --sans: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: #0a111c; --panel: #121c2b; --panel-2: #182436; --ink: #e6ecf3; --sub: #9aa8bb; --line: #243349;
-    --seal: #5c7cff; --seal-ink: #ffffff; --shadow: 0 2px 6px rgba(0,0,0,.3), 0 18px 40px rgba(0,0,0,.35);
-  }
+  :root:not([data-theme="light"]) { color-scheme: dark; --bg: #0a111c; --panel: #121c2b; --panel-2: #182436; --ink: #e6ecf3; --sub: #9aa8bb; --line: #243349; --seal: #5c7cff; --shadow: 0 2px 6px rgba(0,0,0,.3), 0 18px 40px rgba(0,0,0,.35); }
 }
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #0a111c; --panel: #121c2b; --panel-2: #182436; --ink: #e6ecf3; --sub: #9aa8bb; --line: #243349;
-  --seal: #5c7cff; --seal-ink: #ffffff; --shadow: 0 2px 6px rgba(0,0,0,.3), 0 18px 40px rgba(0,0,0,.35);
-}
+:root[data-theme="dark"] { color-scheme: dark; --bg: #0a111c; --panel: #121c2b; --panel-2: #182436; --ink: #e6ecf3; --sub: #9aa8bb; --line: #243349; --seal: #5c7cff; --shadow: 0 2px 6px rgba(0,0,0,.3), 0 18px 40px rgba(0,0,0,.35); }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.5; }
 button { font: inherit; color: inherit; cursor: pointer; }
-button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; }
-.page { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 36px; display: grid; gap: 18px; }
-
-/* 헤더 */
+button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--seal); outline-offset: 2px; }
+.page { max-width: 1280px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 36px; display: grid; gap: 18px; }
 .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
 .brand { display: flex; align-items: center; gap: 12px; }
-.brand h1 { font-family: var(--display); font-weight: 400; font-size: 30px; letter-spacing: .01em; margin: 0; line-height: 1; }
+.brand h1 { font-family: var(--display); font-weight: 400; font-size: 30px; margin: 0; line-height: 1; }
 .brand p { margin: 4px 0 0; font-size: 13px; color: var(--sub); }
 .timeline { display: flex; gap: 4px; flex-wrap: wrap; }
 .timeline button { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; display: flex; gap: 6px; align-items: center; }
@@ -51,21 +31,14 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .timeline button[aria-current="step"] .t { color: inherit; opacity: .75; }
 .timeline button:disabled { opacity: .45; cursor: default; }
 
-/* 배치 */
-.stage { display: grid; grid-template-columns: minmax(0, 1fr) 372px 372px; gap: 22px; align-items: start; }
-@media (max-width: 1180px) { .stage { grid-template-columns: repeat(2, minmax(0, 372px)); justify-content: center; } .control { grid-column: 1 / -1; } }
-@media (max-width: 800px) { .stage { grid-template-columns: minmax(0, 1fr); } .phone-col[data-hidden-mobile="true"] { display: none; } }
-.phone-switch { display: none; gap: 6px; }
-@media (max-width: 800px) { .phone-switch { display: flex; } }
-.phone-switch button { flex: 1; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 8px; font-weight: 500; }
-.phone-switch button[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-
-/* 컨트롤 */
-.control { display: grid; gap: 14px; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 10px; }
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 392px minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 1180px) { .stage { grid-template-columns: minmax(0, 1fr) 392px; } .side-r { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 820px) { .stage { grid-template-columns: minmax(0, 1fr); } .phone-col { order: -1; } .side-r { grid-template-columns: minmax(0, 1fr); } }
+.side, .side-r { display: grid; gap: 14px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 10px; align-content: start; }
 .eyebrow { font-size: 11.5px; letter-spacing: .08em; color: var(--sub); font-weight: 500; }
 .scene-title { font-family: var(--display); font-weight: 400; font-size: 24px; line-height: 1.15; margin: 0; }
-.scene-body { margin: 0; color: var(--ink); font-size: 14px; }
+.scene-body { margin: 0; font-size: 14px; }
 .scene-look { margin: 0; font-size: 13px; color: var(--seal); font-weight: 500; }
 .btn { border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: 9px 14px; font-weight: 500; }
 .btn:hover { border-color: var(--sub); }
@@ -75,12 +48,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .btn-row .btn { flex: 1 1 auto; }
 .mini { font-size: 12.5px; padding: 7px 10px; }
 .keys { display: grid; gap: 6px; }
-.key-row { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; font-size: 13px; padding: 6px 8px; border-radius: 10px; background: var(--panel-2); }
-.key-row svg { display: block; }
+.key-row { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; font-size: 13px; padding: 7px 9px; border-radius: 10px; background: var(--panel-2); }
 .chip { font-size: 11.5px; font-weight: 500; padding: 2px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid var(--line); color: var(--sub); }
-.chip.ok { color: var(--safe); border-color: var(--safe); }
-.chip.run { color: var(--amber); border-color: var(--amber); }
-.chip.no { color: var(--deny); border-color: var(--deny); }
+.chip.ok { color: var(--safe); border-color: var(--safe); } .chip.run { color: var(--amber); border-color: var(--amber); } .chip.no { color: var(--deny); border-color: var(--deny); }
 .device { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; }
 .lcd { width: 132px; height: 70px; border-radius: 10px; background: #0d1a14; color: #8ff0b5; font-family: var(--mono); display: grid; place-items: center; text-align: center; font-size: 11px; line-height: 1.3; border: 3px solid #26332c; }
 .lcd.off { color: #3f5a4a; }
@@ -88,68 +58,67 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .lcd .bar { width: 96px; height: 3px; background: #1f3a2c; border-radius: 2px; overflow: hidden; margin-top: 4px; }
 .lcd .bar i { display: block; height: 100%; background: #8ff0b5; }
 .device-note { font-size: 12.5px; color: var(--sub); margin: 0; }
-.chain { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 190px; overflow-y: auto; }
-.chain li { font-size: 12px; display: grid; grid-template-columns: 44px 1fr; gap: 6px; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+.sms { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 300px; overflow-y: auto; }
+.sms li { background: var(--panel-2); border-radius: 14px 14px 14px 4px; padding: 9px 11px; font-size: 13px; display: grid; gap: 2px; }
+.sms li.warn { box-shadow: inset 3px 0 0 var(--deny); }
+.sms li.empty { background: none; padding: 0; color: var(--sub); }
+.sms small { font-family: var(--mono); color: var(--sub); font-size: 11px; }
+.chain { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 280px; overflow-y: auto; }
+.chain li { font-size: 12px; display: grid; grid-template-columns: 42px 1fr; gap: 6px; padding: 4px 0; border-bottom: 1px dashed var(--line); }
 .chain li:last-child { border-bottom: 0; }
 .chain time { font-family: var(--mono); color: var(--sub); }
 .chain .h { font-family: var(--mono); color: var(--sub); font-size: 10.5px; }
 
 /* 폰 */
 .phone-col { display: grid; gap: 8px; justify-items: center; }
-.phone-label { font-size: 13px; font-weight: 500; color: var(--sub); display: flex; gap: 8px; align-items: center; }
+.phone-label { font-size: 13px; color: var(--sub); }
 .phone-label b { color: var(--ink); }
-.phone { width: 100%; max-width: 372px; height: 760px; background: #05080d; border-radius: 52px; padding: 11px; box-shadow: var(--shadow); position: relative; }
-.phone::before { content: ""; position: absolute; top: 20px; left: 50%; width: 104px; height: 30px; margin-left: -52px; background: #05080d; border-radius: 20px; z-index: 5; }
-.screen { position: relative; height: 100%; border-radius: 42px; overflow: hidden; display: flex; flex-direction: column; background: var(--s-bg); color: var(--s-ink); transition: background .6s ease, color .6s ease; font-size: 14px;
-  --s-bg: #eef2f6; --s-surface: #ffffff; --s-ink: #0f1b2d; --s-sub: #5a6980; --s-line: #dbe2ea; --s-accent: #2346e8; }
-.screen[data-mood="dusk"] { --s-bg: #f7ecdc; --s-surface: #fffaf2; --s-ink: #2b1d0c; --s-sub: #7a6147; --s-line: #eadbc5; --s-accent: #c67a0c; }
-.screen[data-mood="storm"] { --s-bg: #0b1422; --s-surface: #15233a; --s-ink: #eef3fb; --s-sub: #9aabc4; --s-line: #243650; --s-accent: #ff6a2b; }
-.screen[data-mood="dawn"] { --s-bg: #e6f4f0; --s-surface: #ffffff; --s-ink: #0c2a24; --s-sub: #4f746b; --s-line: #cfe6df; --s-accent: #12a58a; }
-.status { height: 50px; flex: none; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 28px 6px; font-size: 13px; font-weight: 700; font-family: var(--sans); position: relative; z-index: 4; }
-.status .icons { display: flex; gap: 5px; align-items: center; }
-.status .icons i { display: block; background: currentColor; border-radius: 1px; }
+.phone { width: 100%; max-width: 392px; height: 800px; background: #05080d; border-radius: 54px; padding: 11px; box-shadow: var(--shadow); position: relative; }
+.phone::before { content: ""; position: absolute; top: 20px; left: 50%; width: 106px; height: 30px; margin-left: -53px; background: #05080d; border-radius: 20px; z-index: 9; }
+.screen { position: relative; height: 100%; border-radius: 44px; overflow: hidden; display: flex; flex-direction: column; background: var(--s-bg); color: var(--s-ink); transition: background .6s, color .6s; font-size: 14px;
+  --s-bg: #eef2f6; --s-surface: #ffffff; --s-ink: #0f1b2d; --s-sub: #5a6980; --s-line: #dbe2ea; --s-accent: #2346e8; --s-map: #e3e9ef; --s-road: #ffffff; }
+.screen[data-mood="dusk"] { --s-bg: #f7ecdc; --s-surface: #fffaf2; --s-ink: #2b1d0c; --s-sub: #7a6147; --s-line: #eadbc5; --s-accent: #c67a0c; --s-map: #efe0c9; --s-road: #fff7ea; }
+.screen[data-mood="storm"] { --s-bg: #0b1422; --s-surface: #15233a; --s-ink: #eef3fb; --s-sub: #9aabc4; --s-line: #243650; --s-accent: #ff6a2b; --s-map: #101c2e; --s-road: #1d2d47; }
+.screen[data-mood="dawn"] { --s-bg: #e6f4f0; --s-surface: #ffffff; --s-ink: #0c2a24; --s-sub: #4f746b; --s-line: #cfe6df; --s-accent: #12a58a; --s-map: #d7ebe5; --s-road: #ffffff; }
+.status { height: 50px; flex: none; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 30px 6px; font-size: 13px; font-weight: 700; position: relative; z-index: 4; }
+.status .icons { display: flex; gap: 3px; align-items: flex-end; }
+.status .icons i { display: block; background: currentColor; border-radius: 1px; width: 3px; }
 .appbar { flex: none; display: flex; justify-content: space-between; align-items: center; padding: 8px 20px 4px; position: relative; z-index: 3; }
 .appbar .who { font-size: 12.5px; color: var(--s-sub); }
-.appbar .who b { display: block; color: var(--s-ink); font-size: 15px; }
-.content { flex: 1; overflow-y: auto; padding: 10px 16px 16px; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 3; scrollbar-width: none; }
+.appbar .who b { display: block; color: var(--s-ink); font-size: 16px; }
+.content { flex: 1; overflow-y: auto; padding: 10px 16px 18px; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 3; scrollbar-width: none; }
 .content::-webkit-scrollbar { display: none; }
-.tabbar { flex: none; height: 74px; display: flex; justify-content: space-around; align-items: flex-start; padding-top: 10px; border-top: 1px solid var(--s-line); background: color-mix(in srgb, var(--s-surface) 88%, transparent); position: relative; z-index: 3; }
-.tabbar button { background: none; border: 0; display: grid; justify-items: center; gap: 3px; font-size: 11px; color: var(--s-sub); padding: 0 10px; }
+.tabbar { flex: none; height: 76px; display: flex; justify-content: space-around; align-items: flex-start; padding-top: 10px; border-top: 1px solid var(--s-line); background: var(--s-surface); position: relative; z-index: 3; }
+.tabbar button { background: none; border: 0; display: grid; justify-items: center; gap: 3px; font-size: 11px; color: var(--s-sub); padding: 0 14px; position: relative; }
 .tabbar button[aria-selected="true"] { color: var(--s-accent); font-weight: 700; }
-.tabbar svg { width: 22px; height: 22px; }
-.rain { position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity .8s; background-image: repeating-linear-gradient(104deg, transparent 0 18px, rgba(160, 190, 230, .22) 18px 19px, transparent 19px 38px); background-size: 120px 120px; }
-.screen[data-rain="light"] .rain { opacity: .5; }
-.screen[data-rain="heavy"] .rain { opacity: 1; }
-@media (prefers-reduced-motion: no-preference) {
-  .rain { animation: rain .5s linear infinite; }
-  @keyframes rain { from { background-position: 0 0; } to { background-position: -26px 120px; } }
-}
+.tabbar .badge { position: absolute; top: -3px; right: 8px; min-width: 17px; height: 17px; border-radius: 9px; background: #ff3b30; color: #fff; font-size: 10.5px; display: grid; place-items: center; padding: 0 4px; font-weight: 700; }
+.rain { position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity .8s; background-image: repeating-linear-gradient(104deg, transparent 0 18px, rgba(160, 190, 230, .2) 18px 19px, transparent 19px 38px); background-size: 120px 120px; }
+.screen[data-rain="light"] .rain { opacity: .5; } .screen[data-rain="heavy"] .rain { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) { .rain { animation: rain .5s linear infinite; } @keyframes rain { from { background-position: 0 0; } to { background-position: -26px 120px; } } }
 
 .s-card { background: var(--s-surface); border: 1px solid var(--s-line); border-radius: 22px; padding: 16px; display: grid; gap: 10px; }
-.s-title { font-family: var(--display); font-weight: 400; font-size: 25px; line-height: 1.2; margin: 0; text-wrap: balance; }
-.s-big { font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1.1; margin: 0; }
+.s-title { font-family: var(--display); font-weight: 400; font-size: 24px; line-height: 1.2; margin: 0; text-wrap: balance; }
 .s-sub { color: var(--s-sub); font-size: 13px; margin: 0; }
 .s-row { display: flex; gap: 8px; align-items: center; }
+.s-row.between { justify-content: space-between; }
 .s-chip { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--s-accent) 16%, transparent); color: var(--s-accent); white-space: nowrap; }
+.s-chip.gray { background: color-mix(in srgb, var(--s-sub) 16%, transparent); color: var(--s-sub); }
 .s-btn { border: 0; border-radius: 16px; padding: 14px; font-weight: 700; font-size: 15px; background: var(--s-accent); color: #fff; width: 100%; }
-.s-btn.ghost { background: transparent; color: var(--s-sub); border: 1px solid var(--s-line); }
-.s-list { display: grid; gap: 8px; }
-.stat3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.stat3 div { background: var(--s-surface); border: 1px solid var(--s-line); border-radius: 16px; padding: 10px; font-size: 11.5px; color: var(--s-sub); }
-.stat3 b { display: block; font-size: 17px; color: var(--s-ink); font-family: var(--mono); }
-.banner { display: flex; gap: 10px; align-items: center; border-radius: 16px; padding: 10px 12px; font-size: 13px; font-weight: 500; background: color-mix(in srgb, var(--s-accent) 16%, var(--s-surface)); color: var(--s-ink); border: 1px solid color-mix(in srgb, var(--s-accent) 40%, transparent); }
+.s-btn.ghost { background: transparent; color: var(--s-ink); border: 1px solid var(--s-line); }
+.banner { display: flex; gap: 10px; align-items: center; border-radius: 16px; padding: 10px 12px; font-size: 13px; font-weight: 500; background: color-mix(in srgb, var(--s-accent) 16%, var(--s-surface)); border: 1px solid color-mix(in srgb, var(--s-accent) 40%, transparent); }
 .banner .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--s-accent); flex: none; }
-.envelope-wrap { display: grid; place-items: center; padding: 6px 0 2px; }
-.env-svg { width: 190px; height: auto; overflow: visible; }
-.env-svg .flap { transform-origin: 50% 0%; transform-box: fill-box; transition: transform .9s cubic-bezier(.5, 0, .2, 1); }
-.env-svg.open .flap { transform: scaleY(-1); }
-.env-svg .seal { transition: transform .6s, opacity .6s; transform-origin: center; transform-box: fill-box; }
-.env-svg.open .seal { transform: scale(.4); opacity: 0; }
-.env-svg .paper { transition: transform .9s .5s; }
-.env-svg.open .paper { transform: translateY(-34px); }
-.shards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.shards div { border: 1px dashed var(--s-line); border-radius: 12px; padding: 8px 6px; text-align: center; font-size: 11px; color: var(--s-sub); }
-.shards b { display: block; color: var(--s-ink); font-size: 12px; }
+.section-t { font-size: 13px; font-weight: 700; margin: 4px 2px -4px; color: var(--s-sub); }
+.kv { display: grid; grid-template-columns: 82px 1fr; gap: 7px 10px; margin: 0; font-size: 13.5px; }
+.kv dt { color: var(--s-sub); }
+.kv dd { margin: 0; font-weight: 500; }
+.map { border-radius: 20px; overflow: hidden; border: 1px solid var(--s-line); background: var(--s-map); position: relative; }
+.map svg { display: block; width: 100%; height: auto; }
+.map .legend { position: absolute; left: 10px; bottom: 8px; display: flex; gap: 8px; font-size: 10.5px; color: var(--s-sub); background: color-mix(in srgb, var(--s-surface) 85%, transparent); padding: 3px 8px; border-radius: 8px; }
+.check { display: flex; gap: 10px; align-items: center; padding: 9px 0; border: 0; border-bottom: 1px solid var(--s-line); background: none; width: 100%; text-align: left; font-size: 14px; color: var(--s-ink); }
+.check:last-child { border-bottom: 0; }
+.check .box { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--s-line); display: grid; place-items: center; flex: none; }
+.check[aria-checked="true"] .box { background: var(--s-accent); border-color: var(--s-accent); }
+.check[aria-checked="true"] .t { color: var(--s-sub); text-decoration: line-through; }
 .toggle-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--s-line); }
 .toggle-row:last-child { border-bottom: 0; }
 .toggle-row span { font-size: 14px; font-weight: 500; }
@@ -158,71 +127,68 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
 .switch[aria-checked="true"] { background: var(--s-accent); }
 .switch[aria-checked="true"]::after { transform: translateX(20px); }
-.switch:disabled { opacity: .5; }
-.sos { position: relative; width: 100%; border: 0; border-radius: 22px; padding: 18px; background: #d6331f; color: #fff; font-weight: 700; font-size: 17px; overflow: hidden; display: grid; gap: 2px; justify-items: center; }
-.sos small { font-weight: 400; font-size: 12px; opacity: .9; }
-.sos .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(255,255,255,.22); }
-.sos span { position: relative; }
-.note-list { display: grid; gap: 8px; }
-.note { background: var(--s-surface); border: 1px solid var(--s-line); border-radius: 16px; padding: 11px 13px; font-size: 13px; display: grid; gap: 2px; }
-.note time { font-family: var(--mono); font-size: 11.5px; color: var(--s-sub); }
-.note.warn { border-color: color-mix(in srgb, #d6331f 45%, transparent); }
-.toast { position: absolute; left: 12px; right: 12px; top: 54px; z-index: 8; background: rgba(20, 28, 42, .94); color: #fff; border-radius: 20px; padding: 12px 14px; display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.35); transform: translateY(-220%); opacity: 0; transition: transform .45s cubic-bezier(.3, 1.3, .5, 1), opacity .3s; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--s-bg); border: 1px solid var(--s-line); border-radius: 12px; padding: 3px; gap: 3px; }
+.seg button { border: 0; background: none; border-radius: 9px; padding: 7px 0; font-size: 13px; font-weight: 500; color: var(--s-sub); }
+.seg button[aria-pressed="true"] { background: var(--s-surface); color: var(--s-ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.caps { display: flex; flex-wrap: wrap; gap: 6px; }
+.caps button { border: 1px solid var(--s-line); background: none; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; color: var(--s-sub); }
+.caps button[aria-pressed="true"] { border-color: var(--s-accent); color: var(--s-accent); background: color-mix(in srgb, var(--s-accent) 10%, transparent); font-weight: 700; }
+.stat3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat3 div { background: var(--s-surface); border: 1px solid var(--s-line); border-radius: 16px; padding: 10px 12px; font-size: 11.5px; color: var(--s-sub); }
+.stat3 b { display: block; font-size: 20px; color: var(--s-ink); font-family: var(--mono); }
+.act { display: grid; grid-template-columns: 40px 1fr; gap: 10px; background: var(--s-surface); border: 1px solid var(--s-line); border-radius: 18px; padding: 12px; }
+.act .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--s-accent) 14%, transparent); color: var(--s-accent); }
+.act b { display: block; font-size: 14px; }
+.act small { color: var(--s-sub); font-size: 12px; display: block; }
+.act time { font-family: var(--mono); font-size: 11.5px; color: var(--s-sub); }
+.profile { display: grid; grid-template-columns: 60px 1fr; gap: 12px; align-items: center; }
+.avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--s-accent); color: #fff; display: grid; place-items: center; font-family: var(--display); font-size: 24px; }
+.toast { position: absolute; left: 12px; right: 12px; top: 54px; z-index: 8; background: rgba(20, 28, 42, .95); color: #fff; border-radius: 20px; padding: 12px 14px; display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.35); transform: translateY(-220%); opacity: 0; transition: transform .45s cubic-bezier(.3, 1.3, .5, 1), opacity .3s; }
 .toast.show { transform: translateY(0); opacity: 1; }
-.toast .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--seal); display: grid; place-items: center; }
+.toast .ic { width: 34px; height: 34px; border-radius: 10px; background: #2346e8; display: grid; place-items: center; }
 .toast b { display: block; font-size: 12px; opacity: .75; font-weight: 500; }
 
-/* 출동 요청 */
-.offer { display: grid; gap: 14px; padding-top: 4px; }
-.radar { position: relative; height: 170px; display: grid; place-items: center; }
-.radar i { position: absolute; width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--s-accent); opacity: 0; }
+/* 레이더 */
+.radar-wrap { border-radius: 24px; background: var(--s-surface); border: 1px solid var(--s-line); overflow: hidden; }
+.radar-wrap svg { display: block; width: 100%; height: auto; }
+.sweep { transform-origin: 170px 170px; }
 @media (prefers-reduced-motion: no-preference) {
-  .radar i { animation: ping 2.4s ease-out infinite; }
-  .radar i:nth-child(2) { animation-delay: .8s; } .radar i:nth-child(3) { animation-delay: 1.6s; }
-  @keyframes ping { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.1); opacity: 0; } }
+  .sweep { animation: sweep 4s linear infinite; } @keyframes sweep { to { transform: rotate(360deg); } }
+  .pulse { animation: pulse 1.6s ease-out infinite; transform-box: fill-box; transform-origin: center; } @keyframes pulse { from { transform: scale(1); opacity: .8; } to { transform: scale(2.6); opacity: 0; } }
 }
-.compass { width: 92px; height: 92px; border-radius: 50%; background: var(--s-accent); display: grid; place-items: center; box-shadow: 0 0 0 8px color-mix(in srgb, var(--s-accent) 25%, transparent); position: relative; z-index: 1; }
-.compass svg { transform: rotate(-90deg); }
-.count { font-family: var(--mono); font-size: 13px; color: var(--s-sub); text-align: center; }
-.slider { position: relative; height: 62px; border-radius: 999px; background: color-mix(in srgb, var(--s-accent) 22%, var(--s-surface)); border: 1px solid color-mix(in srgb, var(--s-accent) 45%, transparent); display: grid; place-items: center; font-weight: 700; font-size: 15px; user-select: none; touch-action: none; overflow: hidden; }
+.pin { cursor: pointer; }
+.pin:focus { outline: none; }
+.pin:focus-visible circle.hit { stroke: #fff; stroke-width: 3; }
+.req-list { display: grid; gap: 8px; }
+.req { display: grid; grid-template-columns: 12px 1fr auto; gap: 10px; align-items: center; background: var(--s-surface); border: 1px solid var(--s-line); border-radius: 16px; padding: 11px 12px; text-align: left; width: 100%; font-size: 13.5px; color: var(--s-ink); }
+.req[aria-pressed="true"] { border-color: var(--s-accent); box-shadow: 0 0 0 1px var(--s-accent); }
+.req i { width: 12px; height: 12px; border-radius: 50%; }
+.req small { display: block; color: var(--s-sub); font-size: 12px; }
+.req .d { font-family: var(--mono); font-size: 12.5px; color: var(--s-sub); }
+.slider { position: relative; height: 60px; border-radius: 999px; background: color-mix(in srgb, var(--s-accent) 22%, var(--s-surface)); border: 1px solid color-mix(in srgb, var(--s-accent) 45%, transparent); display: grid; place-items: center; font-weight: 700; font-size: 15px; user-select: none; touch-action: none; overflow: hidden; }
 .slider .track-fill { position: absolute; left: 0; top: 0; bottom: 0; background: color-mix(in srgb, var(--s-accent) 40%, transparent); width: 0; }
-.slider .thumb { position: absolute; left: 5px; top: 5px; width: 52px; height: 52px; border-radius: 50%; background: var(--s-accent); border: 0; display: grid; place-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.3); touch-action: none; }
+.slider .thumb { position: absolute; left: 5px; top: 5px; width: 50px; height: 50px; border-radius: 50%; background: var(--s-accent); border: 0; display: grid; place-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.3); touch-action: none; }
 .slider .label { position: relative; opacity: .9; }
-.text-btn { background: none; border: 0; color: var(--s-sub); font-size: 13px; text-decoration: underline; padding: 6px; justify-self: center; }
-
-/* 열쇠 확인 */
-.verify { display: grid; gap: 10px; }
-.v-row { display: grid; grid-template-columns: 36px 1fr auto; gap: 10px; align-items: center; background: var(--s-surface); border: 1px solid var(--s-line); border-radius: 16px; padding: 10px 12px; font-size: 13.5px; }
+.v-row { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: center; background: var(--s-surface); border: 1px solid var(--s-line); border-radius: 16px; padding: 11px 12px; font-size: 13.5px; }
 .v-row small { display: block; color: var(--s-sub); font-size: 11.5px; }
 .v-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--s-accent) 14%, transparent); }
 .spin { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid var(--s-line); border-top-color: var(--s-accent); }
 @media (prefers-reduced-motion: no-preference) { .spin { animation: spin .8s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } } }
-
-/* 이동·도착 */
-.map { border-radius: 20px; overflow: hidden; border: 1px solid var(--s-line); background: var(--s-surface); }
-.map svg { display: block; width: 100%; height: auto; }
 .codebox { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.codebox span { height: 48px; border-radius: 12px; border: 1.5px solid var(--s-line); background: var(--s-surface); display: grid; place-items: center; font-family: var(--mono); font-size: 22px; }
+.codebox span { height: 46px; border-radius: 12px; border: 1.5px solid var(--s-line); background: var(--s-bg); display: grid; place-items: center; font-family: var(--mono); font-size: 21px; }
 .codebox span.cur { border-color: var(--s-accent); }
 .codebox.err span { border-color: #ff5a4a; }
 @media (prefers-reduced-motion: no-preference) { .codebox.err { animation: shake .35s; } @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } } }
 .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.keypad button { border: 0; border-radius: 14px; padding: 11px 0; font-size: 19px; font-weight: 500; background: var(--s-surface); color: var(--s-ink); border: 1px solid var(--s-line); font-family: var(--mono); }
+.keypad button { border-radius: 14px; padding: 10px 0; font-size: 19px; font-weight: 500; background: var(--s-bg); color: var(--s-ink); border: 1px solid var(--s-line); font-family: var(--mono); }
 .keypad button.fn { font-size: 13px; font-family: var(--sans); color: var(--s-sub); }
 .err-msg { color: #ff7a6a; font-size: 12.5px; text-align: center; min-height: 18px; margin: 0; }
-
-/* 공개 */
 .info { position: relative; overflow: hidden; }
-.info dl { margin: 0; display: grid; gap: 10px; }
-.info dt { font-size: 11.5px; color: var(--s-sub); }
-.info dd { margin: 0; font-size: 17px; font-weight: 700; }
-.info dd.hidden-f { font-size: 13px; font-weight: 400; color: var(--s-sub); }
-.wm { position: absolute; inset: -40px; pointer-events: none; display: flex; flex-wrap: wrap; gap: 26px 30px; transform: rotate(-24deg); opacity: .09; font-family: var(--mono); font-size: 12px; align-content: flex-start; }
+.wm { position: absolute; inset: -40px; pointer-events: none; display: flex; flex-wrap: wrap; gap: 26px 30px; transform: rotate(-24deg); opacity: .08; font-family: var(--mono); font-size: 12px; align-content: flex-start; }
+.hidden-f { color: var(--s-sub); font-weight: 400 !important; font-size: 12.5px; }
 .timer { font-family: var(--mono); font-size: 12px; color: var(--s-sub); display: flex; justify-content: space-between; }
-.call { display: flex; justify-content: space-between; align-items: center; background: var(--s-surface); border: 1px solid var(--s-line); border-radius: 16px; padding: 12px 14px; font-size: 13px; }
-.call b { font-family: var(--mono); font-size: 18px; }
-.center { text-align: center; justify-items: center; }
 .done-ic { width: 76px; height: 76px; border-radius: 50%; background: var(--s-accent); display: grid; place-items: center; margin: 18px auto 6px; }
+.center { text-align: center; justify-items: center; }
 footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
 </style>
 
@@ -230,20 +196,15 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
   <header class="top">
     <div class="brand">
       <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true"><rect x="3" y="9" width="40" height="28" rx="5" fill="var(--seal)"/><path d="M4 11 L23 25 L42 11" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round" opacity=".85"/><circle cx="23" cy="26" r="8" fill="#ff6a2b" stroke="var(--bg)" stroke-width="2.5"/></svg>
-      <div><h1>비상봉투</h1><p>평소엔 봉인, 재난 땐 가장 가까운 이웃이 연다</p></div>
+      <div><h1>비상봉투</h1><p>이웃 조력자 앱 · 평소엔 내 매칭 이웃을, 재난 땐 지금 도움이 필요한 이웃을</p></div>
     </div>
     <nav class="timeline" id="timeline" aria-label="시연 장면"></nav>
   </header>
 
-  <div class="phone-switch" role="tablist" aria-label="보여줄 폰">
-    <button type="button" role="tab" data-show="helper" aria-selected="true">이웃 조력자 앱</button>
-    <button type="button" role="tab" data-show="resident" aria-selected="false">재난약자 앱</button>
-  </div>
-
   <main class="stage">
-    <section class="control" aria-label="시연 컨트롤">
+    <section class="side" aria-label="시연 컨트롤">
       <div class="card">
-        <div class="eyebrow" id="scene-eyebrow">장면 1 / 5</div>
+        <div class="eyebrow" id="scene-eyebrow"></div>
         <h2 class="scene-title" id="scene-title"></h2>
         <p class="scene-body" id="scene-body"></p>
         <p class="scene-look" id="scene-look"></p>
@@ -253,43 +214,42 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
         </div>
       </div>
       <div class="card">
-        <div class="eyebrow">가정 기기 · 김○○님 집 현관</div>
-        <div class="device">
-          <div class="lcd" id="lcd"></div>
-          <p class="device-note" id="device-note">재난 중에만 도착 코드가 뜹니다. 코드는 1분마다 바뀝니다.</p>
-        </div>
+        <div class="eyebrow" id="device-title">현관 기기</div>
+        <div class="device"><div class="lcd" id="lcd"></div><p class="device-note">출동 중인 집의 현관 기기입니다. 재난 중에만 도착 코드가 뜨고 1분마다 바뀝니다.</p></div>
         <div class="btn-row">
-          <button class="btn mini" id="btn-water" type="button">수위 센서 물에 담그기</button>
           <button class="btn mini" id="btn-autocode" type="button">코드 대신 입력 (시연용)</button>
+          <button class="btn mini" id="btn-water" type="button">다른 집 수위 센서 울리기</button>
         </div>
       </div>
       <div class="card">
-        <div class="eyebrow">열쇠 보관 기관 · 3곳 중 2곳이 확인해야 열림</div>
+        <div class="eyebrow">기관 확인 · 3곳 중 2곳이 승인해야 정보가 열림</div>
         <div class="keys" id="keys"></div>
         <div class="btn-row">
           <button class="btn mini" id="btn-admin" type="button">관리자가 몰래 열어 보기</button>
           <button class="btn mini" id="btn-fake" type="button">가짜 경보 보내기</button>
         </div>
       </div>
+    </section>
+
+    <section class="phone-col" aria-label="이웃 조력자 앱 화면">
+      <div class="phone-label"><b>이웃 조력자 앱</b> · 박○○님 (동행파트너)</div>
+      <div class="phone"><div class="screen" id="app" data-mood="calm"><div class="rain"></div><div class="toast" id="toast"></div><div id="app-body" style="display:contents"></div></div></div>
+    </section>
+
+    <section class="side-r" aria-label="기록">
+      <div class="card">
+        <div class="eyebrow">당사자에게 간 문자 · 앱 설치 없이 받음</div>
+        <ul class="sms" id="sms"></ul>
+      </div>
       <div class="card">
         <div class="eyebrow">시스템 기록 · 해시 체인</div>
         <ul class="chain" id="chain"></ul>
       </div>
     </section>
-
-    <section class="phone-col" id="col-helper" aria-label="이웃 조력자 앱">
-      <div class="phone-label"><b>이웃 조력자 앱</b> 박○○ · 옆 동네 동행파트너</div>
-      <div class="phone"><div class="screen" id="helper" data-mood="calm"><div class="rain"></div><div class="toast" id="toast-helper"></div><div id="helper-body" style="display:contents"></div></div></div>
-    </section>
-
-    <section class="phone-col" id="col-resident" aria-label="재난약자 앱" data-hidden-mobile="true">
-      <div class="phone-label"><b>재난약자 앱</b> 김○○님 · 반지하 · 휠체어 사용</div>
-      <div class="phone"><div class="screen" id="resident" data-mood="calm"><div class="rain"></div><div class="toast" id="toast-resident"></div><div id="resident-body" style="display:contents"></div></div></div>
-    </section>
   </main>
 
   <footer>
-    모든 인물·주소·연락처는 가상입니다. 봉투는 브라우저에서 AES-256-GCM으로 실제 암호화되고, 열쇠는 Shamir 2-of-3으로 나뉘어 세 기관에 보관됩니다.
+    모든 인물·주소·연락처는 가상입니다. 도움 요청 가구의 정보는 브라우저에서 AES-256-GCM으로 실제 암호화돼 있고, 열쇠는 세 기관에 나뉘어 두 곳 이상 승인해야 복원됩니다.
     경보는 <span id="sigalg">Ed25519</span>로 서명·검증하고, 도착 코드는 HMAC-SHA256으로 1분마다 만들어집니다.
   </footer>
 </div>
@@ -335,459 +295,470 @@ function hmac(key, msg) {
 const EXP = new Uint8Array(510), LOG = new Uint8Array(256);
 (() => { let x = 1; for (let i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x ^= ((x << 1) ^ (x & 0x80 ? 0x1b : 0)) & 0xff; } for (let i = 255; i < 510; i++) EXP[i] = EXP[i - 255]; })();
 const gmul = (a, b) => (a && b) ? EXP[LOG[a] + LOG[b]] : 0, gdiv = (a, b) => a ? EXP[(LOG[a] + 255 - LOG[b]) % 255] : 0;
-function split(secret) {
-  const s = new Map([[1, new Uint8Array(secret.length)], [2, new Uint8Array(secret.length)], [3, new Uint8Array(secret.length)]]);
-  for (let i = 0; i < secret.length; i++) { const c1 = rand(1)[0]; for (let x = 1; x <= 3; x++) s.get(x)[i] = gmul(c1, x) ^ secret[i]; }
-  return s;
-}
-function join(shares) {
-  if (shares.size < 2) throw new Error("조각 부족");
-  const xs = [...shares.keys()], out = new Uint8Array(shares.get(xs[0]).length);
-  for (let i = 0; i < out.length; i++) { let v = 0; for (const xi of xs) { let li = 1; for (const xj of xs) if (xj !== xi) li = gmul(li, gdiv(xj, xj ^ xi)); v ^= gmul(shares.get(xi)[i], li); } out[i] = v; }
-  return out;
-}
-async function aesSeal(hid, ver, obj, key) {
-  const k = await crypto.subtle.importKey("raw", key, "AES-GCM", false, ["encrypt"]), iv = rand(12);
-  return { hid, ver, iv, ct: new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv, additionalData: fields("bestmaker-envelope-v1", hid, "ENV2", ver) }, k, enc.encode(JSON.stringify(obj)))) };
-}
-async function aesOpen(env, key) {
-  const k = await crypto.subtle.importKey("raw", key, "AES-GCM", false, ["decrypt"]);
-  return JSON.parse(dec.decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: env.iv, additionalData: fields("bestmaker-envelope-v1", env.hid, "ENV2", env.ver) }, k, env.ct)));
-}
+function split(secret) { const s = [1, 2, 3].map(() => new Uint8Array(secret.length)); for (let i = 0; i < secret.length; i++) { const c = rand(1)[0]; for (let x = 1; x <= 3; x++) s[x - 1][i] = gmul(c, x) ^ secret[i]; } return s; }
+function join(parts) { const xs = [...parts.keys()], out = new Uint8Array(parts.get(xs[0]).length); for (let i = 0; i < out.length; i++) { let v = 0; for (const xi of xs) { let li = 1; for (const xj of xs) if (xj !== xi) li = gmul(li, gdiv(xj, xj ^ xi)); v ^= gmul(parts.get(xi)[i], li); } out[i] = v; } return out; }
+async function aesSeal(hid, obj, key) { const k = await crypto.subtle.importKey("raw", key, "AES-GCM", false, ["encrypt"]), iv = rand(12); return { hid, iv, ct: new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv, additionalData: fields("bestmaker-envelope-v1", hid, "ENV2") }, k, enc.encode(JSON.stringify(obj)))) }; }
+async function aesOpen(env, key) { const k = await crypto.subtle.importKey("raw", key, "AES-GCM", false, ["decrypt"]); return JSON.parse(dec.decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: env.iv, additionalData: fields("bestmaker-envelope-v1", env.hid, "ENV2") }, k, env.ct))); }
 let SIG = { gen: { name: "Ed25519" }, sign: { name: "Ed25519" }, label: "Ed25519" };
 async function initSig() { try { await crypto.subtle.generateKey(SIG.gen, false, ["sign", "verify"]); } catch { SIG = { gen: { name: "ECDSA", namedCurve: "P-256" }, sign: { name: "ECDSA", hash: "SHA-256" }, label: "ECDSA P-256" }; } }
 const keyPair = () => crypto.subtle.generateKey(SIG.gen, false, ["sign", "verify"]);
 const signB = async (k, m) => new Uint8Array(await crypto.subtle.sign(SIG.sign, k, m));
 const verifyB = async (k, m, s) => { try { return await crypto.subtle.verify(SIG.sign, k, s, m); } catch { return false; } };
 const evBytes = e => fields(e.kind, e.level || e.type, e.cell || e.device, String(e.at), String(e.exp), e.nonce || e.counter);
-function arrivalCode(secret, hid, t) {
-  const h = hmac(secret, fields("arrival-v1", hid, String(Math.floor(t / 60000)))), o = h[31] & 15;
-  return String((((h[o] & 0x7f) << 24) | (h[o + 1] << 16) | (h[o + 2] << 8) | h[o + 3]) % 1000000).padStart(6, "0");
-}
+function arrivalCode(secret, hid, t) { const h = hmac(secret, fields("arrival-v1", hid, String(Math.floor(t / 60000)))), o = h[31] & 15; return String((((h[o] & 0x7f) << 24) | (h[o + 1] << 16) | (h[o + 2] << 8) | h[o + 3]) % 1000000).padStart(6, "0"); }
 
-/* ───────── 상태 ───────── */
-const HID = "HH-" + hex(rand(4)), CELL = "10:20", MIN = 60000;
-const FIELDS = [
-  { k: "UNIT", label: "호수", hint: "몇 호인지", value: "B01호 (반지하)" },
-  { k: "STATUS", label: "상태", hint: "필요한 도움", value: "휠체어 사용 · 혼자 거주 · 귀가 어두움" },
-  { k: "ESCAPE", label: "탈출 경로", hint: "창문·출구 위치", value: "안방 창문 (골목 쪽, 창살 없음)" },
-  { k: "CONTACT", label: "비상연락처", hint: "가족 연락처", value: "딸 010-0000-0000 (가상)" },
+/* ───────── 데이터 (가상) ───────── */
+const MIN = 60000;
+const LABEL = { UNIT: "호수", STATUS: "상태", ESCAPE: "탈출 경로", CONTACT: "비상연락처" };
+const HOUSES = [
+  { id: "H1", match: true, name: "김○○님", short: "김○○님 댁", need: "휠체어", dist: 480, bearing: 270, risk: .98,
+    rec: { UNIT: "B01호 (반지하)", STATUS: "휠체어 사용 · 혼자 거주 · 귀가 어두움", ESCAPE: "안방 창문 (골목 쪽, 창살 없음)", CONTACT: "딸 010-0000-0000 (가상)" }, consent: ["UNIT", "STATUS", "ESCAPE", "CONTACT"] },
+  { id: "H2", match: false, short: "봉인형 가구", need: "이동 보조", dist: 230, bearing: 40, risk: .81, sensorOnly: true,
+    rec: { UNIT: "1층 102호", STATUS: "보행 보조기 사용", ESCAPE: "현관 (계단 3칸)", CONTACT: "아들 010-1111-1111 (가상)" }, consent: ["UNIT", "ESCAPE"] },
+  { id: "H3", match: false, short: "봉인형 가구", need: "시각 보조", dist: 720, bearing: 170, risk: .74,
+    rec: { UNIT: "B02호 (반지하)", STATUS: "시각장애 · 안내견 있음", ESCAPE: "주방 창문", CONTACT: "010-2222-2222 (가상)" }, consent: ["UNIT", "STATUS", "ESCAPE"] },
+  { id: "H4", match: false, short: "봉인형 가구", need: "일반 동행", dist: 380, bearing: 120, risk: .70, taken: true, rec: null, consent: [] },
 ];
-const CUST = ["재난안전부서", "자치구", "감사기관"];
+const AGENCIES = ["재난안전부서", "자치구", "감사기관"];
 const SCENES = [
-  { t: "21:30", short: "평소", title: "평소엔 봉인", body: "김○○님의 정보는 봉투에 암호화돼 있고, 열쇠는 세 기관에 한 조각씩 나뉘어 있습니다. 조력자 박○○님은 누구를 돕게 될지 모릅니다.", look: "오른쪽 폰에서 이웃에게 보여줄 항목을 바꿔 보세요. 바꿀 때마다 봉투가 새로 봉인됩니다." },
-  { t: "21:40", short: "비 예보", title: "비 예보, 대기만", body: "서명된 호우 예보가 도착했습니다. 조력자에게는 동네 이름만 가고, 주소는 열리지 않습니다.", look: "왼쪽 폰: 대기 요청에 주소가 없습니다." },
-  { t: "22:00", short: "폭우", title: "폭우, 가장 가까운 이웃에게", body: "침수 경보가 발령됐습니다. 지정 이웃이 응답하지 않아 옆 동네 동행파트너 박○○님에게 요청이 넘어갑니다.", look: "왼쪽 폰에서 버튼을 밀어 수락해 보세요. 세 기관이 차례로 확인합니다." },
-  { t: "22:10", short: "이웃 도착", title: "문 앞에서 코드 확인", body: "박○○님이 집 앞에 도착했습니다. 현관 기기에 뜬 6자리 코드를 넣으면 김○○님이 허락한 항목만 열립니다.", look: "왼쪽 폰 키패드에 가정 기기의 코드를 입력하세요." },
-  { t: "23:00", short: "비 그침", title: "다시 봉인, 기록은 당사자에게", body: "경보가 해제되자 봉투가 자동으로 다시 잠기고, 조력자 화면의 정보가 지워집니다. 김○○님은 누가 언제 왜 봤는지 알림을 받습니다.", look: "오른쪽 폰의 기록 탭을 확인하세요." },
+  { t: "21:30", short: "평소", title: "평소: 내 매칭 이웃을 미리", body: "박○○님은 동행파트너로 김○○님과 1:1로 매칭돼 있습니다. 평소엔 김○○님 댁 위치와 대피 준비만 볼 수 있고, 다른 가구 정보는 전혀 보이지 않습니다.", look: "앱 홈의 지도와 준비 체크리스트를 눌러 보세요. 활동·내 정보 탭도 열립니다." },
+  { t: "21:40", short: "비 예보", title: "비 예보: 대기", body: "서명된 호우 예보가 도착했습니다. 앱이 노을빛으로 바뀌고, 김○○님 댁 근처에서 대기해 달라는 요청이 옵니다. 주변 다른 가구는 숫자만 보입니다.", look: "주소 없는 대기 요청을 확인하세요." },
+  { t: "22:00", short: "폭우", title: "폭우: 지금 도움이 필요한 이웃", body: "침수 경보가 발령됐습니다. 앱 홈이 원형 레이더로 바뀌어, 내 위치를 중심으로 250m·500m·1km 안에서 도움을 요청한 가구가 바로 뜹니다. 내 매칭인 김○○님이 맨 위입니다.", look: "레이더의 점이나 아래 목록을 눌러 고르고, 버튼을 밀어 출동하세요." },
+  { t: "22:10", short: "이웃 도착", title: "문 앞 코드로 도착 확인", body: "현관 기기에 뜬 6자리 코드를 넣으면 도착이 확인됩니다. 매칭이 아닌 봉인형 가구는 이때 처음으로 당사자가 허락한 항목이 열립니다.", look: "앱 키패드에 왼쪽 현관 기기의 코드를 입력하세요." },
+  { t: "23:00", short: "비 그침", title: "다시 봉인", body: "경보가 해제되자 출동 중 열렸던 정보가 앱에서 지워지고 봉투가 다시 잠깁니다. 당사자에게는 누가 언제 왜 봤는지 문자가 갑니다.", look: "앱의 활동 탭에 이번 출동이 기록됩니다." },
 ];
 let E, S;
 
 async function boot() {
-  const issuer = await keyPair(), device = await keyPair();
-  E = { issuer, device, deviceSecret: rand(32), counter: 0, nonces: new Set() };
+  E = { issuer: await keyPair(), nonces: new Set(), houses: {} };
+  for (const h of HOUSES) E.houses[h.id] = { device: await keyPair(), secret: rand(32), counter: 0 };
   S = {
-    scene: 0, clock: hm2ms("21:30"), consent: { UNIT: true, STATUS: true, ESCAPE: true, CONTACT: false },
-    env: null, shares: [], ver: 0, evidence: null, helper: "idle", resTab: "home", keys: ["보관 중", "보관 중", "보관 중"], keyState: ["", "", ""],
-    record: null, code: "", attempts: 5, codeErr: false, offerAt: 0, openedAt: 0, chain: [], notes: [], basis: "", busy: false, mobile: "helper",
+    scene: 0, clock: hm2ms("21:30"), tab: "home", reqs: [], sel: null, mission: null, busy: false,
+    agencies: AGENCIES.map(() => ({ st: "", txt: "대기" })), chain: [], sms: [], evidence: null, alertBasis: "",
+    prep: { loc: true, route: false, contact: true, gear: false }, radius: 1000,
+    caps: { WHEEL: true, SIGN: false, AID: true }, notif: { night: true, vib: true, avail: true }, drillJoined: false,
+    history: [
+      { at: "09.12", title: "모의훈련 · 김○○님 댁 대피 연습", sub: "도착 11분 · 창문 대피 경로 확인", kind: "drill" },
+      { at: "08.21", title: "대기 요청 · 호우 예보", sub: "출동 없이 해제", kind: "wait" },
+      { at: "07.30", title: "기본 교육 이수", sub: "재난약자 동행·휠체어 이동 보조 (2시간)", kind: "edu" },
+    ], unread: 0,
   };
-  await reseal("최초 봉인");
-  log("등록", "김○○님 봉투 봉인 · 열쇠 3조각 분산");
+  for (const h of HOUSES) {
+    if (!h.rec) continue;
+    const key = rand(32);
+    E.houses[h.id].env = await aesSeal(h.id, { ...h.rec, consent: h.consent }, key);
+    E.houses[h.id].shares = split(key); key.fill(0);
+  }
+  log("등록", "도움 요청 가능 가구 봉인 · 열쇠 3기관 분산");
   render();
 }
 function hm2ms(s) { const [h, m] = s.split(":").map(Number); return Date.UTC(2026, 6, 15, h - 9, m); }
 function hm(ms) { return new Date(ms + 9 * 3600000).toISOString().slice(11, 16); }
-
-async function reseal(why) {
-  const key = rand(32), rec = Object.fromEntries(FIELDS.map(f => [f.k, f.value]));
-  rec.consent = FIELDS.filter(f => S.consent[f.k]).map(f => f.k);
-  S.ver++;
-  S.env = await aesSeal(HID, S.ver, rec, key);
-  const sh = split(key); S.shares = [sh.get(1), sh.get(2), sh.get(3)]; key.fill(0);
-  S.keys = ["보관 중", "보관 중", "보관 중"]; S.keyState = ["", "", ""];
-}
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const house = id => HOUSES.find(h => h.id === id);
 function log(type, detail) {
   const prev = S.chain.length ? S.chain[S.chain.length - 1].hash : "0".repeat(64);
-  const hash = hex(sha256(fields(prev, S.chain.length, S.clock, type, detail)));
-  S.chain.push({ at: S.clock, type, detail, hash });
+  S.chain.push({ at: S.clock, type, detail, hash: hex(sha256(fields(prev, S.chain.length, S.clock, type, detail))) });
 }
-function notify(text, warn = false, who = "resident") {
-  if (who === "resident") S.notes.unshift({ at: S.clock, text, warn });
-  toast(who, warn ? "차단 알림" : "비상봉투", text);
-}
-let toastTimer = {};
-function toast(who, title, text) {
-  const el = document.getElementById("toast-" + who);
-  el.innerHTML = `<div class="ic">${sealIcon(18)}</div><div><b>${esc(title)} · ${hm(S.clock)}</b>${esc(text)}</div>`;
+function sms(to, text, warn = false) { S.sms.unshift({ at: S.clock, to, text, warn }); }
+let toastTimer;
+function toast(title, text) {
+  const el = document.getElementById("toast");
+  el.innerHTML = `<div class="ic">${envIc()}</div><div><b>${esc(title)} · ${hm(S.clock)}</b>${esc(text)}</div>`;
   requestAnimationFrame(() => el.classList.add("show"));
-  clearTimeout(toastTimer[who]); toastTimer[who] = setTimeout(() => el.classList.remove("show"), 4200);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 4000);
 }
-function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
-/* 증거 */
-async function issueAlert(level) {
-  const e = { kind: "alert", level, cell: CELL, at: S.clock, exp: S.clock + 180 * MIN, nonce: hex(rand(8)) };
-  e.sig = await signB(E.issuer.privateKey, evBytes(e)); return e;
-}
-async function deviceSignal() {
-  const e = { kind: "device", type: "WATER", device: "DEV-01", at: S.clock, exp: S.clock + 60 * MIN, counter: String(++E.counter) };
-  e.sig = await signB(E.device.privateKey, evBytes(e)); return e;
-}
+/* ───────── 증거·개봉 ───────── */
+async function issueAlert(level) { const e = { kind: "alert", level, cell: "10:20", at: S.clock, exp: S.clock + 180 * MIN, nonce: hex(rand(8)) }; e.sig = await signB(E.issuer.privateKey, evBytes(e)); return e; }
+async function deviceSignal(id) { const d = E.houses[id]; const e = { kind: "device", type: "WATER", device: id, at: S.clock, exp: S.clock + 60 * MIN, counter: String(++d.counter) }; e.sig = await signB(d.device.privateKey, evBytes(e)); return e; }
+function pubFor(e) { return e.kind === "alert" ? E.issuer.publicKey : E.houses[e.device].device.publicKey; }
 async function ingest(e) {
-  const pub = e.kind === "alert" ? E.issuer.publicKey : E.device.publicKey;
-  if (!await verifyB(pub, evBytes(e), e.sig)) { log("증거 거부", "서명 검증 실패"); return false; }
+  if (!await verifyB(pubFor(e), evBytes(e), e.sig)) { log("증거 거부", "서명 검증 실패 · 무시"); return false; }
   if (e.nonce) { if (E.nonces.has(e.nonce)) { log("증거 거부", "재전송된 경보"); return false; } E.nonces.add(e.nonce); }
-  log("증거 수신", e.kind === "alert" ? (e.level === "WARNING" ? "침수 경보 (서명 확인)" : "호우 예보 (서명 확인)") : "가정 수위 센서 (기기 서명 확인)");
+  log("증거 수신", e.kind === "alert" ? (e.level === "WARNING" ? "침수 경보 · 서명 확인" : "호우 예보 · 서명 확인") : "가정 수위 센서 · 기기 서명 확인");
   return true;
 }
-/** 각 보관 기관이 독립적으로 검증 → 2곳 이상이면 복원 */
-async function openEnvelope(role) {
-  const parts = new Map();
+async function openHouse(id, role, evidence) {
+  const parts = new Map(), d = E.houses[id];
   for (let i = 0; i < 3; i++) {
-    S.keyState[i] = "run"; S.keys[i] = "확인 중"; renderKeys(); renderHelperOnlyVerify();
-    await wait(520);
-    let ok = false, why = "";
-    const e = S.evidence;
+    S.agencies[i] = { st: "run", txt: "확인 중" }; renderKeys(); renderVerify();
+    await wait(480);
+    let why = "";
     if (role === "admin") why = "관리자는 열 수 없음";
-    else if (!e) why = "증거 없음";
-    else if (!await verifyB(e.kind === "alert" ? E.issuer.publicKey : E.device.publicKey, evBytes(e), e.sig)) why = "서명 불일치";
-    else if (S.clock >= e.exp) why = "유효 시간 만료";
-    else if (e.kind === "alert" && e.level !== "WARNING") why = "예보만으로는 부족";
-    else ok = true;
-    if (ok) { parts.set(i + 1, S.shares[i].slice()); S.keyState[i] = "ok"; S.keys[i] = "조각 제공"; }
-    else { S.keyState[i] = "no"; S.keys[i] = "거부 · " + why; }
-    renderKeys(); renderHelperOnlyVerify();
+    else if (!evidence) why = "근거 없음";
+    else if (!await verifyB(pubFor(evidence), evBytes(evidence), evidence.sig)) why = "서명 불일치";
+    else if (S.clock >= evidence.exp) why = "유효 시간 지남";
+    else if (evidence.kind === "alert" && evidence.level !== "WARNING") why = "예보만으로는 안 열림";
+    else if (evidence.kind === "device" && evidence.device !== id) why = "다른 집 신호";
+    if (why) S.agencies[i] = { st: "no", txt: "거부 · " + why };
+    else { S.agencies[i] = { st: "ok", txt: "승인" }; parts.set(i + 1, d.shares[i].slice()); }
+    renderKeys(); renderVerify();
   }
   if (parts.size < 2) return null;
   const key = join(parts);
-  try { return await aesOpen(S.env, key); } finally { key.fill(0); }
+  try { return await aesOpen(d.env, key); } finally { key.fill(0); }
 }
-const wait = ms => new Promise(r => setTimeout(r, ms));
 
-/* ───────── 장면 진행 ───────── */
+/* ───────── 시나리오 ───────── */
 async function goScene(n) {
   if (S.busy) return;
-  S.busy = true;
-  try {
-    while (S.scene < n) { S.scene++; await runScene(S.scene); }
-  } finally { S.busy = false; render(); }
+  S.busy = true; render();
+  try { while (S.scene < n) { S.scene++; await runScene(S.scene); } }
+  finally { S.busy = false; render(); }
 }
 async function runScene(n) {
-  S.clock = hm2ms(SCENES[n].t);
+  S.clock = Math.max(S.clock, hm2ms(SCENES[n].t));
   if (n === 1) {
-    S.evidence = await issueAlert("ADVISORY");
-    await ingest(S.evidence);
-    S.helper = "standby"; log("대기 호출", "10:20 격자 조력자 3명 · 주소 없음");
-    toast("helper", "대기 요청", "○○동 일대에서 대기해 주세요");
+    const e = await issueAlert("ADVISORY"); await ingest(e);
+    log("대기 요청", "10:20 격자 조력자 · 주소 없음");
+    toast("호우 예보", "김○○님 댁 근처에서 대기해 주세요");
   }
   if (n === 2) {
-    S.evidence = await issueAlert("WARNING");
-    await ingest(S.evidence);
-    startOffer("공식 침수경보");
+    const e = await issueAlert("WARNING");
+    if (await ingest(e)) { S.evidence = e; S.alertBasis = "공식 침수경보"; }
+    for (const h of HOUSES) if (!h.sensorOnly) addReq(h.id, "공식 침수경보", S.evidence);
+    if (!S.mission) S.sel = "H1";
+    S.tab = "home";
+    toast(`도움 요청 ${openReqs().length}건`, "김○○님(내 매칭) 포함 · 레이더를 확인하세요");
+    log("출동 요청", `반경 1km 안 ${S.reqs.length}가구 · 지정 조력자 우선`);
   }
   if (n === 3) {
-    if (S.helper === "offer") await accept();
-    if (S.helper === "enroute") { await typeCode(arrivalCode(E.deviceSecret, HID, Date.now())); }
+    if (!S.mission) { S.sel = "H1"; await accept("H1"); }
+    if (S.mission && S.mission.stage === "enroute") { S.tab = "home"; await typeCode(currentCode()); }
   }
   if (n === 4) await endAll();
+}
+function addReq(id, basis, evidence) {
+  if (S.reqs.some(r => r.id === id)) return;
+  S.reqs.push({ id, basis, evidence, status: house(id).taken ? "taken" : "open", at: S.clock });
+}
+const openReqs = () => S.reqs.filter(r => r.status === "open" && house(r.id).dist <= S.radius);
+async function accept(id) {
+  const r = S.reqs.find(x => x.id === id);
+  if (!r || r.status !== "open" || S.mission) return;
+  const h = house(id);
+  S.mission = { id, stage: "verify", code: "", attempts: 5, err: false, rec: null, openedAt: 0, steps: { door: false, move: false, shelter: false } };
+  r.status = "mine";
+  log("수락", `박○○ → ${h.match ? "김○○님 (지정 조력자)" : h.short + " (확장 조력자 A)"} · 다른 조력자 화면에서 삭제`);
+  S.tab = "home"; render();
+  const rec = await openHouse(id, "helper", r.evidence);
+  if (!rec) { S.mission = null; r.status = "open"; toast("열 수 없어요", "기관 승인이 부족해요"); render(); return; }
+  S.mission.rec = rec; S.mission.stage = "enroute";
+  log("열쇠 복원", "3곳 승인 · 메모리에서만 복원");
   render();
 }
-function startOffer(basis) {
-  S.basis = basis; S.helper = "offer"; S.offerAt = Date.now();
-  log("출동 요청", "지정 이웃 무응답 → 확장 조력자 A 박○○");
-  toast("helper", "출동 요청", "서쪽 약 500m · 휠체어");
-  notify("도움 요청이 전달됐어요. 가장 가까운 이웃을 찾고 있어요");
-}
-async function accept() {
-  if (S.helper !== "offer") return;
-  S.helper = "verify"; render();
-  log("수락", "박○○ 수락 · 다른 조력자 화면에서 요청 삭제");
-  const rec = await openEnvelope("helper");
-  if (!rec) { S.helper = "offer"; render(); return; }
-  S.record = rec; S.helper = "enroute"; S.code = ""; S.attempts = 5;
-  log("열쇠 복원", "3곳 중 3곳 확인 · 메모리에서만 복원");
-  notify("이웃 1명이 오고 있어요 · 약 500m");
-  render();
-}
-async function typeCode(code) {
-  for (const d of code) { S.code += d; renderHelper(); await wait(110); }
-  await checkCode();
-}
+function currentCode() { return S.mission ? arrivalCode(E.houses[S.mission.id].secret, S.mission.id, Date.now()) : ""; }
+async function typeCode(code) { for (const d of code) { S.mission.code += d; renderApp(); await wait(100); } await checkCode(); }
 async function checkCode() {
-  if (S.code.length < 6) return;
-  const now = Date.now(), ok = [0, -MIN].some(dt => arrivalCode(E.deviceSecret, HID, now + dt) === S.code);
-  if (!ok) {
-    S.attempts--; S.codeErr = true; S.code = "";
-    log("도착 실패", `코드 불일치 (${S.attempts}회 남음)`);
-    if (S.attempts <= 0) { S.helper = "locked"; log("잠금", "도착 확인 5회 실패"); }
-    render(); setTimeout(() => { S.codeErr = false; renderHelper(); }, 600); return;
+  const m = S.mission; if (!m || m.code.length < 6) return;
+  const sec = E.houses[m.id].secret, now = Date.now();
+  if (![0, -MIN].some(dt => arrivalCode(sec, m.id, now + dt) === m.code)) {
+    m.attempts--; m.err = true; m.code = "";
+    log("도착 실패", `코드 불일치 · ${m.attempts}회 남음`);
+    if (m.attempts <= 0) { m.stage = "locked"; log("잠금", "도착 확인 5회 실패 · 다른 이웃에게 넘김"); }
+    render(); setTimeout(() => { if (S.mission) { S.mission.err = false; renderApp(); } }, 600); return;
   }
-  S.helper = "open"; S.openedAt = Date.now();
-  const shown = S.record.consent.map(k => FIELDS.find(f => f.k === k).label);
-  log("열람", `확장 조력자 A · ${shown.join("·")}`);
-  notify(`이웃 조력자 1명이 내 정보를 열람했어요 (${shown.join("·")}) · 근거: ${S.basis}`);
+  m.stage = "onsite"; m.openedAt = Date.now();
+  const h = house(m.id), shown = m.rec.consent.map(k => LABEL[k]);
+  log("도착·열람", `${h.match ? "지정 조력자" : "확장 조력자 A"} · ${shown.join("·")}`);
+  sms(h.match ? "김○○님" : "당사자", `[비상봉투] ${hm(S.clock)} 이웃 조력자 1명이 도착해 정보를 확인했습니다 (${shown.join("·")}). 근거: ${S.reqs.find(r => r.id === m.id).basis}`);
   render();
-  setTimeout(() => document.querySelector("#helper .env-svg")?.classList.add("open"), 60);
 }
 async function endAll() {
   S.clock = hm2ms("23:00");
-  S.record = null; S.evidence = null;
-  const had = S.helper !== "idle" && S.helper !== "standby";
-  S.helper = had ? "closed" : "idle";
-  await reseal("재봉인");
-  log("재봉인", "경보 해제 · 토큰 폐기 · 조력자 화면 삭제");
-  notify("상황이 끝나 내 봉투가 다시 잠겼어요");
+  const m = S.mission;
+  if (m) {
+    const h = house(m.id);
+    S.history.unshift({ at: "07.15", title: `출동 · ${h.match ? "김○○님 (내 매칭)" : h.short}`, sub: `22:00 요청 · ${m.stage === "onsite" ? "도착 확인 · 대피 도움" : "출동 중 해제"} · 23:00 재봉인`, kind: "go" });
+    S.unread++;
+    sms(h.match ? "김○○님" : "당사자", `[비상봉투] ${hm(S.clock)} 상황이 끝나 정보가 다시 잠겼습니다. 조력자 화면의 정보는 삭제됐습니다.`);
+  }
+  S.mission = m ? { ...m, stage: "closed", rec: null } : null;
+  S.reqs = []; S.sel = null; S.evidence = null;
+  log("재봉인", "경보 해제 · 토큰 폐기 · 조력자 화면 정보 삭제");
+  toast("경보 해제", "출동 중 열렸던 정보가 지워졌어요");
 }
 
 /* ───────── 렌더링 ───────── */
 const $ = id => document.getElementById(id);
-function sealIcon(s = 20, c = "#fff") { return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3" fill="none" stroke="${c}" stroke-width="2"/><path d="M3 7 L12 13 L21 7" fill="none" stroke="${c}" stroke-width="2"/></svg>`; }
-function keySvg(state) { const c = state === "ok" ? "var(--safe)" : state === "no" ? "var(--deny)" : state === "run" ? "var(--amber)" : "var(--sub)"; return `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="12" r="4.5" fill="none" stroke="${c}" stroke-width="2.2"/><path d="M12.5 12 H21 M18 12 V15 M21 12 V14.5" stroke="${c}" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>`; }
-function envelope(color, open = false) {
-  return `<svg class="env-svg ${open ? "open" : ""}" viewBox="0 0 200 150" aria-hidden="true">
-    <rect class="paper" x="28" y="40" width="144" height="92" rx="6" fill="#fff" stroke="#d8dee6"/>
-    <g class="paper"><rect x="44" y="54" width="80" height="6" rx="3" fill="#d8dee6"/><rect x="44" y="68" width="112" height="6" rx="3" fill="#e4e9ef"/><rect x="44" y="82" width="96" height="6" rx="3" fill="#e4e9ef"/></g>
-    <path d="M12 44 L100 104 L188 44 V138 a8 8 0 0 1 -8 8 H20 a8 8 0 0 1 -8 -8 Z" fill="${color}"/>
-    <path d="M12 138 L82 90 M188 138 L118 90" stroke="rgba(255,255,255,.28)" stroke-width="2"/>
-    <path class="flap" d="M12 44 a8 8 0 0 1 8 -8 H180 a8 8 0 0 1 8 8 L100 104 Z" fill="${color}" stroke="rgba(0,0,0,.08)"/>
-    <g class="seal"><circle cx="100" cy="100" r="19" fill="#ff6a2b" stroke="#fff" stroke-width="3"/><text x="100" y="107" text-anchor="middle" font-family="Black Han Sans, sans-serif" font-size="19" fill="#fff">봉</text></g>
-  </svg>`;
+const mood = () => S.mission?.stage === "closed" || S.scene === 4 ? "dawn" : ["calm", "dusk", "storm", "storm", "dawn"][S.scene];
+const incident = () => S.reqs.length > 0 || (S.mission && S.mission.stage !== "closed");
+function envIc(s = 18) { return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3" fill="none" stroke="#fff" stroke-width="2"/><path d="M3 7 L12 13 L21 7" fill="none" stroke="#fff" stroke-width="2"/></svg>`; }
+function ic(n) {
+  const p = { home: "M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z", list: "M5 6 H19 M5 12 H19 M5 18 H14", user: "M12 12 a4 4 0 1 0 0 -8 a4 4 0 1 0 0 8 M4 21 a8 7 0 0 1 16 0", pin: "M12 21 s-7 -7 -7 -12 a7 7 0 0 1 14 0 c0 5 -7 12 -7 12 z M12 11 a2 2 0 1 0 0 -4 a2 2 0 1 0 0 4", book: "M5 4 H17 a2 2 0 0 1 2 2 V20 H7 a2 2 0 0 1 -2 -2 Z M5 18 a2 2 0 0 1 2 -2 H19", clock: "M12 21 a9 9 0 1 0 0 -18 a9 9 0 1 0 0 18 M12 7 V12 L15 14", go: "M5 12 H19 M13 6 L19 12 L13 18" }[n];
+  return `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="${p}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
-function statusBar() { return `<div class="status"><span>${hm(S.clock)}</span><span class="icons"><i style="width:3px;height:5px"></i><i style="width:3px;height:7px"></i><i style="width:3px;height:9px"></i><i style="width:3px;height:11px"></i><i style="width:22px;height:11px;border-radius:3px;margin-left:4px"></i></span></div>`; }
-function moodFor(scene) { return ["calm", "dusk", "storm", "storm", "dawn"][scene]; }
+function checkIc(s = 16, c = "#fff") { return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 L10 17 L19 7" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
+function lockSvg(st) { const c = st === "ok" ? "var(--safe)" : st === "no" ? "var(--deny)" : st === "run" ? "var(--amber)" : "var(--sub)"; return `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5" fill="none" stroke="${c}" stroke-width="2.2"/><path d="M8 10 V7 a4 4 0 0 1 8 0 V10" fill="none" stroke="${c}" stroke-width="2.2"/></svg>`; }
 
-function renderControl() {
+function renderSide() {
   $("timeline").innerHTML = SCENES.map((s, i) => `<button type="button" data-scene="${i}" ${i === S.scene ? 'aria-current="step"' : ""} ${i < S.scene || S.busy ? "disabled" : ""}><span class="t">${s.t}</span>${esc(s.short)}</button>`).join("");
   const sc = SCENES[S.scene];
   $("scene-eyebrow").textContent = `장면 ${S.scene + 1} / 5 · ${sc.t}`;
   $("scene-title").textContent = sc.title; $("scene-body").textContent = sc.body; $("scene-look").textContent = sc.look;
   $("btn-next").disabled = S.busy || S.scene >= 4;
   $("btn-next").textContent = S.scene >= 4 ? "시연 끝" : `다음: ${SCENES[S.scene + 1].short}`;
-  $("btn-autocode").disabled = S.helper !== "enroute" || S.busy;
-  $("btn-water").disabled = S.busy || ["offer", "verify", "enroute", "open"].includes(S.helper);
+  $("btn-autocode").disabled = S.busy || S.mission?.stage !== "enroute";
+  $("btn-water").disabled = S.busy || S.reqs.some(r => r.id === "H2") || S.scene >= 4;
   renderKeys(); renderDevice();
+  $("sms").innerHTML = S.sms.length ? S.sms.map(m => `<li class="${m.warn ? "warn" : ""}"><small>${hm(m.at)} · ${esc(m.to)}에게</small>${esc(m.text)}</li>`).join("") : `<li class="empty">아직 보낸 문자가 없어요. 누군가 정보를 열거나 열려고 하면 당사자에게 바로 문자가 갑니다.</li>`;
   $("chain").innerHTML = S.chain.slice().reverse().map(c => `<li><time>${hm(c.at)}</time><span><b>${esc(c.type)}</b> ${esc(c.detail)}<br><span class="h">${c.hash.slice(0, 20)}…</span></span></li>`).join("");
 }
-function renderKeys() {
-  $("keys").innerHTML = CUST.map((n, i) => `<div class="key-row">${keySvg(S.keyState[i])}<span>${n}</span><span class="chip ${S.keyState[i]}">${esc(S.keys[i])}</span></div>`).join("");
-}
+function renderKeys() { $("keys").innerHTML = AGENCIES.map((n, i) => `<div class="key-row">${lockSvg(S.agencies[i].st)}<span>${n}</span><span class="chip ${S.agencies[i].st}">${esc(S.agencies[i].txt)}</span></div>`).join(""); }
 function renderDevice() {
-  const active = ["enroute", "open"].includes(S.helper) || (S.scene >= 2 && S.scene < 4);
-  const lcd = $("lcd");
-  if (!active) { lcd.className = "lcd off"; lcd.innerHTML = "대기 중<br>코드 없음"; return; }
-  const now = Date.now(), left = 60 - Math.floor(now / 1000) % 60;
-  lcd.className = "lcd";
-  lcd.innerHTML = `<div>도착 코드</div><div class="digits">${arrivalCode(E.deviceSecret, HID, now)}</div><div class="bar"><i style="width:${left / 60 * 100}%"></i></div>`;
+  const m = S.mission, lcd = $("lcd");
+  $("device-title").textContent = m && m.stage !== "closed" ? `현관 기기 · ${house(m.id).match ? "김○○님 댁" : house(m.id).short}` : "현관 기기 · 출동 중인 집";
+  if (!m || !["enroute", "onsite"].includes(m.stage)) { lcd.className = "lcd off"; lcd.innerHTML = "대기 중<br>코드 없음"; return; }
+  const left = 60 - Math.floor(Date.now() / 1000) % 60;
+  lcd.className = "lcd"; lcd.innerHTML = `<div>도착 코드</div><div class="digits">${currentCode()}</div><div class="bar"><i style="width:${left / 60 * 100}%"></i></div>`;
 }
 
-function renderHelper() {
-  const scr = $("helper");
-  scr.dataset.mood = S.helper === "closed" ? "dawn" : moodFor(S.scene);
+function statusBar() { return `<div class="status"><span>${hm(S.clock)}</span><span class="icons"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><i style="height:11px"></i><i style="width:22px;height:11px;border-radius:3px;margin-left:5px"></i></span></div>`; }
+function renderApp() {
+  const scr = $("app");
+  scr.dataset.mood = mood();
   scr.dataset.rain = S.scene === 1 ? "light" : (S.scene === 2 || S.scene === 3) ? "heavy" : "";
-  const bar = statusBar();
-  const head = `<div class="appbar"><div class="who">이웃 조력자<b>박○○님</b></div><span class="s-chip">확장 조력자 A</span></div>`;
-  const tabs = `<nav class="tabbar"><button aria-selected="true" type="button">${ic("home")}홈</button><button type="button">${ic("list")}활동</button><button type="button">${ic("user")}내 정보</button></nav>`;
-  let body = "";
-  const h = S.helper;
-  if (h === "idle") {
-    body = `<div class="s-card center"><div class="envelope-wrap">${envelope("#2346e8")}</div><p class="s-title">오늘은 조용해요</p><p class="s-sub">평소에는 어떤 가구 정보도 받지 않아요.<br>누구를 돕게 될지는 재난 때 정해집니다.</p></div>
-      <div class="stat3"><div><b>완료</b>활동 서약</div><div><b>이수</b>기본 교육</div><div><b>0회</b>이번 달 출동</div></div>
-      <div class="s-card"><div class="s-row" style="justify-content:space-between"><b>우리 동네 날씨</b><span class="s-chip">맑음</span></div><p class="s-sub">서울 ○○구 · 강수량 0mm · 하수관로 수위 정상</p></div>`;
-  } else if (h === "standby") {
-    body = `<div class="banner"><span class="dot"></span>호우 예보 · ${SCENES[1].t} 발령</div>
-      <div class="s-card"><span class="s-chip">대기 요청</span><p class="s-title">○○동 일대에서<br>대기해 주세요</p><p class="s-sub">근처에 도움이 필요할 수 있는 가구가 3곳 있어요. 주소와 가구 정보는 아직 열리지 않아요.</p>
-      <div class="toggle-row"><span>지금 출동할 수 있어요<small>끄면 다른 이웃에게 먼저 요청해요</small></span><button class="switch" role="switch" aria-checked="true" type="button" aria-label="출동 가능"></button></div></div>
-      <div class="s-card"><b>대기하는 동안</b><p class="s-sub">휴대폰 배터리를 확인하고, 미끄럼 방지 신발과 손전등을 준비해 주세요. 물이 무릎 위로 차면 들어가지 말고 119에 알려 주세요.</p></div>`;
-  } else if (h === "offer") {
-    body = `<div class="offer"><div class="s-row" style="justify-content:space-between"><span class="s-chip">출동 요청 · ${esc(S.basis)}</span><span class="count" id="offer-count">3:00</span></div>
-      <div class="radar"><i></i><i></i><i></i><div class="compass"><svg width="40" height="40" viewBox="0 0 24 24"><path d="M12 3 L18 20 L12 16 L6 20 Z" fill="#fff" transform="rotate(-90 12 12)"/></svg></div></div>
-      <div class="center" style="display:grid;gap:4px"><p class="s-big">서쪽 약 500m</p><p class="s-sub">휠체어 이용 · 혼자 대피 어려움</p></div>
-      <div class="s-card" style="padding:12px 14px"><p class="s-sub" style="color:var(--s-ink)">지정 이웃이 응답하지 않아 가장 가까운 박○○님께 요청이 왔어요. 주소는 도착 후 확인할 수 있어요.</p></div>
-      <div class="slider" id="slider"><div class="track-fill" id="slider-fill"></div><span class="label">밀어서 출동하기</span><button class="thumb" id="thumb" type="button" aria-label="출동 수락">${arrowIc()}</button></div>
-      <button class="text-btn" id="btn-decline" type="button">지금은 어려워요</button></div>`;
-  } else if (h === "verify") {
-    body = `<div class="s-card center"><p class="s-title">열쇠를 맞추는 중</p><p class="s-sub">세 기관이 경보 서명과 박○○님의 자격을 각자 확인해요. 두 곳 이상 확인되면 봉투가 열려요.</p></div>
-      <div class="verify" id="verify-list">${verifyRows()}</div>`;
-  } else if (h === "enroute") {
-    body = `<div class="map">${mapSvg()}</div>
-      <div class="s-card" style="gap:8px"><b>문 앞에 도착하면</b><p class="s-sub">현관 기기 화면의 6자리 코드를 입력하세요. 코드가 맞아야 필요한 정보가 열려요.</p>
-      <div class="codebox ${S.codeErr ? "err" : ""}">${Array.from({ length: 6 }, (_, i) => `<span class="${i === S.code.length ? "cur" : ""}">${S.code[i] ?? ""}</span>`).join("")}</div>
-      <p class="err-msg">${S.attempts < 5 ? `코드가 맞지 않아요 · ${S.attempts}회 남음` : ""}</p>
-      <div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(d => `<button type="button" data-key="${d}">${d}</button>`).join("")}<button type="button" class="fn" data-key="clear">지우기</button><button type="button" data-key="0">0</button><button type="button" class="fn" data-key="back">←</button></div></div>`;
-  } else if (h === "locked") {
-    body = `<div class="s-card center"><p class="s-title">도착 확인이 잠겼어요</p><p class="s-sub">코드를 5번 틀려 이 출동은 다른 이웃에게 넘어갔어요. 담당 공무원에게 기록이 전달돼요.</p></div>`;
-  } else if (h === "open") {
-    const rec = S.record;
-    const rows = FIELDS.map(f => rec.consent.includes(f.k) ? `<div><dt>${f.label}</dt><dd>${esc(rec[f.k])}</dd></div>` : `<div><dt>${f.label}</dt><dd class="hidden-f">김○○님이 공개하지 않은 항목이에요</dd></div>`).join("");
-    const wm = Array.from({ length: 40 }, () => `<span>박○○ · ${hm(S.clock)}</span>`).join("");
-    body = `<div class="envelope-wrap">${envelope("#ff6a2b")}</div>
-      <div class="s-card info"><div class="wm" aria-hidden="true">${wm}</div><div class="s-row" style="justify-content:space-between"><b>도착 확인 완료</b><span class="s-chip">허락된 항목만</span></div><dl>${rows}</dl>
-      <div class="timer"><span>화면 저장·복사 불가 · 워터마크</span><span id="del-timer">30:00 뒤 삭제</span></div></div>
-      <div class="call"><span>물이 계속 차오르면<br>바로 119에 알려 주세요</span><b>119</b></div>`;
-  } else if (h === "closed") {
-    body = `<div class="done-ic">${checkIc()}</div><div class="center" style="display:grid;gap:6px"><p class="s-title">봉투가 다시 잠겼어요</p><p class="s-sub">경보가 해제되어 김○○님의 정보가 이 폰에서 지워졌어요. 열람 기록은 김○○님께 전달됐어요.</p></div>
-      <div class="s-card"><div class="s-row" style="justify-content:space-between"><b>이번 출동</b><span class="s-chip">완료</span></div><p class="s-sub">22:00 요청 · 22:10 도착 확인 · 23:00 재봉인<br>함께해 주셔서 고맙습니다.</p></div>`;
-  }
-  $("helper-body").innerHTML = bar + head + `<div class="content">${body}</div>` + tabs;
-  if (h === "offer") bindSlider();
+  const inc = incident();
+  const chip = S.mission && S.mission.stage !== "closed" ? `<span class="s-chip">출동 중</span>` : inc ? `<span class="s-chip">도움 요청 ${openReqs().length}건</span>` : S.scene === 1 ? `<span class="s-chip">대기</span>` : `<span class="s-chip gray">평시</span>`;
+  const head = `<div class="appbar"><div class="who">동행파트너<b>박○○님</b></div>${chip}</div>`;
+  const body = S.tab === "activity" ? activityTab() : S.tab === "me" ? meTab() : homeTab();
+  const tabs = `<nav class="tabbar" role="tablist"><button type="button" role="tab" data-tab="home" aria-selected="${S.tab === "home"}">${ic("home")}홈</button><button type="button" role="tab" data-tab="activity" aria-selected="${S.tab === "activity"}">${ic("list")}활동${S.unread ? `<span class="badge">${S.unread}</span>` : ""}</button><button type="button" role="tab" data-tab="me" aria-selected="${S.tab === "me"}">${ic("user")}내 정보</button></nav>`;
+  const prev = $("content"), keep = prev && prev.dataset.tab === S.tab ? prev.scrollTop : 0;
+  $("app-body").innerHTML = statusBar() + head + `<div class="content" id="content" data-tab="${S.tab}">${body}</div>` + tabs;
+  $("content").scrollTop = keep;
+  if (S.tab === "home" && S.sel && !S.mission && inc) bindSlider();
 }
-function verifyRows() {
-  return CUST.map((n, i) => {
-    const st = S.keyState[i];
-    const icon = st === "run" ? `<div class="spin"></div>` : st === "ok" ? checkIc(18, "var(--s-accent)") : st === "no" ? "✕" : keySvg("");
-    return `<div class="v-row"><div class="v-ic">${icon}</div><div>${n}<small>${esc(S.keys[i])}</small></div><span class="s-chip">조각 ${i + 1}</span></div>`;
-  }).join("");
-}
-function renderHelperOnlyVerify() { const el = $("verify-list"); if (el) el.innerHTML = verifyRows(); }
 
-function renderResident() {
-  const scr = $("resident");
-  const opened = S.helper === "open", coming = ["verify", "enroute"].includes(S.helper), searching = S.helper === "offer";
-  scr.dataset.mood = S.scene === 4 ? "dawn" : moodFor(S.scene);
-  scr.dataset.rain = S.scene === 1 ? "light" : (S.scene === 2 || S.scene === 3) ? "heavy" : "";
-  const bar = statusBar();
-  const head = `<div class="appbar"><div class="who">안녕하세요<b>김○○님</b></div><span class="s-chip">${opened ? "열람 중" : coming || searching ? "도움 요청 중" : "봉인됨"}</span></div>`;
-  const tabs = `<nav class="tabbar"><button type="button" data-rtab="home" aria-selected="${S.resTab === "home"}">${ic("home")}내 봉투</button><button type="button" data-rtab="log" aria-selected="${S.resTab === "log"}">${ic("list")}기록${S.notes.length ? ` (${S.notes.length})` : ""}</button><button type="button">${ic("user")}설정</button></nav>`;
-  let body;
-  if (S.resTab === "log") {
-    body = `<p class="s-title">누가 내 정보를 봤나요</p><p class="s-sub">열람과 열람 시도는 모두 여기에 남아요. 지울 수 없어요.</p>
-      <div class="note-list">${S.notes.length ? S.notes.map(n => `<div class="note ${n.warn ? "warn" : ""}"><time>${hm(n.at)}</time>${esc(n.text)}</div>`).join("") : `<div class="note"><time>—</time>아직 아무도 내 정보를 보지 않았어요</div>`}</div>`;
-  } else {
-    let title, sub, color = "#2346e8", envOpen = false;
-    if (opened) { title = "이웃 1명이 도착했어요"; sub = `허락하신 항목만 보고 있어요 · 근거: ${S.basis}`; color = "#ff6a2b"; envOpen = true; }
-    else if (coming) { title = "이웃이 오고 있어요"; sub = "서쪽에서 약 500m · 도착하면 현관 기기의 코드를 확인해요"; color = "#ff6a2b"; }
-    else if (searching) { title = "이웃을 찾고 있어요"; sub = "가장 가까운 조력자에게 요청을 보냈어요"; color = "#ff6a2b"; }
-    else if (S.scene === 1) { title = "비 예보가 있어요"; sub = "봉투는 잠겨 있어요. 이웃들이 근처에서 대기 중이에요"; color = "#c67a0c"; }
-    else if (S.scene === 4) { title = "다시 잠겼어요"; sub = "상황이 끝나 봉투가 자동으로 봉인됐어요"; color = "#12a58a"; }
-    else { title = "내 봉투는 잠겨 있어요"; sub = "구청 담당자도 혼자서는 열 수 없어요"; }
-    const editable = !opened && !coming && !searching;
-    body = `<div class="s-card center"><div class="envelope-wrap">${envelope(color, envOpen)}</div><p class="s-title">${title}</p><p class="s-sub">${esc(sub)}</p>
-        <div class="shards" style="width:100%">${CUST.map((n, i) => `<div><b>조각 ${i + 1}</b>${n}</div>`).join("")}</div></div>
-      <div class="s-card" style="gap:0"><b style="margin-bottom:4px">위급할 때 이웃에게 보여줄 항목</b><p class="s-sub" style="margin-bottom:4px">${editable ? "바꾸면 봉투가 새로 봉인돼요" : "도움을 받는 동안에는 바꿀 수 없어요"}</p>
-        ${FIELDS.map(f => `<div class="toggle-row"><span>${f.label}<small>${f.hint}</small></span><button class="switch" role="switch" type="button" id="sw-${f.k}" data-consent="${f.k}" aria-label="${f.label} 공개" aria-checked="${S.consent[f.k]}" ${editable ? "" : "disabled"}></button></div>`).join("")}</div>
-      <button class="sos" id="sos" type="button" ${editable && S.scene < 4 ? "" : "disabled"}><div class="fill" id="sos-fill"></div><span>긴급 도움 요청</span><small><span>2초간 길게 누르세요</span></small></button>`;
-  }
-  $("resident-body").innerHTML = bar + head + `<div class="content">${body}</div>` + tabs;
-  const sos = $("sos"); if (sos && !sos.disabled) bindHold(sos);
+/* 홈: 평시 */
+function homeTab() {
+  const m = S.mission;
+  if (m && m.stage !== "closed") return missionView(m);
+  if (m && m.stage === "closed") return closedView();
+  if (incident()) return radarView();
+  const h1 = HOUSES[0], p = S.prep, done = Object.values(p).filter(Boolean).length, standby = S.scene === 1;
+  return `${standby ? `<div class="banner"><span class="dot"></span>호우 예보 · 21:40 발령 · 김○○님 댁 근처에서 대기해 주세요</div>` : ""}
+    <div class="section-t">나의 매칭 이웃</div>
+    <div class="map">${peaceMap()}<div class="legend"><span>● 나</span><span>◆ 김○○님 댁</span><span>■ 대피소</span></div></div>
+    <div class="s-card">
+      <div class="s-row between"><div><p class="s-title" style="font-size:22px">김○○님</p><p class="s-sub">78세 · ○○동 · 도보 7분 (480m)</p></div><span class="s-chip">1:1 매칭</span></div>
+      <dl class="kv"><dt>필요한 도움</dt><dd>${esc(h1.need)} · 혼자 대피 어려움</dd><dt>호수</dt><dd>${esc(h1.rec.UNIT)}</dd><dt>탈출 경로</dt><dd>${esc(h1.rec.ESCAPE)}</dd><dt>비상연락처</dt><dd>${esc(h1.rec.CONTACT)}</dd><dt>가까운 대피소</dt><dd>○○초등학교 강당 · 350m</dd></dl>
+      <p class="s-sub">매칭할 때 김○○님이 동의한 정보예요. 다른 가구 정보는 평소에 볼 수 없어요.</p>
+    </div>
+    <div class="s-card" style="gap:0">
+      <div class="s-row between" style="margin-bottom:4px"><b>대피 준비 체크리스트</b><span class="s-chip">${done}/4</span></div>
+      ${[["loc", "김○○님 댁 위치 직접 가 보기"], ["route", "대피소까지 휠체어 경로 확인"], ["contact", "비상연락처 저장"], ["gear", "손전등·우비 준비"]].map(([k, t]) => `<button type="button" class="check" role="checkbox" aria-checked="${p[k]}" data-prep="${k}"><span class="box">${p[k] ? checkIc() : ""}</span><span class="t">${t}</span></button>`).join("")}
+    </div>
+    ${standby ? `<div class="s-card"><div class="s-row between"><b>주변 상황</b><span class="s-chip">예보</span></div><p class="s-sub">반경 1km 안에 도움이 필요할 수 있는 가구가 3곳 더 있어요. 주소와 정보는 실제 상황이 되기 전까지 열리지 않아요.</p></div>`
+      : `<div class="s-card"><div class="s-row between"><b>우리 동네 날씨</b><span class="s-chip">맑음</span></div><p class="s-sub">서울 ○○구 · 강수량 0mm · 하수관로 수위 정상</p></div>`}`;
 }
-function render() { renderControl(); renderHelper(); renderResident(); }
-
-/* 아이콘 */
-function ic(n) {
-  const p = { home: "M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z", list: "M5 6 H19 M5 12 H19 M5 18 H14", user: "M12 12 a4 4 0 1 0 0 -8 a4 4 0 1 0 0 8 M4 21 a8 7 0 0 1 16 0" }[n];
-  return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${p}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-}
-function arrowIc() { return `<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12 H19 M13 6 L19 12 L13 18" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
-function checkIc(s = 38, c = "#fff") { return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 L10 17 L19 7" fill="none" stroke="${c}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
-function mapSvg() {
-  return `<svg viewBox="0 0 340 170" aria-label="이동 경로 지도">
-    <rect width="340" height="170" fill="var(--s-surface)"/>
-    ${[30, 85, 140].map(y => `<rect x="0" y="${y}" width="340" height="12" fill="var(--s-line)"/>`).join("")}
-    ${[40, 130, 220, 300].map(x => `<rect x="${x}" y="0" width="12" height="170" fill="var(--s-line)"/>`).join("")}
-    <path d="M306 146 V91 H136 V36 H52" fill="none" stroke="var(--s-accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 9"/>
-    <circle cx="306" cy="146" r="9" fill="var(--s-accent)" stroke="#fff" stroke-width="3"/>
-    <path d="M46 10 a12 12 0 0 1 12 12 c0 9 -12 20 -12 20 s-12 -11 -12 -20 a12 12 0 0 1 12 -12 z" fill="#ff6a2b" stroke="#fff" stroke-width="2"/>
-    <text x="64" y="26" font-size="11" font-family="IBM Plex Sans KR, sans-serif" fill="var(--s-ink)" font-weight="700">도착지</text>
-    <text x="64" y="58" font-size="10" font-family="IBM Plex Sans KR, sans-serif" fill="var(--s-sub)">주소는 도착 후 공개</text>
-    <text x="232" y="164" font-size="10" font-family="IBM Plex Sans KR, sans-serif" fill="var(--s-sub)">내 위치 · 약 500m</text>
+function peaceMap() {
+  return `<svg viewBox="0 0 340 200" aria-label="김○○님 댁까지 지도">
+    <rect width="340" height="200" fill="var(--s-map)"/>
+    ${[40, 110, 170].map(y => `<rect x="0" y="${y}" width="340" height="12" fill="var(--s-road)"/>`).join("")}
+    ${[60, 150, 250].map(x => `<rect x="${x}" y="0" width="12" height="200" fill="var(--s-road)"/>`).join("")}
+    <path d="M256 176 V116 H156 V52 H80" fill="none" stroke="var(--s-accent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 8"/>
+    <circle cx="256" cy="176" r="8" fill="var(--s-accent)" stroke="#fff" stroke-width="3"/>
+    <rect x="68" y="40" width="22" height="22" rx="3" transform="rotate(45 79 51)" fill="#ff6a2b" stroke="#fff" stroke-width="2.5"/>
+    <text x="96" y="30" font-size="11" font-weight="700" fill="var(--s-ink)" font-family="IBM Plex Sans KR, sans-serif">김○○님 댁</text>
+    <rect x="186" y="70" width="14" height="14" fill="#12a58a" stroke="#fff" stroke-width="2"/>
+    <text x="204" y="81" font-size="10" fill="var(--s-sub)" font-family="IBM Plex Sans KR, sans-serif">대피소</text>
+    <text x="276" y="160" font-size="10" fill="var(--s-sub)" font-family="IBM Plex Sans KR, sans-serif">내 위치</text>
   </svg>`;
 }
 
-/* 상호작용 */
-function bindSlider() {
-  const slider = $("slider"), thumb = $("thumb"), fill = $("slider-fill");
-  let dragging = false, startX = 0, max = 0;
-  const set = x => { thumb.style.transform = `translateX(${x}px)`; fill.style.width = `${x + 57}px`; };
-  thumb.addEventListener("pointerdown", e => { dragging = true; startX = e.clientX; max = slider.clientWidth - 62; thumb.setPointerCapture(e.pointerId); });
-  thumb.addEventListener("pointermove", e => { if (dragging) set(Math.max(0, Math.min(max, e.clientX - startX))); });
-  const end = e => {
-    if (!dragging) return; dragging = false;
-    const x = Math.max(0, Math.min(max, e.clientX - startX));
-    if (x > max * .82) { set(max); accept(); } else { thumb.style.transition = "transform .25s"; set(0); setTimeout(() => thumb.style.transition = "", 260); }
-  };
-  thumb.addEventListener("pointerup", end); thumb.addEventListener("pointercancel", end);
-  thumb.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); accept(); } });
-  $("btn-decline").addEventListener("click", () => {
-    log("거절", "박○○ 거절 → 다음 이웃에게");
-    toast("helper", "거절했어요", "시연을 위해 3초 뒤 요청을 다시 보냅니다");
-    S.helper = "standby"; render();
-    setTimeout(() => { if (S.helper === "standby" && S.scene >= 2) { startOffer(S.basis); render(); } }, 3000);
-  });
+/* 홈: 상황 발생 → 원형 레이더 */
+function radarPos(h) {
+  const d = h.dist, r = d <= 250 ? d / 250 * 55 : d <= 500 ? 55 + (d - 250) / 250 * 45 : 100 + (d - 500) / 500 * 50;
+  const a = (h.bearing - 90) * Math.PI / 180;
+  return { x: 170 + r * 1.05 * Math.cos(a), y: 170 + r * 1.05 * Math.sin(a) };
 }
-function bindHold(btn) {
-  let t0 = 0, raf = 0;
-  const fill = $("sos-fill");
-  const stop = () => { cancelAnimationFrame(raf); fill.style.width = "0"; t0 = 0; };
-  const step = () => {
-    const p = Math.min(1, (performance.now() - t0) / 2000); fill.style.width = p * 100 + "%";
-    if (p >= 1) { stop(); sosTriggered(); } else raf = requestAnimationFrame(step);
-  };
-  btn.addEventListener("pointerdown", () => { t0 = performance.now(); raf = requestAnimationFrame(step); });
-  ["pointerup", "pointerleave", "pointercancel"].forEach(ev => btn.addEventListener(ev, stop));
-  btn.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && !e.repeat) { e.preventDefault(); sosTriggered(); } });
+function dirText(b) { return ["북", "북동", "동", "남동", "남", "남서", "서", "북서"][Math.round(b / 45) % 8]; }
+const pinColor = (r, h) => r.status === "taken" ? "#6b7b8f" : h.match ? "#ff6a2b" : "#f2b33d";
+function radarView() {
+  const vis = S.reqs.filter(r => house(r.id).dist <= S.radius).sort((a, b) => (house(b.id).match - house(a.id).match) || house(a.id).dist - house(b.id).dist);
+  const hidden = S.reqs.length - vis.length;
+  const pins = vis.map(r => {
+    const h = house(r.id), p = radarPos(h), sel = S.sel === r.id, col = pinColor(r, h);
+    return `<g class="pin" tabindex="0" role="button" data-pick="${r.id}" aria-label="${esc(h.match ? h.name : h.short)} ${h.dist}m">
+      ${r.status === "open" ? `<circle class="pulse" cx="${p.x}" cy="${p.y}" r="10" fill="none" stroke="${col}" stroke-width="2"/>` : ""}
+      <circle class="hit" cx="${p.x}" cy="${p.y}" r="${h.match ? 12 : 10}" fill="${col}" stroke="${sel ? "#fff" : "rgba(0,0,0,.25)"}" stroke-width="${sel ? 3 : 1.5}"/>
+      <text x="${p.x}" y="${p.y + (h.match ? 28 : 25)}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--s-ink)" font-family="IBM Plex Sans KR, sans-serif">${esc(h.match ? "김○○님" : h.need)}</text>
+    </g>`;
+  }).join("");
+  const rings = [[55, "250m"], [100, "500m"], [150, "1km"]].map(([r, t]) => `<circle cx="170" cy="170" r="${r * 1.05}" fill="none" stroke="var(--s-line)" stroke-width="1.5" ${r === 150 ? "" : 'stroke-dasharray="4 5"'}/><text x="${170 - r * 1.05 * .72 - 4}" y="${170 - r * 1.05 * .72}" text-anchor="end" font-size="10" fill="var(--s-sub)" font-family="IBM Plex Mono, monospace">${t}</text>`).join("");
+  const cur = S.reqs.find(r => r.id === S.sel);
+  const openCount = vis.filter(r => r.status === "open").length;
+  return `<div class="banner"><span class="dot"></span>${esc(S.alertBasis || "도움 요청")} · 반경 ${S.radius >= 1000 ? S.radius / 1000 + "km" : S.radius + "m"} 안 ${openCount}곳이 기다려요</div>
+    <div class="radar-wrap"><svg viewBox="0 0 340 340" aria-label="원형 레이더">
+      <defs><radialGradient id="sw" cx="0" cy="0" r="1"><stop offset="0" stop-color="var(--s-accent)" stop-opacity="0"/><stop offset="1" stop-color="var(--s-accent)" stop-opacity=".22"/></radialGradient></defs>
+      <rect width="340" height="340" fill="var(--s-surface)"/>
+      ${rings}
+      <line x1="170" y1="12" x2="170" y2="328" stroke="var(--s-line)"/><line x1="12" y1="170" x2="328" y2="170" stroke="var(--s-line)"/>
+      <text x="170" y="24" text-anchor="middle" font-size="10" fill="var(--s-sub)" font-family="IBM Plex Sans KR, sans-serif">북</text>
+      <path class="sweep" d="M170 170 L170 12 A158 158 0 0 1 281.7 58.3 Z" fill="url(#sw)"/>
+      ${pins}
+      <circle cx="170" cy="170" r="9" fill="#2346e8" stroke="#fff" stroke-width="3"/>
+      <text x="170" y="194" text-anchor="middle" font-size="10.5" fill="var(--s-sub)" font-weight="700" font-family="IBM Plex Sans KR, sans-serif">나</text>
+    </svg></div>
+    ${cur ? selectedCard(cur) : ""}
+    <div class="section-t">내 매칭 우선 · 가까운 순</div>
+    <div class="req-list">${vis.map(r => { const h = house(r.id);
+      return `<button type="button" class="req" data-pick="${r.id}" aria-pressed="${S.sel === r.id}"><i style="background:${pinColor(r, h)}"></i><span><b>${esc(h.match ? "김○○님 · 내 매칭" : h.short)}</b><small>${esc(h.need)} · ${r.status === "taken" ? "다른 이웃이 출동 중" : esc(r.basis)}</small></span><span class="d">${h.dist}m</span></button>`; }).join("")}
+    ${hidden ? `<p class="s-sub">출동 반경 밖 ${hidden}곳은 숨겨졌어요. 내 정보에서 반경을 바꿀 수 있어요.</p>` : ""}</div>`;
 }
-async function sosTriggered() { await sensorTrigger("긴급버튼"); }
-async function sensorTrigger(label) {
-  if (S.busy || ["offer", "verify", "enroute", "open"].includes(S.helper)) return;
-  S.busy = true;
-  try {
-    if (S.scene < 2) S.clock = hm2ms("22:00");
-    const e = await deviceSignal();
-    if (await ingest(e)) { S.evidence = e; if (S.scene < 2) S.scene = 2; startOffer(label === "긴급버튼" ? "긴급버튼" : "가정 수위 센서"); }
-  } finally { S.busy = false; render(); }
+function selectedCard(r) {
+  const h = house(r.id);
+  if (r.status === "taken") return `<div class="s-card"><div class="s-row between"><b>${esc(h.short)}</b><span class="s-chip gray">배정 완료</span></div><p class="s-sub">다른 이웃이 먼저 수락해 출동 중이에요.</p></div>`;
+  if (h.dist > S.radius) return "";
+  const pre = h.match
+    ? `<dl class="kv"><dt>필요한 도움</dt><dd>${esc(h.need)}</dd><dt>호수</dt><dd>${esc(h.rec.UNIT)}</dd><dt>탈출 경로</dt><dd>${esc(h.rec.ESCAPE)}</dd></dl><p class="s-sub">지정 조력자라 수락 즉시 동의 항목이 모두 보여요.</p>`
+    : `<dl class="kv"><dt>필요한 도움</dt><dd>${esc(h.need)}</dd><dt>위치</dt><dd>${dirText(h.bearing)}쪽 약 ${h.dist}m</dd><dt>주소</dt><dd class="hidden-f">도착 확인 후 공개</dd></dl><p class="s-sub">이웃에게 알리지 않기로 한 봉인형 가구예요. 문 앞 코드로 도착이 확인되면 허락한 항목만 열려요.</p>`;
+  return `<div class="s-card"><div class="s-row between"><b>${esc(h.match ? "김○○님 · 내 매칭" : h.short)}</b><span class="s-chip">${h.match ? "지정 조력자" : "확장 조력자 A"}</span></div>${pre}
+    <div class="slider" id="slider"><div class="track-fill" id="slider-fill"></div><span class="label">밀어서 출동하기</span><button class="thumb" id="thumb" type="button" aria-label="출동 수락">${arrowIc()}</button></div></div>`;
+}
+function arrowIc() { return `<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12 H19 M13 6 L19 12 L13 18" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
+
+/* 홈: 출동 중 */
+function missionView(m) {
+  const h = house(m.id), title = h.match ? "김○○님 댁" : h.short;
+  if (m.stage === "verify") return `<div class="s-card"><span class="s-chip" style="justify-self:start">${esc(title)}로 출동</span><p class="s-title">기관 확인 중</p><p class="s-sub">세 기관이 경보 서명과 박○○님의 자격을 각자 확인해요. 두 곳 이상 승인하면 정보가 열려요.</p></div><div style="display:grid;gap:8px" id="verify">${verifyRows()}</div>`;
+  if (m.stage === "locked") return `<div class="s-card center"><p class="s-title">도착 확인이 잠겼어요</p><p class="s-sub">코드를 5번 틀려 이 출동은 다른 이웃에게 넘어갔어요.</p></div>`;
+  const rec = m.rec, isOpen = m.stage === "onsite" || h.match;
+  const rows = ["UNIT", "STATUS", "ESCAPE", "CONTACT"].map(k => {
+    if (!isOpen) return k === "UNIT" ? `<dt>주소·상태</dt><dd class="hidden-f">도착 확인 후 공개</dd>` : "";
+    return rec.consent.includes(k) ? `<dt>${LABEL[k]}</dt><dd>${esc(rec[k])}</dd>` : `<dt>${LABEL[k]}</dt><dd class="hidden-f">당사자가 공개하지 않음</dd>`;
+  }).join("");
+  const wm = Array.from({ length: 40 }, () => `<span>박○○ · ${hm(S.clock)}</span>`).join("");
+  const info = `<div class="s-card info"><div class="wm" aria-hidden="true">${wm}</div><div class="s-row between"><b>${esc(title)}</b><span class="s-chip">${h.match ? "지정 조력자" : "확장 조력자 A"}</span></div>
+    <dl class="kv"><dt>필요한 도움</dt><dd>${esc(h.need)}</dd>${rows}</dl>
+    <div class="timer"><span>저장·복사 불가 · 워터마크</span><span id="del-timer">${m.stage === "onsite" ? "30:00 뒤 삭제" : "경보 해제 시 삭제"}</span></div></div>`;
+  if (m.stage === "enroute") return `<div class="map">${routeMap(h)}</div>${info}
+    <div class="s-card" style="gap:8px"><b>문 앞에 도착하면</b><p class="s-sub">현관 기기 화면의 6자리 코드를 입력하세요.</p>
+      <div class="codebox ${m.err ? "err" : ""}">${Array.from({ length: 6 }, (_, i) => `<span class="${i === m.code.length ? "cur" : ""}">${m.code[i] ?? ""}</span>`).join("")}</div>
+      <p class="err-msg">${m.attempts < 5 ? `코드가 맞지 않아요 · ${m.attempts}회 남음` : ""}</p>
+      <div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(d => `<button type="button" data-key="${d}">${d}</button>`).join("")}<button type="button" class="fn" data-key="clear">지우기</button><button type="button" data-key="0">0</button><button type="button" class="fn" data-key="back">←</button></div></div>`;
+  const st = m.steps;
+  return `<div class="banner"><span class="dot"></span>도착 확인 완료 · ${hm(S.clock)}</div>${info}
+    <div class="s-card" style="gap:0"><b style="margin-bottom:4px">대피 도움</b>
+      ${[["door", "문 열고 상태 확인"], ["move", h.need === "휠체어" ? "휠체어로 이동 보조" : "함께 이동"], ["shelter", "대피소 도착 (○○초등학교)"]].map(([k, t]) => `<button type="button" class="check" role="checkbox" aria-checked="${st[k]}" data-step="${k}"><span class="box">${st[k] ? checkIc() : ""}</span><span class="t">${t}</span></button>`).join("")}</div>
+    <div class="s-card"><div class="s-row between"><span class="s-sub" style="color:var(--s-ink)">물이 계속 차오르면 들어가지 말고<br>바로 119에 알려 주세요</span><b style="font-family:var(--mono);font-size:20px">119</b></div></div>`;
+}
+function verifyRows() { return AGENCIES.map((n, i) => { const a = S.agencies[i]; const icn = a.st === "run" ? `<div class="spin"></div>` : a.st === "ok" ? checkIc(18, "var(--s-accent)") : a.st === "no" ? "✕" : lockSvg(""); return `<div class="v-row"><div class="v-ic">${icn}</div><div>${n}<small>${esc(a.txt)}</small></div></div>`; }).join(""); }
+function renderVerify() { const el = $("verify"); if (el) el.innerHTML = verifyRows(); }
+function routeMap(h) {
+  const a = (h.bearing - 90) * Math.PI / 180, len = Math.min(130, 30 + h.dist / 6);
+  const tx = Math.max(24, Math.min(316, 170 + len * Math.cos(a))), ty = Math.max(22, Math.min(148, 90 + len * .55 * Math.sin(a)));
+  return `<svg viewBox="0 0 340 170" aria-label="이동 경로"><rect width="340" height="170" fill="var(--s-map)"/>
+    ${[30, 85, 140].map(y => `<rect x="0" y="${y}" width="340" height="11" fill="var(--s-road)"/>`).join("")}${[40, 130, 220, 300].map(x => `<rect x="${x}" y="0" width="11" height="170" fill="var(--s-road)"/>`).join("")}
+    <path d="M170 90 L${tx} ${ty}" fill="none" stroke="var(--s-accent)" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 8"/>
+    <circle cx="170" cy="90" r="8" fill="#2346e8" stroke="#fff" stroke-width="3"/>
+    <circle cx="${tx}" cy="${ty}" r="9" fill="#ff6a2b" stroke="#fff" stroke-width="3"/>
+    <text x="${Math.min(tx + 12, 260)}" y="${Math.max(14, ty - 12)}" font-size="11" font-weight="700" fill="var(--s-ink)" font-family="IBM Plex Sans KR, sans-serif">${esc(h.match ? "김○○님 댁" : "도착지")}</text>
+    <text x="10" y="164" font-size="10" fill="var(--s-sub)" font-family="IBM Plex Sans KR, sans-serif">${dirText(h.bearing)}쪽 약 ${h.dist}m · 도보 ${Math.max(3, Math.round(h.dist / 70))}분</text></svg>`;
+}
+function closedView() {
+  return `<div class="done-ic">${checkIc(38)}</div><div class="center" style="display:grid;gap:6px"><p class="s-title">정보가 다시 잠겼어요</p><p class="s-sub">경보가 해제되어 출동 중 열렸던 정보가 이 폰에서 지워졌어요. 열람 기록은 당사자에게 문자로 전달됐어요.</p></div>
+    <div class="s-card"><div class="s-row between"><b>이번 출동</b><span class="s-chip">완료</span></div><p class="s-sub">활동 탭에 기록됐어요. 함께해 주셔서 고맙습니다.</p></div>
+    <button type="button" class="s-btn ghost" data-tab="activity">활동 기록 보기</button>`;
 }
 
-document.addEventListener("click", async ev => {
+/* 활동 탭 */
+function activityTab() {
+  S.unread = 0;
+  const cnt = k => S.history.filter(x => x.kind === k).length;
+  const icon = { go: "go", wait: "clock", drill: "pin", edu: "book" };
+  const m = S.mission;
+  const cur = m && m.stage !== "closed" ? `<div class="act" style="border-color:var(--s-accent)"><div class="ic">${ic("go")}</div><div><b>지금 출동 중 · ${esc(house(m.id).match ? "김○○님" : house(m.id).short)}</b><small>${{ verify: "기관 확인 중", enroute: "이동 중 · 도착 코드 대기", onsite: "현장 도착 · 대피 도움", locked: "도착 확인 잠김" }[m.stage]}</small></div></div>` : "";
+  return `<p class="s-title">내 활동</p>
+    <div class="stat3"><div><b>${cnt("go")}</b>출동</div><div><b>${cnt("wait")}</b>대기</div><div><b>${cnt("drill")}</b>모의훈련</div></div>
+    ${cur}
+    <div class="section-t">기록</div>
+    ${S.history.map(x => `<div class="act"><div class="ic">${ic(icon[x.kind])}</div><div><time>2026.${x.at}</time><b>${esc(x.title)}</b><small>${esc(x.sub)}</small></div></div>`).join("")}
+    <div class="s-card"><div class="s-row between"><b>다음 모의훈련</b><span class="s-chip">${S.drillJoined ? "신청 완료" : "신청 가능"}</span></div><p class="s-sub">10월 18일(토) 10:00 · ○○초등학교 · 휠체어 대피 실습</p>
+      <button type="button" class="s-btn ${S.drillJoined ? "ghost" : ""}" id="btn-drill">${S.drillJoined ? "신청 취소하기" : "훈련 신청하기"}</button></div>`;
+}
+
+/* 내 정보 탭 */
+function meTab() {
+  const r = S.radius, c = S.caps, n = S.notif;
+  return `<div class="s-card"><div class="profile"><div class="avatar">박</div><div><b style="font-size:17px">박○○님</b><p class="s-sub">동행파트너 · 서울 ○○구 ○○동<br>자격 유효 2027.03.31까지</p></div></div></div>
+    <div class="s-card" style="gap:0">
+      <div class="toggle-row"><span>지금 출동할 수 있어요<small>끄면 다른 이웃에게 먼저 요청해요</small></span><button type="button" class="switch" role="switch" data-notif="avail" aria-checked="${n.avail}" aria-label="출동 가능"></button></div>
+      <div class="toggle-row"><span>밤 10시 이후에도 알림<small>재난 경보는 항상 울려요</small></span><button type="button" class="switch" role="switch" data-notif="night" aria-checked="${n.night}" aria-label="야간 알림"></button></div>
+      <div class="toggle-row"><span>강한 진동<small>출동 요청 때 3초간 진동</small></span><button type="button" class="switch" role="switch" data-notif="vib" aria-checked="${n.vib}" aria-label="강한 진동"></button></div></div>
+    <div class="s-card"><b>출동 가능 반경</b><div class="seg">${[500, 1000, 2000].map(v => `<button type="button" data-radius="${v}" aria-pressed="${r === v}">${v >= 1000 ? v / 1000 + "km" : v + "m"}</button>`).join("")}</div><p class="s-sub">이 반경 안의 도움 요청만 레이더에 보여요.</p></div>
+    <div class="s-card"><b>할 수 있는 도움</b><div class="caps">${[["WHEEL", "휠체어 이동 보조"], ["SIGN", "수어 가능"], ["AID", "응급처치 교육"]].map(([k, t]) => `<button type="button" data-cap="${k}" aria-pressed="${c[k]}">${t}</button>`).join("")}</div><p class="s-sub">필요한 도움과 맞는 요청을 먼저 보내 드려요.</p></div>
+    <div class="s-card"><b>내 정보는 이렇게 쓰여요</b><p class="s-sub">위치는 출동할 수 있는지 판단할 때 500m 칸 단위로만 쓰고, 출동 기록은 당사자와 감사 기관만 볼 수 있어요. 출동 중 본 정보는 경보가 끝나면 자동으로 지워져요.</p></div>
+    <div class="s-card"><b>활동 서약</b><p class="s-sub">출동 중 알게 된 정보를 저장하거나 다른 사람에게 알리지 않겠습니다. 물이 무릎 위로 차면 들어가지 않고 119에 알리겠습니다. · 2026.07.30 서약</p></div>`;
+}
+
+function render() { renderSide(); renderApp(); }
+
+/* ───────── 상호작용 ───────── */
+function bindSlider() {
+  const slider = $("slider"), thumb = $("thumb"), fill = $("slider-fill"); if (!thumb) return;
+  let drag = false, x0 = 0, max = 0;
+  const set = x => { thumb.style.transform = `translateX(${x}px)`; fill.style.width = `${x + 55}px`; };
+  thumb.addEventListener("pointerdown", e => { drag = true; x0 = e.clientX; max = slider.clientWidth - 60; thumb.setPointerCapture(e.pointerId); });
+  thumb.addEventListener("pointermove", e => { if (drag) set(Math.max(0, Math.min(max, e.clientX - x0))); });
+  const end = e => { if (!drag) return; drag = false; const x = Math.max(0, Math.min(max, e.clientX - x0)); if (x > max * .8) { set(max); act(() => accept(S.sel)); } else { thumb.style.transition = "transform .25s"; set(0); setTimeout(() => thumb.style.transition = "", 260); } };
+  thumb.addEventListener("pointerup", end); thumb.addEventListener("pointercancel", end);
+  thumb.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(() => accept(S.sel)); } });
+}
+async function act(fn) { if (S.busy) return; S.busy = true; renderSide(); try { await fn(); } finally { S.busy = false; render(); } }
+
+document.addEventListener("click", ev => {
+  const pick = ev.target.closest("[data-pick]");
+  if (pick) { S.sel = pick.dataset.pick; renderApp(); return; }
   const b = ev.target.closest("button"); if (!b || b.disabled) return;
   if (b.id === "btn-next") return goScene(S.scene + 1);
-  if (b.id === "btn-reset") { await boot(); return; }
+  if (b.id === "btn-reset") return boot();
   if (b.dataset.scene) return goScene(Number(b.dataset.scene));
-  if (b.dataset.show) {
-    S.mobile = b.dataset.show;
-    document.querySelectorAll(".phone-switch button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
-    $("col-helper").dataset.hiddenMobile = String(S.mobile !== "helper"); $("col-resident").dataset.hiddenMobile = String(S.mobile !== "resident");
-    return;
+  if (b.dataset.tab) { S.tab = b.dataset.tab; renderApp(); $("content").scrollTop = 0; return; }
+  if (b.dataset.prep) { S.prep[b.dataset.prep] = !S.prep[b.dataset.prep]; return renderApp(); }
+  if (b.dataset.step && S.mission) { const k = b.dataset.step; S.mission.steps[k] = !S.mission.steps[k]; if (k === "shelter" && S.mission.steps.shelter) { log("대피 완료", "대피소 도착 보고"); toast("대피 완료", "대피소 도착을 기록했어요"); } return render(); }
+  if (b.dataset.notif) { S.notif[b.dataset.notif] = !S.notif[b.dataset.notif]; return renderApp(); }
+  if (b.dataset.radius) { S.radius = Number(b.dataset.radius); toast("반경 변경", `이제 ${b.textContent} 안의 요청만 받아요`); return renderApp(); }
+  if (b.dataset.cap) { S.caps[b.dataset.cap] = !S.caps[b.dataset.cap]; return renderApp(); }
+  if (b.id === "btn-drill") { S.drillJoined = !S.drillJoined; toast("모의훈련", S.drillJoined ? "10월 18일 훈련을 신청했어요" : "신청을 취소했어요"); return renderApp(); }
+  if (b.dataset.key && S.mission?.stage === "enroute") {
+    const m = S.mission, k = b.dataset.key;
+    if (k === "back") m.code = m.code.slice(0, -1); else if (k === "clear") m.code = ""; else if (m.code.length < 6) m.code += k;
+    renderApp(); if (m.code.length === 6) act(checkCode); return;
   }
-  if (b.dataset.rtab) { S.resTab = b.dataset.rtab; return renderResident(); }
-  if (b.dataset.consent) {
-    const k = b.dataset.consent; S.consent[k] = !S.consent[k];
-    await reseal("공개 항목 변경");
-    log("재봉인", `공개 항목 변경 (${FIELDS.find(f => f.k === k).label} ${S.consent[k] ? "공개" : "비공개"}) · 새 열쇠로 분산`);
-    renderControl(); renderResident(); document.getElementById("sw-" + k)?.focus(); return;
-  }
-  if (b.dataset.key && S.helper === "enroute") {
-    const k = b.dataset.key;
-    if (k === "back") S.code = S.code.slice(0, -1); else if (k === "clear") S.code = ""; else if (S.code.length < 6) S.code += k;
-    renderHelper(); if (S.code.length === 6) await checkCode(); return;
-  }
-  if (b.id === "btn-autocode") { if (S.helper === "enroute" && !S.busy) { S.busy = true; S.code = ""; try { await typeCode(arrivalCode(E.deviceSecret, HID, Date.now())); } finally { S.busy = false; render(); } } return; }
-  if (b.id === "btn-water") return sensorTrigger("센서");
-  if (b.id === "btn-admin") {
-    if (S.busy) return; S.busy = true;
-    try {
-      const saved = S.helper; const rec = await openEnvelope("admin");
-      log("열람 차단", "관리자 요청 · 3곳 모두 거부");
-      notify("누군가 내 정보를 열어 보려 했지만 차단됐어요 (관리자 계정) · 세 기관 모두 거부", true);
-      if (rec) S.record = rec; S.helper = saved;
-      setTimeout(() => { S.keys = S.keys.map(() => "보관 중"); S.keyState = ["", "", ""]; renderKeys(); }, 2600);
-    } finally { S.busy = false; render(); }
-    return;
-  }
-  if (b.id === "btn-fake") {
-    const fake = await issueAlert("WARNING"); fake.level = "WARNING"; fake.cell = "10:21"; // 서명 후 내용 변경
-    const ok = await ingest(fake);
-    toast("helper", "가짜 경보 차단", ok ? "" : "서명이 맞지 않는 경보는 무시했어요. 아무것도 열리지 않아요");
-    renderControl(); return;
-  }
+  if (b.id === "btn-autocode") return act(async () => { S.mission.code = ""; S.tab = "home"; await typeCode(currentCode()); });
+  if (b.id === "btn-water") return act(async () => {
+    const e = await deviceSignal("H2");
+    if (await ingest(e)) {
+      if (!S.alertBasis) S.alertBasis = "가정 수위 센서";
+      addReq("H2", "가정 수위 센서", e);
+      if (!S.mission) S.sel = "H2";
+      S.tab = "home";
+      toast("새 도움 요청", `이동 보조 · 북동쪽 약 ${house("H2").dist}m · 예보 없이 센서가 울렸어요`);
+      log("출동 요청", "봉인형 가구 수위 센서 · 단계 무관 즉시");
+    }
+  });
+  if (b.id === "btn-admin") return act(async () => {
+    await openHouse("H1", "admin", S.evidence);
+    log("열람 차단", "관리자 요청 · 3곳 모두 거부");
+    sms("김○○님", "[비상봉투] 관리자 계정이 회원님 정보 열람을 시도했으나 세 기관 모두 거부해 차단됐습니다.", true);
+    setTimeout(() => { S.agencies = AGENCIES.map(() => ({ st: "", txt: "대기" })); renderKeys(); }, 2600);
+  });
+  if (b.id === "btn-fake") return act(async () => {
+    const f = await issueAlert("WARNING"); f.cell = "10:21";
+    const ok = await ingest(f);
+    toast("가짜 경보 차단", ok ? "" : "서명이 맞지 않는 경보는 무시했어요");
+  });
 });
+document.addEventListener("keydown", ev => { const g = ev.target.closest?.("[data-pick]"); if (g && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); S.sel = g.dataset.pick; renderApp(); } });
 
 setInterval(() => {
   if (!S) return;
   renderDevice();
-  const oc = $("offer-count");
-  if (oc && S.helper === "offer") { const left = Math.max(0, 180 - Math.floor((Date.now() - S.offerAt) / 1000)); oc.textContent = `응답 ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; }
   const dt = $("del-timer");
-  if (dt && S.helper === "open") { const left = Math.max(0, 1800 - Math.floor((Date.now() - S.openedAt) / 1000)); dt.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")} 뒤 삭제`; }
+  if (dt && S.mission?.stage === "onsite") { const left = Math.max(0, 1800 - Math.floor((Date.now() - S.mission.openedAt) / 1000)); dt.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")} 뒤 삭제`; }
 }, 1000);
 
 (async () => { await initSig(); $("sigalg").textContent = SIG.label; await boot(); })();
