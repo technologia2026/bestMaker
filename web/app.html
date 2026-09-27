@@ -76,10 +76,10 @@ button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--seal);
 .phone { width: 100%; max-width: 392px; height: 800px; background: #05080d; border-radius: 54px; padding: 11px; box-shadow: var(--shadow); position: relative; }
 .phone::before { content: ""; position: absolute; top: 20px; left: 50%; width: 106px; height: 30px; margin-left: -53px; background: #05080d; border-radius: 20px; z-index: 9; }
 .screen { position: relative; height: 100%; border-radius: 44px; overflow: hidden; display: flex; flex-direction: column; background: var(--s-bg); color: var(--s-ink); transition: background .6s, color .6s; font-size: 14px;
-  --s-bg: #eef2f6; --s-surface: #ffffff; --s-ink: #0f1b2d; --s-sub: #5a6980; --s-line: #dbe2ea; --s-accent: #2346e8; --s-map: #e3e9ef; --s-road: #ffffff; --s-land: #f7f9fb; --s-edge: #c3ceda; }
-.screen[data-mood="dusk"] { --s-bg: #f7ecdc; --s-surface: #fffaf2; --s-ink: #2b1d0c; --s-sub: #7a6147; --s-line: #eadbc5; --s-accent: #c67a0c; --s-map: #efe0c9; --s-road: #fff7ea; --s-land: #fbf3e6; --s-edge: #dcc6a6; }
-.screen[data-mood="storm"] { --s-bg: #0b1422; --s-surface: #15233a; --s-ink: #eef3fb; --s-sub: #9aabc4; --s-line: #243650; --s-accent: #ff6a2b; --s-map: #0d1829; --s-road: #1d2d47; --s-land: #13203a; --s-edge: #2e4568; }
-.screen[data-mood="dawn"] { --s-bg: #e6f4f0; --s-surface: #ffffff; --s-ink: #0c2a24; --s-sub: #4f746b; --s-line: #cfe6df; --s-accent: #12a58a; --s-map: #d7ebe5; --s-road: #ffffff; --s-land: #f3faf8; --s-edge: #b9d8cf; }
+  --s-bg: #eef2f6; --s-surface: #ffffff; --s-ink: #0f1b2d; --s-sub: #5a6980; --s-line: #dbe2ea; --s-accent: #2346e8; --s-map: #e3e9ef; --s-road: #ffffff; --s-land: #f7f9fb; --s-edge: #8e9fb3; }
+.screen[data-mood="dusk"] { --s-bg: #f7ecdc; --s-surface: #fffaf2; --s-ink: #2b1d0c; --s-sub: #7a6147; --s-line: #eadbc5; --s-accent: #c67a0c; --s-map: #efe0c9; --s-road: #fff7ea; --s-land: #fbf3e6; --s-edge: #b89568; }
+.screen[data-mood="storm"] { --s-bg: #0b1422; --s-surface: #15233a; --s-ink: #eef3fb; --s-sub: #9aabc4; --s-line: #243650; --s-accent: #ff6a2b; --s-map: #0d1829; --s-road: #1d2d47; --s-land: #13203a; --s-edge: #4a6a99; }
+.screen[data-mood="dawn"] { --s-bg: #e6f4f0; --s-surface: #ffffff; --s-ink: #0c2a24; --s-sub: #4f746b; --s-line: #cfe6df; --s-accent: #12a58a; --s-map: #d7ebe5; --s-road: #ffffff; --s-land: #f3faf8; --s-edge: #7fb3a4; }
 .status { height: 50px; flex: none; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 30px 6px; font-size: 13px; font-weight: 700; position: relative; z-index: 4; }
 .status .icons { display: flex; gap: 3px; align-items: flex-end; }
 .status .icons i { display: block; background: currentColor; border-radius: 1px; width: 3px; }
@@ -217,7 +217,7 @@ footer { font-size: 12px; color: var(--sub); max-width: 80ch; }
 .rowhead b { font-size: 15px; }
 .rowhead span { font-size: 12px; color: var(--sub); }
 .ops-map { height: 470px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
-  --s-map: var(--panel-2); --s-land: var(--panel); --s-edge: var(--line); --s-sub: var(--sub); --s-ink: var(--ink); --s-accent: var(--alert); }
+  --s-map: var(--panel-2); --s-land: var(--panel); --s-edge: color-mix(in srgb, var(--sub) 70%, transparent); --s-sub: var(--sub); --s-ink: var(--ink); --s-accent: var(--alert); }
 .ops-map svg { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; }
 .ops-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--sub); }
 .ops-legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
@@ -685,6 +685,9 @@ function fuzz(h) { // 실제 위치가 원 안 어딘가에 있도록 중심을 
 }
 function inPoly(x, y, ring) { let c = false; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) { const [xi, yi] = ring[i], [xj, yj] = ring[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c; } return c; }
 function dongAt(x, y) { const d = DONGS.find(d => d.r.some(r => inPoly(x, y, r))); return d ? d.n : "인근"; }
+const GU_TINT = { "관악구": "rgba(35,70,232,.07)", "동작구": "rgba(18,165,138,.09)", "영등포구": "rgba(232,154,31,.10)", "구로구": "rgba(214,51,31,.06)", "금천구": "rgba(130,80,210,.07)" };
+const GU_C = Object.entries(DONGS.reduce((a, d) => { const r = d.r.reduce((x, y) => y.length > x.length ? y : x); let x = 0, y = 0; r.forEach(p => { x += p[0]; y += p[1]; }); (a[d.g] ??= []).push([x / r.length, y / r.length]); return a; }, {}))
+  .map(([g, pts]) => { const inView = pts.filter(([x, y]) => Math.abs(x) < 1900 && Math.abs(y) < 1900); const use = inView.length ? inView : pts; return { g, x: use.reduce((a, p) => a + p[0], 0) / use.length, y: use.reduce((a, p) => a + p[1], 0) / use.length }; });
 const DONG_C = DONGS.map(d => { const r = d.r.reduce((a, b) => b.length > a.length ? b : a); let x = 0, y = 0; r.forEach(p => { x += p[0]; y += p[1]; }); return { n: d.n, x: x / r.length, y: y / r.length }; });
 function defaultView(mode) {
   if (mode === "peace") return { x: -230, y: -80, w: 1500 };
@@ -705,8 +708,10 @@ function drawMapInto(svg, mode, v) {
   svg.setAttribute("viewBox", `${v.x - v.w / 2} ${v.y - h / 2} ${v.w} ${h}`);
   const T = (x, y, t, size, col, w = 500, anchor = "middle") => `<text x="${x}" y="${y}" font-size="${size * f}" font-weight="${w}" fill="${col}" text-anchor="${anchor}" font-family="IBM Plex Sans KR, sans-serif" paint-order="stroke" stroke="var(--s-land)" stroke-width="${3 * f}">${esc(t)}</text>`;
   let g = `<rect x="-6000" y="-6000" width="12000" height="12000" fill="var(--s-map)"/>`;
-  g += DONGS.map(d => `<path d="${d.r.map(r => "M" + r.map(p => p.join(",")).join("L") + "Z").join("")}" fill="var(--s-land)" stroke="var(--s-edge)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`).join("");
-  g += `<g opacity=".6">${DONG_C.map(c => T(c.x, c.y, c.n, 9, "var(--s-sub)", 400)).join("")}</g>`;
+  const dpath = d => d.r.map(r => "M" + r.map(p => p.join(",")).join("L") + "Z").join("");
+  g += DONGS.map(d => `<path d="${dpath(d)}" fill="var(--s-land)"/><path d="${dpath(d)}" fill="${GU_TINT[d.g] || "transparent"}" stroke="var(--s-edge)" stroke-width="1.3" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`).join("");
+  g += GU_C.map(c => `<text x="${c.x}" y="${c.y}" font-size="${17 * f}" font-weight="700" fill="var(--s-ink)" fill-opacity=".22" text-anchor="middle" letter-spacing="${3 * f}" font-family="IBM Plex Sans KR, sans-serif">${esc(c.g)}</text>`).join("");
+  g += DONG_C.map(c => T(c.x, c.y, c.n, 10.5, "var(--s-ink)", 700)).join("");
   if (mode === "incident") {
     g += [250, 500, 1000].map(r => `<circle cx="0" cy="0" r="${r}" fill="none" stroke="var(--s-accent)" stroke-opacity=".45" stroke-width="1.3" stroke-dasharray="5 5" vector-effect="non-scaling-stroke"/>` + T(-r * .71, -r * .71, r >= 1000 ? "1km" : r + "m", 10, "var(--s-accent)", 700)).join("");
     for (const r of S.reqs) {
